@@ -1,0 +1,156 @@
+fileFormatVersion: 2
+guid: dfcf4406382262943af598c82230a88d
+timeCreated: 1566168777
+licenseType: Free
+ModelImporter:
+  serializedVersion: 21
+  fileIDToRecycleName:
+    100000: Component_PuzzleBackground_000
+    100002: Component_PuzzleBackground_001
+    100004: Component_PuzzleBackground_002
+    100006: Component_PuzzleBackground_003
+    100008: Component_PuzzleBackground_004
+    100010: Component_PuzzleBackground_005
+    100012: Component_PuzzleBackground_006
+    100014: Component_PuzzleBackground_007
+    100016: Component_PuzzleBackground_008
+    100018: Component_PuzzleBackground_009
+    100020: Component_PuzzleBackground_010
+    100022: Component_PuzzleBackground_011
+    100024: Component_PuzzleBackground_012
+    100026: Component_PuzzleBackground_013
+    100028: //RootNode
+    400000: Component_PuzzleBackground_000
+    400002: Component_PuzzleBackground_001
+    400004: Component_PuzzleBackground_002
+    400006: Component_PuzzleBackground_003
+    400008: Component_PuzzleBackground_004
+    400010: Component_PuzzleBackground_005
+    400012: Component_PuzzleBackground_006
+    400014: Component_PuzzleBackground_007
+    400016: Component_PuzzleBackground_008
+    400018: Component_PuzzleBackground_009
+    400020: Component_PuzzleBackground_010
+    400022: Component_PuzzleBackground_011
+    400024: Component_PuzzleBackground_012
+    400026: Component_PuzzleBackground_013
+    400028: //RootNode
+    2300000: Component_PuzzleBackground_000
+    2300002: Component_PuzzleBackground_001
+    2300004: Component_PuzzleBackground_002
+    2300006: Component_PuzzleBackground_003
+    2300008: Component_PuzzleBackground_004
+    2300010: Component_PuzzleBackground_005
+    2300012: Component_PuzzleBackground_006
+    2300014: Component_PuzzleBackground_007
+    2300016: Component_PuzzleBackground_008
+    2300018: Component_PuzzleBackground_009
+    2300020: Component_PuzzleBackground_010
+    2300022: Component_PuzzleBackground_011
+    2300024: Component_PuzzleBackground_012
+    2300026: Component_PuzzleBackground_013
+    3300000: Component_PuzzleBackground_000
+    3300002: Component_PuzzleBackground_001
+    3300004: Component_PuzzleBackground_002
+    3300006: Component_PuzzleBackground_003
+    3300008: Component_PuzzleBackground_004
+    3300010: Component_PuzzleBackground_005
+    3300012: Component_PuzzleBackground_006
+    3300014: Component_PuzzleBackground_007
+    3300016: Component_PuzzleBackground_008
+    3300018: Component_PuzzleBackground_009
+    3300020: Component_PuzzleBackground_010
+    3300022: Component_PuzzleBackground_011
+    3300024: Component_PuzzleBackground_012
+    3300026: Component_PuzzleBackground_013
+    4300000: Component_PuzzleBackground_013
+    4300002: Component_PuzzleBackground_012
+    4300004: Component_PuzzleBackground_011
+    4300006: Component_PuzzleBackground_010
+    4300008: Component_PuzzleBackground_009
+    4300010: Component_PuzzleBackground_008
+    4300012: Component_PuzzleBackground_007
+    4300014: Component_PuzzleBackground_006
+    4300016: Component_PuzzleBackground_005
+    4300018: Component_PuzzleBackground_004
+    4300020: Component_PuzzleBackground_003
+    4300022: Component_PuzzleBackground_002
+    4300024: Component_PuzzleBackground_000
+    4300026: Component_PuzzleBackground_001
+    7400000: Default Take
+    9500000: //RootNode
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
