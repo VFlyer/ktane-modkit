@@ -51,7 +51,7 @@ class SequenceCut : Puzzle
 
     public SequenceCut(Modkit module, int moduleId, ComponentInfo info) : base(module, moduleId, info)
     {
-        Debug.LogFormat("[The Modkit #{0}] Solving Encrypted Keypad. Symbols present are: {1}. Alphanumeric keys present are: {2}.", moduleId, info.GetSymbols(), info.alphabet.Join(", "));
+        Debug.LogFormat("[The Modkit #{0}] Solving Sequence Cut. Symbols present are: {1}. Alphanumeric keys present are: {2}.", moduleId, info.GetSymbols(), info.alphabet.Join(", "));
         row = info.symbols.Select(x => symbolToRow[x]).Min();
         seq = sequences[row];
         Debug.LogFormat("[The Modkit #{0}] Using sequence {1} - [ {2} ].", moduleId, row + 1, seq.Select(x => ComponentInfo.COLORNAMES[x]).Join(", "));
@@ -126,7 +126,7 @@ class SequenceCut : Puzzle
             if(module.bomb.GetSerialNumber().IndexOf(info.alphabet[i][0]) != -1)
                 pos1 = module.bomb.GetSerialNumber().IndexOf(info.alphabet[i][0]);
             else
-                pos1 = (info.alphabet[i][0] - 'A') % 7;
+                pos1 = (info.alphabet[i][0] - 'A' + 1) % 7;
 
             if((info.alphabet[i][1] - '0') >= 1 && (info.alphabet[i][1] - '0') <= 7)
                 pos2 = (info.alphabet[i][1] - '0') - 1;

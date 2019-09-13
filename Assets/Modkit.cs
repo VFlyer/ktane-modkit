@@ -60,6 +60,10 @@ public class Modkit : MonoBehaviour
 		SetUpComponents();
 		CalcComponents();
 		AssignHandlers();
+		SetSelectables(0, false);
+		SetSelectables(1, false);
+		SetSelectables(2, false);
+		SetSelectables(4, false);
 	}
 
 	void SetUpComponents()
@@ -294,9 +298,42 @@ public class Modkit : MonoBehaviour
 		moduleSolved = true;
 	}
 
+	public void SetSelectables(int n, bool enable)
+	{
+		switch(n)
+		{
+			case 0: 
+			{
+				foreach(GameObject wire in wires)
+					wire.SetActive(enable);
+				break;
+			}
+			case 1: 
+			{
+				foreach(GameObject symbol in symbols)
+					symbol.SetActive(enable);
+				break;
+			}
+			case 2: 
+			{
+				foreach(GameObject alpha in alphabet)
+					alpha.SetActive(enable);
+				break;
+			}
+			case 4: 
+			{
+				foreach(GameObject arrow in arrows)
+					arrow.SetActive(enable);
+				break;
+			}
+		}
+	}
+
 	public IEnumerator ShowComponent(int n)
 	{
 		animating = true;
+
+		SetSelectables(n, true);
 
         GetComponent<KMAudio>().PlayGameSoundAtTransformWithRef(KMSoundOverride.SoundEffect.WireSequenceMechanism, transform);
 
@@ -340,6 +377,8 @@ public class Modkit : MonoBehaviour
 		}
 
 		doors[n].transform.localPosition += new Vector3(0, 0.001f, 0);
+
+		SetSelectables(n, false);
 
 		animating = false;
 	}
