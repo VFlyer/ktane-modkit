@@ -18,6 +18,6 @@ MonoBehaviour:
     HTML: https://ktane.timwi.de/HTML/The%20Modkit.html\r\nManual PDF: https://ktane.timwi.de/PDF/The%20Modkit.pdf\r\n\r\nAny
     problems/suggestions, feel free to contact me on the KTaNE Discord @TheThirdMan.
     Join the KTaNE Discord here: https://discord.gg/Fv7YEDj"
-  version: 1.1
+  version: 1.2
   outputFolder: build
   previewImage: {fileID: 2800000, guid: f90c926a897f963419671947dd84e86c, type: 3}

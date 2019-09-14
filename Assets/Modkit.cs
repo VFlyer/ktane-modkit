@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using UnityEngine;
 using KModkit;
 using rnd = UnityEngine.Random;
@@ -409,4 +410,268 @@ public class Modkit : MonoBehaviour
 
 		yield return ShowComponent(0);
 	}
+
+    //twitch plays
+    private bool isValid(string[] s)
+    {
+        for (int i = 0; i < s.Length; i++)
+        {
+            s[i] = s[i].Replace(" ", "");
+            s[i] = s[i].ToLower();
+            if (!s[i].StartsWith("cutwire") && !s[i].StartsWith("press") && !s[i].StartsWith("select"))
+            {
+                return false;
+            }
+        }
+        for (int i = 0; i < s.Length; i++)
+        {
+            if (s[i].StartsWith("cutwire") && !s[i].Equals("cutwire"))
+            {
+                for(int j = 7; j < s.Length; j++)
+                {
+                    if (j % 2 == 0)
+                    {
+                        if (!s[i].ElementAt(j).Equals(","))
+                        {
+                            return false;
+                        }
+                    }
+                    else
+                    {
+                        if (!s[i].ElementAt(j).Equals("1") && !s[i].ElementAt(j).Equals("2") && !s[i].ElementAt(j).Equals("3") && !s[i].ElementAt(j).Equals("4") && !s[i].ElementAt(j).Equals("5"))
+                        {
+                            return false;
+                        }
+                    }
+                }
+            }
+            else if (s[i].StartsWith("select") && !s[i].Equals("select"))
+            {
+                string subs = s[i].Substring(6, s[i].Length - 6);
+                string[] param = subs.Split(',');
+                for(int k = 0; k < param.Length; k++)
+                {
+                    if (!param[k].Equals("arrows") && !param[k].Equals("led") && !param[k].Equals("alphabet") && !param[k].Equals("symbols") && !param[k].Equals("wires"))
+                    {
+                        return false;
+                    }
+                }
+            }
+            else if (s[i].StartsWith("press") && !s[i].Equals("press"))
+            {
+                string subs = s[i].Substring(5, s[i].Length - 5);
+                string[] param = subs.Split(',');
+                for (int k = 0; k < param.Length; k++)
+                {
+                    if (!param[k].Equals("bigdiamond") && !param[k].Equals("up") && !param[k].Equals("right") && !param[k].Equals("down") && !param[k].Equals("left") && !param[k].Equals("symbol1") && !param[k].Equals("symbol2") && !param[k].Equals("symbol3") && !param[k].Equals("alpha1") && !param[k].Equals("alpha2") && !param[k].Equals("alpha3"))
+                    {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    #pragma warning disable 414
+    private readonly string TwitchHelpMessage = @"!{0} select led,arrows [Selects the specified component(s), in this example 'led' and 'arrows'] | !{0} cut wire 1,4 [Cuts the specified wire(s), in this example wire 1 & 4] | !{0} press right,alpha2,symbol1 [Presses the specified button(s), in this example the right arrow, 2nd alphabet, and 1st symbol] | Commands may be chained with a semicolon";
+    #pragma warning restore 414
+    IEnumerator ProcessTwitchCommand(string command)
+    {
+        string[] parameters = command.Split(';');
+        if (isValid(parameters))
+        {
+            yield return null;
+            for (int i = 0; i < parameters.Length; i++)
+            {
+                parameters[i] = parameters[i].Replace(" ", "");
+                parameters[i] = parameters[i].ToLower();
+                if (parameters[i].StartsWith("cutwire") && onComponents[0] == true)
+                {
+                    for (int j = 7; j < parameters[i].Length; j++)
+                    {
+                        if (j % 2 == 1)
+                        {
+                            while (IsAnimating()) yield return new WaitForSeconds(0.1f);
+                            if (parameters[i].ElementAt(j).Equals('1'))
+                            {
+                                wires[0].GetComponentInChildren<KMSelectable>().OnInteract();
+                            }
+                            else if (parameters[i].ElementAt(j).Equals('2'))
+                            {
+                                wires[1].GetComponentInChildren<KMSelectable>().OnInteract();
+                            }
+                            else if (parameters[i].ElementAt(j).Equals('3'))
+                            {
+                                wires[2].GetComponentInChildren<KMSelectable>().OnInteract();
+                            }
+                            else if (parameters[i].ElementAt(j).Equals('4'))
+                            {
+                                wires[3].GetComponentInChildren<KMSelectable>().OnInteract();
+                            }
+                            else if (parameters[i].ElementAt(j).Equals('5'))
+                            {
+                                wires[4].GetComponentInChildren<KMSelectable>().OnInteract();
+                            }
+                        }
+                        yield return new WaitForSeconds(0.1f);
+                    }
+                }
+                else if (parameters[i].StartsWith("select"))
+                {
+                    string subs = parameters[i].Substring(6, parameters[i].Length-6);
+                    string[] param = subs.Split(',');
+                    for(int j = 0; j < param.Length; j++)
+                    {
+                        if (param[j].Equals("wires"))
+                        {
+                            while (!displayText.text.Equals("WIRES") || IsAnimating()) { selectBtns[2].OnInteract(); yield return new WaitForSeconds(0.2f); };
+                            selectBtns[1].OnInteract();
+                        }
+                        else if (param[j].Equals("led"))
+                        {
+                            while (!displayText.text.Equals("LED") || IsAnimating()) { selectBtns[2].OnInteract(); yield return new WaitForSeconds(0.2f); };
+                            selectBtns[1].OnInteract();
+                        }
+                        else if (param[j].Equals("arrows"))
+                        {
+                            while (!displayText.text.Equals("ARROWS") || IsAnimating()) { selectBtns[2].OnInteract(); yield return new WaitForSeconds(0.2f); };
+                            selectBtns[1].OnInteract();
+                        }
+                        else if (param[j].Equals("alphabet"))
+                        {
+                            while (!displayText.text.Equals("ALPHABET") || IsAnimating()) { selectBtns[2].OnInteract(); yield return new WaitForSeconds(0.2f); };
+                            selectBtns[1].OnInteract();
+                        }
+                        else if (param[j].Equals("symbols"))
+                        {
+                            while (!displayText.text.Equals("SYMBOLS") || IsAnimating()) { selectBtns[2].OnInteract(); yield return new WaitForSeconds(0.2f); };
+                            selectBtns[1].OnInteract();
+                        }
+                        yield return new WaitForSeconds(0.1f);
+                    }
+                }
+                else if (parameters[i].StartsWith("press"))
+                {
+                    string subs = parameters[i].Substring(5, parameters[i].Length - 5);
+                    string[] param = subs.Split(',');
+                    for (int j = 0; j < param.Length; j++)
+                    {
+                        if (param[j].Equals("bigdiamond"))
+                        {
+                            while (IsAnimating()) { yield return new WaitForSeconds(0.1f); };
+                            utilityBtn.OnInteract();
+                        }
+                        else if (param[j].Equals("up"))
+                        {
+                            if(onComponents[4] == false)
+                            {
+                                yield return "sendtochaterror You cannot press arrows if the component isnt selected!";
+                                yield break;
+                            }
+                            while (IsAnimating()) { yield return new WaitForSeconds(0.1f); };
+                            arrows[0].GetComponentInChildren<KMSelectable>().OnInteract();
+                        }
+                        else if (param[j].Equals("down"))
+                        {
+                            if (onComponents[4] == false)
+                            {
+                                yield return "sendtochaterror You cannot press arrows if the component isnt selected!";
+                                yield break;
+                            }
+                            while (IsAnimating()) { yield return new WaitForSeconds(0.1f); };
+                            arrows[1].GetComponentInChildren<KMSelectable>().OnInteract();
+                        }
+                        else if (param[j].Equals("right"))
+                        {
+                            if (onComponents[4] == false)
+                            {
+                                yield return "sendtochaterror You cannot press arrows if the component isnt selected!";
+                                yield break;
+                            }
+                            while (IsAnimating()) { yield return new WaitForSeconds(0.1f); };
+                            arrows[2].GetComponentInChildren<KMSelectable>().OnInteract();
+                        }
+                        else if (param[j].Equals("left"))
+                        {
+                            if (onComponents[4] == false)
+                            {
+                                yield return "sendtochaterror You cannot press arrows if the component isnt selected!";
+                                yield break;
+                            }
+                            while (IsAnimating()) { yield return new WaitForSeconds(0.1f); };
+                            arrows[3].GetComponentInChildren<KMSelectable>().OnInteract();
+                        }
+                        else if (param[j].Equals("alpha1"))
+                        {
+                            if (onComponents[2] == false)
+                            {
+                                yield return "sendtochaterror You cannot press alphabet buttons if the component isnt selected!";
+                                yield break;
+                            }
+                            while (IsAnimating()) { yield return new WaitForSeconds(0.1f); };
+                            alphabet[0].GetComponentInChildren<KMSelectable>().OnInteract();
+                        }
+                        else if (param[j].Equals("alpha2"))
+                        {
+                            if (onComponents[2] == false)
+                            {
+                                yield return "sendtochaterror You cannot press alphabet buttons if the component isnt selected!";
+                                yield break;
+                            }
+                            while (IsAnimating()) { yield return new WaitForSeconds(0.1f); };
+                            alphabet[1].GetComponentInChildren<KMSelectable>().OnInteract();
+                        }
+                        else if (param[j].Equals("alpha3"))
+                        {
+                            if (onComponents[2] == false)
+                            {
+                                yield return "sendtochaterror You cannot press alphabet buttons if the component isnt selected!";
+                                yield break;
+                            }
+                            while (IsAnimating()) { yield return new WaitForSeconds(0.1f); };
+                            alphabet[2].GetComponentInChildren<KMSelectable>().OnInteract();
+                        }
+                        else if (param[j].Equals("symbol1"))
+                        {
+                            if (onComponents[1] == false)
+                            {
+                                yield return "sendtochaterror You cannot press symbol buttons if the component isnt selected!";
+                                yield break;
+                            }
+                            while (IsAnimating()) { yield return new WaitForSeconds(0.1f); };
+                            symbols[0].GetComponentInChildren<KMSelectable>().OnInteract();
+                        }
+                        else if (param[j].Equals("symbol2"))
+                        {
+                            if (onComponents[1] == false)
+                            {
+                                yield return "sendtochaterror You cannot press symbol buttons if the component isnt selected!";
+                                yield break;
+                            }
+                            while (IsAnimating()) { yield return new WaitForSeconds(0.1f); };
+                            symbols[1].GetComponentInChildren<KMSelectable>().OnInteract();
+                        }
+                        else if (param[j].Equals("symbol3"))
+                        {
+                            if (onComponents[1] == false)
+                            {
+                                yield return "sendtochaterror You cannot press symbol buttons if the component isnt selected!";
+                                yield break;
+                            }
+                            while (IsAnimating()) { yield return new WaitForSeconds(0.1f); };
+                            symbols[2].GetComponentInChildren<KMSelectable>().OnInteract();
+                        }
+                        yield return new WaitForSeconds(0.1f);
+                    }
+                }
+                else
+                {
+                    yield return "sendtochaterror You cannot cut wires if the component isnt selected!";
+                    yield break;
+                }
+            }
+            yield break;
+        }
+    }
 }
