@@ -474,7 +474,7 @@ public class Modkit : MonoBehaviour
     }
 
     #pragma warning disable 414
-    private readonly string TwitchHelpMessage = @"!{0} select led,arrows [Selects the specified component(s), in this example 'led' and 'arrows'] | !{0} cut wire 1,4 [Cuts the specified wire(s), in this example wire 1 & 4] | !{0} press right,alpha2,symbol1 [Presses the specified button(s), in this example the right arrow, 2nd alphabet, and 1st symbol] | Commands may be chained with a semicolon";
+    private readonly string TwitchHelpMessage = @"!{0} select led,arrows [Selects the specified component(s), in this example 'led' and 'arrows'] | !{0} cut wire 1,4 [Cuts the specified wire(s), in this example wire 1 & 4] | !{0} press right,alpha2,symbol1,bigdiamond [Presses the specified button(s), in this example the right arrow, 2nd alphabet, and 1st symbol] | Commands may be chained with a semicolon";
     #pragma warning restore 414
     IEnumerator ProcessTwitchCommand(string command)
     {

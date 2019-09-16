@@ -124,7 +124,7 @@ class LEDDirections : Puzzle
                     stages[n].Add(ComponentInfo.UP);
                 if(module.bomb.IsIndicatorPresent(Indicator.BOB))
                     stages[n].Add(ComponentInfo.DOWN);
-                if(info.alphabet[n][1] - '0' < 6)
+                if((info.alphabet[n][1] - '0') < 6)
                     stages[n].Add(ComponentInfo.LEFT);
                 if(stages[n].Count == 0)
                     stages[n].Add(ComponentInfo.RIGHT);
@@ -167,7 +167,7 @@ class LEDDirections : Puzzle
                     stages[n].Add(ComponentInfo.LEFT);
                 if(module.bomb.GetSerialNumberNumbers().Count() >= 4)
                     stages[n].Add(ComponentInfo.LEFT);
-                if(info.alphabet[n][1] - '0' % 2 == 0)
+                if((info.alphabet[n][1] - '0') % 2 == 0)
                     stages[n].Add(ComponentInfo.DOWN);
                 if(info.alphabet[n][0] < 'L')
                     stages[n].Add(ComponentInfo.RIGHT);
