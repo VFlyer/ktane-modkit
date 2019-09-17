@@ -86,8 +86,8 @@ class GatedMaze : Puzzle
             new int[] { ComponentInfo.LEFT, ComponentInfo.RIGHT },
             new int[] { ComponentInfo.DOWN, ComponentInfo.LEFT },
             new int[] { ComponentInfo.UP },
-            new int[] { ComponentInfo.LEFT, ComponentInfo.DOWN, ComponentInfo.RIGHT },
-            new int[] { ComponentInfo.RIGHT, ComponentInfo.DOWN },
+            new int[] { ComponentInfo.UP, ComponentInfo.DOWN, ComponentInfo.RIGHT },
+            new int[] { ComponentInfo.LEFT, ComponentInfo.RIGHT, ComponentInfo.DOWN },
             new int[] { ComponentInfo.UP, ComponentInfo.LEFT }
         },
         new int [][] {
