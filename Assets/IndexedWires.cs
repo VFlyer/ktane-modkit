@@ -126,7 +126,7 @@ class IndexedWires : Puzzle
             {
                 if(info.alphabet.Select(x => x[0]).Min() == info.alphabet[i][0])
                 {
-                    if(info.alphabet[i][1] - '0' % 2 == 0)
+                    if((info.alphabet[i][1] - '0') % 2 == 0)
                         colors[i] = ComponentInfo.YELLOW;
                     else
                         colors[i] = ComponentInfo.RED;
