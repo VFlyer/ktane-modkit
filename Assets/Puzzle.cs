@@ -18,6 +18,7 @@ public class Puzzle
         this.module = module;
         this.moduleId = moduleId;
         this.info = info;
+        this.vanilla = vanilla;
     }
 
     public virtual void OnWireCut(int wire)
