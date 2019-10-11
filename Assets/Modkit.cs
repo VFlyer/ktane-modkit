@@ -427,7 +427,7 @@ public class Modkit : MonoBehaviour
         {
             if (s[i].StartsWith("cutwire") && !s[i].Equals("cutwire"))
             {
-                for(int j = 7; j < s.Length; j++)
+                for (int j = 7; j < s.Length; j++)
                 {
                     if (j % 2 == 0)
                     {
@@ -449,7 +449,7 @@ public class Modkit : MonoBehaviour
             {
                 string subs = s[i].Substring(6, s[i].Length - 6);
                 string[] param = subs.Split(',');
-                for(int k = 0; k < param.Length; k++)
+                for (int k = 0; k < param.Length; k++)
                 {
                     if (!param[k].Equals("arrows") && !param[k].Equals("led") && !param[k].Equals("alphabet") && !param[k].Equals("symbols") && !param[k].Equals("wires"))
                     {
@@ -459,6 +459,10 @@ public class Modkit : MonoBehaviour
             }
             else if (s[i].StartsWith("press") && !s[i].Equals("press"))
             {
+                if (s[i].Equals("pressbigdiamondat0") || s[i].Equals("pressbigdiamondat1") || s[i].Equals("pressbigdiamondat2") || s[i].Equals("pressbigdiamondat3") || s[i].Equals("pressbigdiamondat4") || s[i].Equals("pressbigdiamondat5") || s[i].Equals("pressbigdiamondat6") || s[i].Equals("pressbigdiamondat7") || s[i].Equals("pressbigdiamondat8") || s[i].Equals("pressbigdiamondat9"))
+                {
+                    return true;
+                }
                 string subs = s[i].Substring(5, s[i].Length - 5);
                 string[] param = subs.Split(',');
                 for (int k = 0; k < param.Length; k++)
@@ -474,7 +478,7 @@ public class Modkit : MonoBehaviour
     }
 
     #pragma warning disable 414
-    private readonly string TwitchHelpMessage = @"!{0} select led,arrows [Selects the specified component(s), in this example 'led' and 'arrows'] | !{0} cut wire 1,4 [Cuts the specified wire(s), in this example wire 1 & 4] | !{0} press right,alpha2,symbol1,bigdiamond [Presses the specified button(s), in this example the right arrow, 2nd alphabet, and 1st symbol] | Commands may be chained with a semicolon";
+    private readonly string TwitchHelpMessage = @"!{0} select led,arrows [Selects the specified component(s), in this example 'led' and 'arrows'] | !{0} cut wire 1,4 [Cuts the specified wire(s), in this example wire 1 & 4] | !{0} press right,alpha2,symbol1,bigdiamond [Presses the specified button(s), in this example the right arrow, 2nd alphabet, 1st symbol, and big diamond] | !{0} press bigdiamond at <#> [Presses the 'Big Diamond' button when the last digit of the number of seconds remaining is <#>] | Commands may be chained with a semicolon";
     #pragma warning restore 414
     IEnumerator ProcessTwitchCommand(string command)
     {
@@ -557,7 +561,67 @@ public class Modkit : MonoBehaviour
                     string[] param = subs.Split(',');
                     for (int j = 0; j < param.Length; j++)
                     {
-                        if (param[j].Equals("bigdiamond"))
+                        if (param[j].Equals("bigdiamondat0"))
+                        {
+                            while (IsAnimating()) { yield return new WaitForSeconds(0.1f); };
+                            while (((int)bomb.GetTime()%60)%10 != 0) { yield return new WaitForSeconds(0.1f); yield return "trycancel The big diamond button press has been cancelled due to a cancel request."; };
+                            utilityBtn.OnInteract();
+                        }
+                        else if (param[j].Equals("bigdiamondat1"))
+                        {
+                            while (IsAnimating()) { yield return new WaitForSeconds(0.1f); };
+                            while (((int)bomb.GetTime() % 60) % 10 != 1) { yield return new WaitForSeconds(0.1f); yield return "trycancel The big diamond button press has been cancelled due to a cancel request."; };
+                            utilityBtn.OnInteract();
+                        }
+                        else if (param[j].Equals("bigdiamondat2"))
+                        {
+                            while (IsAnimating()) { yield return new WaitForSeconds(0.1f); };
+                            while (((int)bomb.GetTime() % 60) % 10 != 2) { yield return new WaitForSeconds(0.1f); yield return "trycancel The big diamond button press has been cancelled due to a cancel request."; };
+                            utilityBtn.OnInteract();
+                        }
+                        else if (param[j].Equals("bigdiamondat3"))
+                        {
+                            while (IsAnimating()) { yield return new WaitForSeconds(0.1f); };
+                            while (((int)bomb.GetTime() % 60) % 10 != 3) { yield return new WaitForSeconds(0.1f); yield return "trycancel The big diamond button press has been cancelled due to a cancel request."; };
+                            utilityBtn.OnInteract();
+                        }
+                        else if (param[j].Equals("bigdiamondat4"))
+                        {
+                            while (IsAnimating()) { yield return new WaitForSeconds(0.1f); };
+                            while (((int)bomb.GetTime() % 60) % 10 != 4) { yield return new WaitForSeconds(0.1f); yield return "trycancel The big diamond button press has been cancelled due to a cancel request."; };
+                            utilityBtn.OnInteract();
+                        }
+                        else if (param[j].Equals("bigdiamondat5"))
+                        {
+                            while (IsAnimating()) { yield return new WaitForSeconds(0.1f); };
+                            while (((int)bomb.GetTime() % 60) % 10 != 5) { yield return new WaitForSeconds(0.1f); yield return "trycancel The big diamond button press has been cancelled due to a cancel request."; };
+                            utilityBtn.OnInteract();
+                        }
+                        else if (param[j].Equals("bigdiamondat6"))
+                        {
+                            while (IsAnimating()) { yield return new WaitForSeconds(0.1f); };
+                            while (((int)bomb.GetTime() % 60) % 10 != 6) { yield return new WaitForSeconds(0.1f); yield return "trycancel The big diamond button press has been cancelled due to a cancel request."; };
+                            utilityBtn.OnInteract();
+                        }
+                        else if (param[j].Equals("bigdiamondat7"))
+                        {
+                            while (IsAnimating()) { yield return new WaitForSeconds(0.1f); };
+                            while (((int)bomb.GetTime() % 60) % 10 != 7) { yield return new WaitForSeconds(0.1f); yield return "trycancel The big diamond button press has been cancelled due to a cancel request."; };
+                            utilityBtn.OnInteract();
+                        }
+                        else if (param[j].Equals("bigdiamondat8"))
+                        {
+                            while (IsAnimating()) { yield return new WaitForSeconds(0.1f); };
+                            while (((int)bomb.GetTime() % 60) % 10 != 8) { yield return new WaitForSeconds(0.1f); yield return "trycancel The big diamond button press has been cancelled due to a cancel request."; };
+                            utilityBtn.OnInteract();
+                        }
+                        else if (param[j].Equals("bigdiamondat9"))
+                        {
+                            while (IsAnimating()) { yield return new WaitForSeconds(0.1f); };
+                            while (((int)bomb.GetTime() % 60) % 10 != 9) { yield return new WaitForSeconds(0.1f); yield return "trycancel The big diamond button press has been cancelled due to a cancel request."; };
+                            utilityBtn.OnInteract();
+                        }
+                        else if (param[j].Equals("bigdiamond"))
                         {
                             while (IsAnimating()) { yield return new WaitForSeconds(0.1f); };
                             utilityBtn.OnInteract();
