@@ -69,6 +69,7 @@ class LEDDirections : Puzzle
         else
         {
 		    Debug.LogFormat("[The Modkit #{0}] Strike! Received input [ {1} ] on stage {2}.", moduleId, input.Select(x => ComponentInfo.DIRNAMES[x]).Join(", "), currentStage + 1);
+            module.GetComponent<KMBombModule>().HandleStrike();
             input.Clear();
         }
     }
