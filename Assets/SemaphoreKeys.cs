@@ -157,6 +157,13 @@ class SemaphoreKeys : Puzzle
                 else
                     presses.Add(2);
         }
+        else if(Math.Abs(info.alphabet[0][0] - info.alphabet[2][0]) == 1)
+        {
+            if(info.alphabet[0][0] < info.alphabet[2][0])
+                    presses.Add(0);
+                else
+                    presses.Add(2);
+        }
 
         if(presses.Count != 0)
         {
