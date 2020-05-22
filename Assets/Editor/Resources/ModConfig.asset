@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Name: ModConfig
   m_EditorClassIdentifier: 
   id: modkit
-  title: The Modkit
-  description: "It is literally do or die.\n\r\nModule by TheThirdMan\r\nmoduleID:
-    modkit\r\n\r\nGitHub Repository: https://github.com/luisdiogo98/ktane-modkit\n\r\nManual
-    HTML: https://ktane.timwi.de/HTML/The%20Modkit.html\r\nManual PDF: https://ktane.timwi.de/PDF/The%20Modkit.pdf\r\n\r\nAny
-    problems/suggestions, feel free to contact me on the KTaNE Discord @TheThirdMan.
-    Join the KTaNE Discord here: https://discord.gg/Fv7YEDj"
-  version: 1.9
+  title: The Modkit [REUPLOAD]
+  description: "It is literally do or die.\n\r\n[b]This is a reupload of the original
+    module by the original author. Please unsubscribe/disable the old version [url=https://steamcommunity.com/sharedfiles/filedetails/?id=1860975453]here.[/url][/b]\n\nModule
+    Originally by TheThirdMan\r\nReuploaded and Maintained by VFlyer\nmoduleID: modkit\r\n\r\nGitHub
+    (Old Version): https://github.com/VFlyer/ktane-modkit\nGitHub (Old Version): https://github.com/luisdiogo98/ktane-modkit\n\r\nManual
+    HTML: https://ktane.timwi.de/HTML/The%20Modkit.html\r\nManual PDF: https://ktane.timwi.de/PDF/The%20Modkit.pdf\r\n"
+  version: 1.9_01
   outputFolder: build
-  previewImage: {fileID: 2800000, guid: f90c926a897f963419671947dd84e86c, type: 3}
+  previewImage: {fileID: 2800000, guid: e81d8fe971c7ff044bfa913d761433b8, type: 3}
