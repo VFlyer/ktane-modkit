@@ -127,6 +127,7 @@ class GatedMaze : Puzzle
     int col = -1;
 
     bool solving = false;
+    List<int> allMoves = new List<int>();
 
     public GatedMaze(Modkit module, int moduleId, ComponentInfo info) : base(module, moduleId, info)
     {
@@ -134,11 +135,13 @@ class GatedMaze : Puzzle
     
         destination = module.bomb.GetSerialNumberNumbers().Sum() % 64;
         if(numberGroup.Contains(destination))
-            do { origin = rnd.Range(0, 64); } while(numberGroup.Contains(origin));
-        else do { origin = rnd.Range(0, 64); } while(!numberGroup.Contains(origin));
+            do { origin = rnd.Range(0, 64); } while (numberGroup.Contains(origin));
+        else do { origin = rnd.Range(0, 64); } while (!numberGroup.Contains(origin));
 
         Debug.LogFormat("[The Modkit #{0}] Origin: {1}. Destination: {2}.", moduleId, origin, destination);
-    
+
+        allMoves.Add(origin);
+
         for(int i = 0; i < maze.Length; i++)
             for(int j = 0; j < maze[i].Length; j++)
                 if(maze[i][j] == origin)
@@ -147,6 +150,11 @@ class GatedMaze : Puzzle
                     col = j;
                     break;
                 }
+        module.bomb.OnBombExploded += delegate
+        {
+            if (module.IsSolved()) return;
+            Debug.LogFormat("[The Modkit #{0}] Moves taken up to detonation: {1} ", moduleId, allMoves.Join(" => "));
+        };
     }
 
     public override void OnArrowPress(int arrow)
@@ -189,39 +197,42 @@ class GatedMaze : Puzzle
                 case 3: provCol = col - 1; break;
             }
 
-		    Debug.LogFormat("[The Modkit #{0}] {1} -> {2}", moduleId, origin, maze[provRow][provCol]);
+		    //Debug.LogFormat("[The Modkit #{0}] {1} -> {2}", moduleId, origin, maze[provRow][provCol]);
             row = provRow;
             col = provCol;
             origin = maze[row][col];
 
-            String n = Convert.ToString(origin, 2);
+            string n = Convert.ToString(origin, 2);
             while(n.Length < 6)
                 n = "0" + n;
 
             for(int i = 0; i < n.Length; i++)
             {
                 if(i < 3)
-                    if(n[i] == '1')
-                        module.symbols[i].transform.Find("Key_TL").Find("LED").GetComponentInChildren<Renderer>().material = module.keyLightMats[1];
-                    else
-                        module.symbols[i].transform.Find("Key_TL").Find("LED").GetComponentInChildren<Renderer>().material = module.keyLightMats[6];
+                    module.symbols[i].transform.Find("Key_TL").Find("LED").GetComponentInChildren<Renderer>().material = n[i] == '1' ? module.keyLightMats[3] : module.keyLightMats[6];
                 else
-                    if(n[i] == '1')
-                        module.alphabet[i - 3].transform.Find("Key_TL").Find("LED").GetComponentInChildren<Renderer>().material = module.keyLightMats[0];
-                    else
-                        module.alphabet[i - 3].transform.Find("Key_TL").Find("LED").GetComponentInChildren<Renderer>().material = module.keyLightMats[6];
+                    module.alphabet[i - 3].transform.Find("Key_TL").Find("LED").GetComponentInChildren<Renderer>().material = n[i] == '1' ? module.keyLightMats[3] : module.keyLightMats[6];
             }
-
+            allMoves.Add(origin);
             if(origin == destination)
             {
-		        Debug.LogFormat("[The Modkit #{0}] Module solved.", moduleId);
+                Debug.LogFormat("[The Modkit #{0}] Moves taken to solve: {1} ", moduleId, allMoves.Join(" => "));
+                Debug.LogFormat("[The Modkit #{0}] Module solved.", moduleId);
+                
                 module.Solve();
             }
         }
         else
         {
+            Debug.LogFormat("[The Modkit #{0}] Moves taken up to this strike: {1} ", moduleId, allMoves.Join(" => "));
             Debug.LogFormat("[The Modkit #{0}] Strike! Can't go {1} at {2}.", moduleId, ComponentInfo.DIRNAMES[arrow], origin);
             module.CauseStrike();
+            if (currentFlashing != null)
+                module.StopCoroutine(currentFlashing);
+            currentFlashing = HandleArrowDelayFlashSingle(arrow);
+            module.StartCoroutine(currentFlashing);
+            allMoves.Clear();
+            allMoves.Add(origin);
             return;
         }
     }
@@ -245,8 +256,7 @@ class GatedMaze : Puzzle
         }
 
         module.StartSolve();
-
-        if(!solving)
+        if (!solving)
         {
             solving = true;
             String n = Convert.ToString(origin, 2);
@@ -257,15 +267,19 @@ class GatedMaze : Puzzle
             {
                 if(i < 3)
                     if(n[i] == '1')
-                        module.symbols[i].transform.Find("Key_TL").Find("LED").GetComponentInChildren<Renderer>().material = module.keyLightMats[1];
+                        module.symbols[i].transform.Find("Key_TL").Find("LED").GetComponentInChildren<Renderer>().material = module.keyLightMats[3];
                     else
                         module.symbols[i].transform.Find("Key_TL").Find("LED").GetComponentInChildren<Renderer>().material = module.keyLightMats[6];
                 else
                     if(n[i] == '1')
-                        module.alphabet[i - 3].transform.Find("Key_TL").Find("LED").GetComponentInChildren<Renderer>().material = module.keyLightMats[0];
+                        module.alphabet[i - 3].transform.Find("Key_TL").Find("LED").GetComponentInChildren<Renderer>().material = module.keyLightMats[3];
                     else
                         module.alphabet[i - 3].transform.Find("Key_TL").Find("LED").GetComponentInChildren<Renderer>().material = module.keyLightMats[6];
             }
+            if (currentFlashing != null)
+                module.StopCoroutine(currentFlashing);
+            currentFlashing = HandleArrowDelayFlash();
+            module.StartCoroutine(currentFlashing);
         }
     }
 }

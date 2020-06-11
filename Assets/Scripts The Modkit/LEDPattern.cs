@@ -66,7 +66,7 @@ class LEDPattern : Puzzle
 
     public LEDPattern(Modkit module, int moduleId, ComponentInfo info) : base(module, moduleId, info)
     {
-        Debug.LogFormat("[The Modkit #{0}] Solving LED Pattern. LEDs are: {1}.", moduleId, info.LED.Select(x => ComponentInfo.COLORNAMES[x]).Join(", "));
+        Debug.LogFormat("[The Modkit #{0}] Solving LED Pattern. LEDs: {1}.", moduleId, info.LED.Select(x => ComponentInfo.COLORNAMES[x]).Join(", "));
 
         for(int i = 0; i < maps.Length; i++)
         {
@@ -123,12 +123,12 @@ class LEDPattern : Puzzle
 
         if(matches.Contains(digit))
         {
-            Debug.LogFormat("[The Modkit #{0}] Pressed the ❖ button when the last seconds digit on the countdown timer was {1}. Module solved.", moduleId, digit);
+            Debug.LogFormat("[The Modkit #{0}] Correctly pressed the ❖ button when the last seconds digit on the countdown timer was {1}. Module solved.", moduleId, digit);
             module.Solve();
         }
         else
         {
-            Debug.LogFormat("[The Modkit #{0}] Strike! Pressed the ❖ button when the last seconds digit on the countdown timer was {1}.", moduleId, digit);
+            Debug.LogFormat("[The Modkit #{0}] Strike! Incorrectly pressed the ❖ button when the last seconds digit on the countdown timer was {1}.", moduleId, digit);
             module.CauseStrike();
         }
         

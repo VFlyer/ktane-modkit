@@ -50,7 +50,7 @@ class ColorfulWires : Puzzle
 
         if(wiresToCut.Contains(wire))
         {
-		    Debug.LogFormat("[The Modkit #{0}] Cut wire {1}.", moduleId, wire + 1);
+		    Debug.LogFormat("[The Modkit #{0}] Correctly cut wire {1}.", moduleId, wire + 1);
             validCuts++;
 
             if(validCuts == wiresToCut.Count())
@@ -61,7 +61,7 @@ class ColorfulWires : Puzzle
         }
         else
         {
-            Debug.LogFormat("[The Modkit #{0}] Strike! Cut wire {1}.", moduleId, wire + 1);
+            Debug.LogFormat("[The Modkit #{0}] Strike! Incorrectly cut wire {1}.", moduleId, wire + 1);
             module.CauseStrike();
         }
     }
@@ -88,19 +88,19 @@ class ColorfulWires : Puzzle
 
         if(wiresToCut.Count == 0)
         {
-            Debug.LogFormat("[The Modkit #{0}] Pressed the ❖ button when no wires were valid. Module solved.", moduleId);
+            Debug.LogFormat("[The Modkit #{0}] Correctly pressed the ❖ button when no wires were valid. Module solved.", moduleId);
             module.Solve();
         }
         else
         {
-            Debug.LogFormat("[The Modkit #{0}] Strike! Pressed the ❖ button when at least one wire was valid.", moduleId);
+            Debug.LogFormat("[The Modkit #{0}] Strike! Incorrectly pressed the ❖ button when at least one wire was valid.", moduleId);
             module.CauseStrike();
         }
     }
 
     void CalcSolution()
     {
-        Debug.LogFormat("[The Modkit #{0}] Wires present are {1}.", moduleId, info.GetWireNames());
+        Debug.LogFormat("[The Modkit #{0}] Wires present: {1}.", moduleId, info.GetWireNames());
 
         validCuts = 0;
         wiresToCut = new List<int>();
@@ -124,6 +124,6 @@ class ColorfulWires : Puzzle
                 wiresToCut.Add(i);
         }
 
-        Debug.LogFormat("[The Modkit #{0}] Wires that need to be cut are {1}.", moduleId, wiresToCut.Select(x => x + 1).Join(", "));
+        Debug.LogFormat("[The Modkit #{0}] Wires that need to be cut: {1}.", moduleId, wiresToCut.Select(x => x + 1).Join(", "));
     }
 }

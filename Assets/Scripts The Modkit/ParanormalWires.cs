@@ -49,6 +49,7 @@ class ParanormalWires : Puzzle
         if(cut.Count == 0 || wire == toCut)
         {
             Debug.LogFormat("[The Modkit #{0}] Cut wire {1}.", moduleId, wire + 1);
+            toCut = -1;
         }
         else
         {
@@ -141,7 +142,8 @@ class ParanormalWires : Puzzle
     {
         if(op / 10 == 0)
         {
-            if(info.symbols.Distinct().Count() < 3)
+            //Debug.LogFormat("[The Modkit #{0}] A symbol has changed.", moduleId);
+            if (info.symbols.Distinct().Count() < 3)
             {
                 for(int i = 0; i < info.wires.Length; i++)
                 {
@@ -158,8 +160,6 @@ class ParanormalWires : Puzzle
                         return;
                     }
                 }
-
-                DefaultWire();
             }
             else if(op % 10 == 0)
             {
@@ -182,8 +182,6 @@ class ParanormalWires : Puzzle
                     Debug.LogFormat("[The Modkit #{0}] Wire {1} must be cut next.", moduleId, toCut + 1);
                     return;
                 }
-
-                DefaultWire();
             }
             else
             {
@@ -201,16 +199,15 @@ class ParanormalWires : Puzzle
                         Debug.LogFormat("[The Modkit #{0}] Wire {1} must be cut next.", moduleId, toCut + 1);
                         return;
                     }
-
-                    DefaultWire();
                 }
             }
         }
         else if(op / 10 == 1)
         {
-            if(symbolLights[op % 10] == ComponentInfo.GREEN)
+            if (symbolLights[op % 10] == ComponentInfo.GREEN)
             {
-                for(int i = 2; i < info.wires.Length; i++)
+                //Debug.LogFormat("[The Modkit #{0}] The symbol's light is green.", moduleId);
+                for (int i = 2; i < info.wires.Length; i++)
                 {
                     if(cut.Contains(i))
                         continue;
@@ -225,8 +222,6 @@ class ParanormalWires : Puzzle
                         return;
                     }
                 }
-
-                DefaultWire();
             }
             else if(op % 10 == 1)
             {
@@ -253,8 +248,6 @@ class ParanormalWires : Puzzle
                     Debug.LogFormat("[The Modkit #{0}] Wire {1} must be cut next.", moduleId, toCut + 1);
                     return;
                 }
-
-                DefaultWire();
             }
             else
             {
@@ -278,13 +271,12 @@ class ParanormalWires : Puzzle
                         }
                     }    
                 }
-
-                DefaultWire();
             }
         }
         else if(op / 10 == 2)
         {
-            if("AEIOU".Contains(info.alphabet[op % 10]))
+            //Debug.LogFormat("[The Modkit #{0}] An alphanumeric key has changed.", moduleId);
+            if ("AEIOU".Contains(info.alphabet[op % 10]))
             {
                 int last = -1;
                 for(int i = 0; i < info.wires.Length; i++)
@@ -305,8 +297,6 @@ class ParanormalWires : Puzzle
                     Debug.LogFormat("[The Modkit #{0}] Wire {1} must be cut next.", moduleId, toCut + 1);
                     return;
                 }
-
-                DefaultWire();
             }
             else if(module.bomb.GetSerialNumberNumbers().Contains(info.alphabet[op % 10][1] - '0'))
             {
@@ -323,8 +313,6 @@ class ParanormalWires : Puzzle
                     Debug.LogFormat("[The Modkit #{0}] Wire {1} must be cut next.", moduleId, toCut + 1);
                     return;
                 }
-
-                DefaultWire();
             }
             else
             {
@@ -343,8 +331,6 @@ class ParanormalWires : Puzzle
                         return;
                     }    
                 }
-
-                DefaultWire();
             }
         }
         else if(op / 10 == 3)
@@ -372,7 +358,6 @@ class ParanormalWires : Puzzle
                     return;
                 }
 
-                DefaultWire();
             }
             else if(op % 10 == 2)
             {
@@ -391,8 +376,6 @@ class ParanormalWires : Puzzle
                         return;
                     }    
                 }
-
-                DefaultWire();
             }
             else
             {
@@ -417,8 +400,7 @@ class ParanormalWires : Puzzle
                             found = true;
                     }
                 }
-                        
-                DefaultWire();
+
             }
         }
         else if(op / 10 == 4)
@@ -441,7 +423,6 @@ class ParanormalWires : Puzzle
                     }    
                 }
 
-                DefaultWire();
             }
             else if(info.LED.Distinct().Count() == 1)
             {
@@ -459,7 +440,6 @@ class ParanormalWires : Puzzle
                     return;
                 }
 
-                DefaultWire();
             }
             else
             {
@@ -476,14 +456,12 @@ class ParanormalWires : Puzzle
                         last = i;
                 }
 
-                if(last != -1)
+                if (last != -1)
                 {
                     toCut = last;
                     Debug.LogFormat("[The Modkit #{0}] Wire {1} must be cut next.", moduleId, toCut + 1);
                     return;
                 }
-
-                DefaultWire();
             }
         }
         else if(op / 10 == 5)
@@ -506,7 +484,6 @@ class ParanormalWires : Puzzle
                     }    
                 }
 
-                DefaultWire();
             }
             else if(op % 10 == 2)
             {
@@ -525,8 +502,7 @@ class ParanormalWires : Puzzle
                         return;
                     }
                 }
-                        
-                DefaultWire();
+
             }
             else
             {
@@ -551,8 +527,7 @@ class ParanormalWires : Puzzle
                             found = true;
                     }
                 }
-                        
-                DefaultWire();
+
             }
         }
         else if(op / 10 == 6)
@@ -565,14 +540,14 @@ class ParanormalWires : Puzzle
                     Debug.LogFormat("[The Modkit #{0}] Wire {1} must be cut next.", moduleId, toCut + 1);
                     return;
                 }
-
+                else
                 if(!cut.Contains(2) && (info.wires[2] / 10 == ComponentInfo.RED || info.wires[2] % 10 == ComponentInfo.RED))
                 {
                     toCut = 2;
                     Debug.LogFormat("[The Modkit #{0}] Wire {1} must be cut next.", moduleId, toCut + 1);
                     return;
                 }
-
+                else
                 if(!cut.Contains(4) && (info.wires[4] / 10 == ComponentInfo.RED || info.wires[4] % 10 == ComponentInfo.RED))
                 {
                     toCut = 4;
@@ -580,7 +555,6 @@ class ParanormalWires : Puzzle
                     return;
                 }
 
-                DefaultWire();
             }
             else if(info.AreArrowsAdjacent(ComponentInfo.BLUE, ComponentInfo.BLUE) || info.AreArrowsAdjacent(ComponentInfo.RED, ComponentInfo.RED) || info.AreArrowsAdjacent(ComponentInfo.GREEN, ComponentInfo.GREEN) || info.AreArrowsAdjacent(ComponentInfo.YELLOW, ComponentInfo.YELLOW))
             {
@@ -600,7 +574,7 @@ class ParanormalWires : Puzzle
                     }
                 }
 
-                DefaultWire();
+
             }
             else
             {
@@ -618,7 +592,7 @@ class ParanormalWires : Puzzle
                     return;
                 }
 
-                DefaultWire();
+
             }
         }
         else
@@ -645,7 +619,6 @@ class ParanormalWires : Puzzle
                     return;
                 }
 
-                DefaultWire();
             }
             else if(litCnt >= 2)
             {
@@ -665,7 +638,7 @@ class ParanormalWires : Puzzle
                     }    
                 }
 
-                DefaultWire();
+                
             }
             else
             {
@@ -677,17 +650,21 @@ class ParanormalWires : Puzzle
                 }
             }
         }
+        DefaultWire();
     }
 
     void DefaultWire()
     {
-        for(int i = 0; i < info.wires.Length; i++)
+        if (cut.Contains(toCut) || toCut == -1)
         {
-            if(!cut.Contains(i))
+            for (int i = 0; i < info.wires.Length; i++)
             {
-                toCut = i;
-                Debug.LogFormat("[The Modkit #{0}] Wire {1} must be cut next.", moduleId, toCut + 1);
-                return;
+                if (!cut.Contains(i))
+                {
+                    toCut = i;
+                    Debug.LogFormat("[The Modkit #{0}] The top-most uncut wire {1} must be cut next.", moduleId, toCut + 1);
+                    return;
+                }
             }
         }
     }

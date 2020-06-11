@@ -64,7 +64,7 @@ class WireMaze : Puzzle
 
     public WireMaze(Modkit module, int moduleId, ComponentInfo info) : base(module, moduleId, info)
     {
-        Debug.LogFormat("[The Modkit #{0}] Solving Wire Maze. Wires present are {1}.", moduleId, info.GetWireNames());
+        Debug.LogFormat("[The Modkit #{0}] Solving Wire Maze. Wires present: {1}.", moduleId, info.GetWireNames());
     }
 
     public override void OnWireCut(int wire)
@@ -126,16 +126,16 @@ class WireMaze : Puzzle
         {
             if(currentRow == targetRow && currentCol == targetCol)
             {
-		        Debug.LogFormat("[The Modkit #{0}] Cut wire {1}. Module solved.", moduleId, wire + 1);
+		        Debug.LogFormat("[The Modkit #{0}] Correctly cut wire {1}. Module solved.", moduleId, wire + 1);
                 module.Solve();
                 return;
             }
-		    Debug.LogFormat("[The Modkit #{0}] Cut wire {1}. You may now move in the maze.", moduleId, wire + 1);
+		    Debug.LogFormat("[The Modkit #{0}] Correctly cut wire {1}. You may now move in the maze.", moduleId, wire + 1);
             wireCut = true;
         }
         else
         {
-		    Debug.LogFormat("[The Modkit #{0}] Strike! Cut wire {1}. That does not match your position in the maze.", moduleId, wire + 1);
+		    Debug.LogFormat("[The Modkit #{0}] Strike! Cutted wire {1} does not match your position in the maze.", moduleId, wire + 1);
             module.CauseStrike();
         }
     }
@@ -185,7 +185,7 @@ class WireMaze : Puzzle
         Debug.LogFormat("[The Modkit #{0}] Went {1} to row={2}, column={3}.", moduleId, ComponentInfo.DIRNAMES[arrow], currentRow + 1, currentCol + 1);
         wireCut = false;
         RegenWires(false);
-        Debug.LogFormat("[The Modkit #{0}] Wires present are {1}.", moduleId, info.GetWireNames());
+        Debug.LogFormat("[The Modkit #{0}] Wires present: {1}.", moduleId, info.GetWireNames());
     }
 
     public override void OnUtilityPress()
@@ -265,7 +265,7 @@ class WireMaze : Puzzle
 			else
 				module.wires[i].transform.GetComponentInChildren<Renderer>().material = module.wireMats.Where(x => x.name == ComponentInfo.COLORNAMES[color1]).ToArray()[0];
 		
-			module.wires[i].transform.Find("hl").gameObject.SetActive(true);
+			module.wires[i].transform.Find("hl").gameObject.SetActive(!(cut && i == wire));
 			
             if(cut && i == wire)
                 module.wires[i].GetComponent<MeshFilter>().mesh = module.wireCut;

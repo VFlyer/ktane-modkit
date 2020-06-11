@@ -132,4 +132,27 @@ public class Puzzle
 
         module.StartSolve();
     }
+    public IEnumerator HandleArrowDelayFlash()
+    {
+        yield return null;
+        for (int i = 0; i < 4; i++)
+        {
+            module.arrows[i].transform.Find("light").gameObject.SetActive(true);
+        }
+        yield return new WaitForSeconds(0.1f);
+        for (int i = 0; i < 4; i++)
+        {
+            module.arrows[i].transform.Find("light").gameObject.SetActive(false);
+        }
+    }
+
+    public IEnumerator HandleArrowDelayFlashSingle(int num)
+    {
+        if (num < 0 || num >= 4) yield break;
+        yield return null;
+        module.arrows[num].transform.Find("light").gameObject.SetActive(true);
+        yield return new WaitForSeconds(0.1f);
+        module.arrows[num].transform.Find("light").gameObject.SetActive(false);
+    }
+    public IEnumerator currentFlashing;
 }

@@ -13,7 +13,7 @@ class WireInstructions : Puzzle
 
     public WireInstructions(Modkit module, int moduleId, ComponentInfo info) : base(module, moduleId, info)
     {
-        Debug.LogFormat("[The Modkit #{0}] Solving Wire Instructions. LEDs are: {1}.", moduleId, info.LED.Select(x => ComponentInfo.COLORNAMES[x]).Join(", "));
+        Debug.LogFormat("[The Modkit #{0}] Solving Wire Instructions. LEDs: {1}.", moduleId, info.LED.Select(x => ComponentInfo.COLORNAMES[x]).Join(", "));
         CalcSoltuion();
     }
 
@@ -41,12 +41,12 @@ class WireInstructions : Puzzle
 
         if(!toCut.Contains(wire))
         {
-		    Debug.LogFormat("[The Modkit #{0}] Strike! Cut wire {1}.", moduleId, wire + 1);
+		    Debug.LogFormat("[The Modkit #{0}] Strike! Incorrectly cut wire {1}.", moduleId, wire + 1);
             module.CauseStrike();
             return;
         }
 
-        Debug.LogFormat("[The Modkit #{0}] Cut wire {1}.", moduleId, wire + 1);
+        Debug.LogFormat("[The Modkit #{0}] Correctly cut wire {1}.", moduleId, wire + 1);
         cut++;
         if(cut == toCut.Count)
         {
@@ -77,19 +77,19 @@ class WireInstructions : Puzzle
 
         if(toCut.Count == 0)
         {
-            Debug.LogFormat("[The Modkit #{0}] Pressed the ❖ button when no wires were valid. Module solved.", moduleId);
+            Debug.LogFormat("[The Modkit #{0}] Correctly pressed the ❖ button when no wires were valid. Module solved.", moduleId);
             module.Solve();
         }
         else
         {
-            Debug.LogFormat("[The Modkit #{0}] Strike! Pressed the ❖ button when at least one wire was valid.", moduleId);
+            Debug.LogFormat("[The Modkit #{0}] Strike! Incorrectly pressed the ❖ button when at least one wire was valid.", moduleId);
             module.CauseStrike();
         }
     }
 
     void CalcSoltuion()
     {
-        Debug.LogFormat("[The Modkit #{0}] Wires present are {1}.", moduleId, info.GetWireNames());
+        Debug.LogFormat("[The Modkit #{0}] Wires present: {1}.", moduleId, info.GetWireNames());
 
         switch(info.LED[0])
         {
@@ -273,6 +273,6 @@ class WireInstructions : Puzzle
         }
 
         toCut.Sort();
-        Debug.LogFormat("[The Modkit #{0}] Wires that need to be cut are [ {1} ].", moduleId, toCut.Select(x => x + 1).Join(", "));
+        Debug.LogFormat("[The Modkit #{0}] Wires that need to be cut: [ {1} ].", moduleId, toCut.Any() ? toCut.Select(x => x + 1).Join(", ") : "none");
     }
 }

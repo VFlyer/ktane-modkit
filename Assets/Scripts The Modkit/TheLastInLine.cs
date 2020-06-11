@@ -181,7 +181,7 @@ class TheLastInLine : Puzzle
             }
             else
             {
-		        Debug.LogFormat("[The Modkit #{0}] Strike! Pressed symbol {1}. Symbol 1 must be pressed first.", moduleId, symbol + 1);
+		        Debug.LogFormat("[The Modkit #{0}] Strike! Symbol 1 must be pressed first but symbol {1} was pressed instead.", moduleId, symbol + 1);
                 module.CauseStrike();
             }
             return;
@@ -196,7 +196,7 @@ class TheLastInLine : Puzzle
 
         for(int i = 0; i < info.wires.Length; i++)
         {
-            String[] r;
+            string[] r;
             rules.TryGetValue(info.wires[i], out r);
 
             if(!r[0].Contains(lastPress[0]) && !r[0].Contains(lastPress[1]))
@@ -223,7 +223,7 @@ class TheLastInLine : Puzzle
             return;
         }
 
-        Debug.LogFormat("[The Modkit #{0}] Strike! No rule allows to move from {1} to {2} using the {3} arrow.", moduleId, lastPress == "**" ? "symbol" : lastPress, "symbol", ComponentInfo.DIRNAMES[arrow]);
+        Debug.LogFormat("[The Modkit #{0}] Strike! The wires gave no rule that allow movevement from {1} to {2} using the {3} arrow.", moduleId, lastPress == "**" ? "symbol" : lastPress, "symbol", ComponentInfo.DIRNAMES[arrow]);
         arrow = -1;
         module.CauseStrike();
     }
@@ -253,7 +253,7 @@ class TheLastInLine : Puzzle
 
         if(lastPress == null)
         {
-            Debug.LogFormat("[The Modkit #{0}] Strike! Pressed alphanumeric key {1}. Symbol 1 must be pressed first.", moduleId, alphabet + 1);
+            Debug.LogFormat("[The Modkit #{0}] Strike! Symbol 1 must be pressed first but alphanumeric key {1} was pressed instead.", moduleId, alphabet + 1);
             module.CauseStrike();
             return;
         }
@@ -267,7 +267,7 @@ class TheLastInLine : Puzzle
 
         for(int i = 0; i < info.wires.Length; i++)
         {
-            String[] r;
+            string[] r;
             rules.TryGetValue(info.wires[i], out r);
 
             if(!r[0].Contains(lastPress[0]) && !r[0].Contains(lastPress[1]))
@@ -294,7 +294,7 @@ class TheLastInLine : Puzzle
             return;
         }
 
-        Debug.LogFormat("[The Modkit #{0}] Strike! No rule allows to move from {1} to {2} using the {3} arrow.", moduleId, lastPress == "**" ? "symbol" : lastPress, info.alphabet[alphabet], ComponentInfo.DIRNAMES[arrow]);
+        Debug.LogFormat("[The Modkit #{0}] Strike! The wires gave no rule that allow movevement from {1} to {2} using the {3} arrow.", moduleId, lastPress == "**" ? "symbol" : lastPress, info.alphabet[alphabet], ComponentInfo.DIRNAMES[arrow]);
         arrow = -1;
         module.CauseStrike();
     }
@@ -359,7 +359,7 @@ class TheLastInLine : Puzzle
 
         for(int i = 0; i < info.wires.Length; i++)
         {
-            String[] r;
+            string[] r;
             rules.TryGetValue(info.wires[i], out r);
 
             if(!r[0].Contains(lastPress[0]) && !r[0].Contains(lastPress[1]))
@@ -392,7 +392,7 @@ class TheLastInLine : Puzzle
 
             for(int i = 0; i < info.wires.Length; i++)
             {
-                String[] r;
+                string[] r;
                 rules.TryGetValue(info.wires[i], out r);
 
                 if(!r[0].Contains(lastPress[0]) && !r[0].Contains(lastPress[1]))

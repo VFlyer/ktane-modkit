@@ -21,7 +21,7 @@ class AdjacentSymbols : Puzzle
 
     public AdjacentSymbols(Modkit module, int moduleId, ComponentInfo info) : base(module, moduleId, info)
     {
-        Debug.LogFormat("[The Modkit #{0}] Solving Adjacent Symbols. Symbols present are: {1}.", moduleId, info.GetSymbols());
+        Debug.LogFormat("[The Modkit #{0}] Solving Adjacent Symbols. Symbols present: {1}.", moduleId, info.GetSymbols());
 
         string sn = module.bomb.GetSerialNumber();
         string convertedSN = "";
@@ -30,9 +30,9 @@ class AdjacentSymbols : Puzzle
             if(c < 65)
                 convertedSN += c;
             else
-                convertedSN += ((int)c - 64);
+                convertedSN += c - 64;
 
-        Debug.LogFormat("[The Modkit #{0}] Converted serial number is: {1}.", moduleId, convertedSN);
+        Debug.LogFormat("[The Modkit #{0}] Converted serial number: {1}.", moduleId, convertedSN);
     
         List<int> dir = new List<int>();
 
@@ -46,7 +46,7 @@ class AdjacentSymbols : Puzzle
             else if(c == '4' || c == '8')
                 dir.Add(ComponentInfo.LEFT);
 
-        Debug.LogFormat("[The Modkit #{0}] Direction sequence is: {1}.", moduleId, dir.Select(x => ComponentInfo.DIRNAMES[x]).Join(", "));
+        Debug.LogFormat("[The Modkit #{0}] Direction sequence: {1}.", moduleId, dir.Select(x => ComponentInfo.DIRNAMES[x]).Join(", "));
         
         List<int> symbolOrder = new List<int>();
         int row = 1;
@@ -75,7 +75,7 @@ class AdjacentSymbols : Puzzle
             symbolOrder.Add(map[row][col]);
         }
 
-        Debug.LogFormat("[The Modkit #{0}] Symbol order is: {1}.", moduleId, symbolOrder.Select(x => x == -1 ? "black" : ComponentInfo.SYMBOLCHARS[x]).Join(", "));
+        Debug.LogFormat("[The Modkit #{0}] Symbol order: {1}.", moduleId, symbolOrder.Select(x => x == -1 ? "black" : ComponentInfo.SYMBOLCHARS[x]).Join(", "));
 
         foreach(int s in symbolOrder)
         {
@@ -88,7 +88,7 @@ class AdjacentSymbols : Puzzle
                 presses.Add(s);
         }
 
-        Debug.LogFormat("[The Modkit #{0}] Keys press order is: {1}.", moduleId, presses.Select(x => ComponentInfo.SYMBOLCHARS[x]).Join(", "));
+        Debug.LogFormat("[The Modkit #{0}] Keys press order: {1}.", moduleId, presses.Select(x => ComponentInfo.SYMBOLCHARS[x]).Join(", "));
     }
 
     public override void OnSymbolPress(int symbol)
@@ -116,19 +116,21 @@ class AdjacentSymbols : Puzzle
 
         if(info.symbols[symbol] == presses[nextPress])
         {
-		    Debug.LogFormat("[The Modkit #{0}] Pressed symbol {1}.", moduleId, symbol + 1);
+		    Debug.LogFormat("[The Modkit #{0}] Correctly pressed symbol {1}.", moduleId, symbol + 1);
             pressed.Add(symbol);
             nextPress++;
-            module.symbols[symbol].transform.Find("Key_TL").Find("LED").GetComponentInChildren<Renderer>().material = module.keyLightMats[1];
+            module.symbols[symbol].transform.Find("Key_TL").Find("LED").GetComponentInChildren<Renderer>().material = module.keyLightMats[3];
             if(nextPress == 3)
             {
                 Debug.LogFormat("[The Modkit #{0}] Module solved.", moduleId);
+                for (int x = 0; x < 3; x++)
+                    module.symbols[x].transform.Find("Key_TL").Find("LED").GetComponentInChildren<Renderer>().material = module.keyLightMats[1];
                 module.Solve();
             }
         }
         else
         {
-		    Debug.LogFormat("[The Modkit #{0}] Strike! Pressed symbol {1}. Resetting.", moduleId, symbol + 1);
+		    Debug.LogFormat("[The Modkit #{0}] Strike! Incorrectly pressed symbol {1}. Resetting inputs...", moduleId, symbol + 1);
             module.CauseStrike();
 
             foreach(GameObject s in module.symbols)

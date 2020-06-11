@@ -17,7 +17,7 @@ class CruelWireSequence : Puzzle
 
     public CruelWireSequence(Modkit module, int moduleId, ComponentInfo info) : base(module, moduleId, info)
     {
-        Debug.LogFormat("[The Modkit #{0}] Solving Cruel Wire Sequence. Alphanumeric keys present are: {1}.", moduleId, info.alphabet.Join(", "));
+        Debug.LogFormat("[The Modkit #{0}] Solving Cruel Wire Sequence. Alphanumeric keys present: {1}.", moduleId, info.alphabet.Join(", "));
         
         pannels = new ComponentInfo[] { info, new ComponentInfo(), new ComponentInfo() };
 

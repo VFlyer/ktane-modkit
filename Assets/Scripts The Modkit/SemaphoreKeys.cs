@@ -16,7 +16,7 @@ class SemaphoreKeys : Puzzle
     
         CalcSolution();
 
-        Debug.LogFormat("[The Modkit #{0}] Keys that can be pressed are [ {1} ].", moduleId, presses.Select(x => x + 1).Join(", "));
+        Debug.LogFormat("[The Modkit #{0}] Keys that can be pressed: [ {1} ].", moduleId, presses.Select(x => x + 1).Join(", "));
     }
 
     public override void OnAlphabetPress(int alphabet)
@@ -41,13 +41,13 @@ class SemaphoreKeys : Puzzle
 
         if(presses.Contains(alphabet))
         {
-		    Debug.LogFormat("[The Modkit #{0}] Pressed alphanumeric key {1}. Module solved.", moduleId, alphabet + 1);
+		    Debug.LogFormat("[The Modkit #{0}] Correctly pressed alphanumeric key {1}. Module solved.", moduleId, alphabet + 1);
             module.alphabet[alphabet].transform.Find("Key_TL").Find("LED").GetComponentInChildren<Renderer>().material = module.keyLightMats[0];
             module.Solve();
         }
         else
         {
-		    Debug.LogFormat("[The Modkit #{0}] Strike! Pressed alphanumeric key {1}.", moduleId, alphabet + 1);
+		    Debug.LogFormat("[The Modkit #{0}] Strike! Incorrectly pressed alphanumeric key {1}.", moduleId, alphabet + 1);
             module.CauseStrike();
         }
     }

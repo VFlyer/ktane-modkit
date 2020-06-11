@@ -60,15 +60,15 @@ class ColorCompass : Puzzle
 
     public ColorCompass(Modkit module, int moduleId, ComponentInfo info) : base(module, moduleId, info)
     {
-        Debug.LogFormat("[The Modkit #{0}] Solving Color Compass. Arrows are [Up: {1}, Right: {2}, Down: {3}, Left: {4}].", moduleId, ComponentInfo.COLORNAMES[info.arrows[ComponentInfo.UP]], ComponentInfo.COLORNAMES[info.arrows[ComponentInfo.RIGHT]], ComponentInfo.COLORNAMES[info.arrows[ComponentInfo.DOWN]], ComponentInfo.COLORNAMES[info.arrows[ComponentInfo.LEFT]]);
+        Debug.LogFormat("[The Modkit #{0}] Solving Color Compass. Arrows: [Up: {1}, Right: {2}, Down: {3}, Left: {4}].", moduleId, ComponentInfo.COLORNAMES[info.arrows[ComponentInfo.UP]], ComponentInfo.COLORNAMES[info.arrows[ComponentInfo.RIGHT]], ComponentInfo.COLORNAMES[info.arrows[ComponentInfo.DOWN]], ComponentInfo.COLORNAMES[info.arrows[ComponentInfo.LEFT]]);
         LED = info.LED.ToList();
         off = new int[] {0, 1, 2}.OrderBy(x => rnd.Range(0, 1000)).ToList();
 
-        Debug.LogFormat("[The Modkit #{0}]] Different LED colors are [ {1} ].", moduleId, info.LED.Distinct().Select(x => ComponentInfo.COLORNAMES[x]).Join(", "));
+        Debug.LogFormat("[The Modkit #{0}]] Different LED colors: [ {1} ].", moduleId, info.LED.Distinct().Select(x => ComponentInfo.COLORNAMES[x]).Join(", "));
     
         index = CalcIndex();
 
-        Debug.LogFormat("[The Modkit #{0}]] Input sequence is [ {1} ].", moduleId, GetSequenceString());
+        Debug.LogFormat("[The Modkit #{0}]] Which gives the input sequence: [ {1} ].", moduleId, GetSequenceString());
     }    
 
     public override void OnArrowPress(int arrow)
@@ -91,9 +91,11 @@ class ColorCompass : Puzzle
 
         module.StartSolve();
 
+        string[] positional = { "1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th", "9th" };
+
         if(sequences[index][press] == arrow + 10 || sequences[index][press] == info.arrows[arrow])
         {
-		    Debug.LogFormat("[The Modkit #{0}] Pressed {1} arrow.", moduleId, ComponentInfo.DIRNAMES[arrow]);
+		    Debug.LogFormat("[The Modkit #{0}] Pressed {1} arrow for the {2} input.", moduleId, ComponentInfo.DIRNAMES[arrow], positional[press]);
             press++;
             if(press == 4)
             {
@@ -111,15 +113,15 @@ class ColorCompass : Puzzle
                 else
                 {
                     index = CalcIndex();
-                    Debug.LogFormat("[The Modkit #{0}]] Sequence is correct. Different LED colors are [ {1} ].", moduleId, info.LED.Distinct().Where(x => x != -1).Select(x => ComponentInfo.COLORNAMES[x]).Join(", "));
-                    Debug.LogFormat("[The Modkit #{0}]] Input sequence is [ {1} ].", moduleId, GetSequenceString());
+                    Debug.LogFormat("[The Modkit #{0}]] Sequence is correct. Different LED colors are now [ {1} ].", moduleId, info.LED.Distinct().Where(x => x != -1).Select(x => ComponentInfo.COLORNAMES[x]).Join(", "));
+                    Debug.LogFormat("[The Modkit #{0}]] Which gives the input sequence: [ {1} ].", moduleId, GetSequenceString());
                     press = 0;
                 }
             }
         }
         else
         {
-		    Debug.LogFormat("[The Modkit #{0}] Strike! Pressed {1} arrow.", moduleId, ComponentInfo.DIRNAMES[arrow]);
+		    Debug.LogFormat("[The Modkit #{0}] Strike! Incorrectly pressed {1} arrow for the {2} input!", moduleId, ComponentInfo.DIRNAMES[arrow], positional[press]);
             press = 0;
             module.CauseStrike();
         }

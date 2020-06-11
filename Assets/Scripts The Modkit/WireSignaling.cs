@@ -13,7 +13,7 @@ class WireSignaling : Puzzle
 
     public WireSignaling(Modkit module, int moduleId, ComponentInfo info) : base(module, moduleId, info)
     {
-        Debug.LogFormat("[The Modkit #{0}] Solving Wire Signaling. Symbols present are: {1}. Arrows are [Up: {2}, Right: {3}, Down: {4}, Left: {5}].", moduleId, info.GetSymbols(), ComponentInfo.COLORNAMES[info.arrows[ComponentInfo.UP]], ComponentInfo.COLORNAMES[info.arrows[ComponentInfo.RIGHT]], ComponentInfo.COLORNAMES[info.arrows[ComponentInfo.DOWN]], ComponentInfo.COLORNAMES[info.arrows[ComponentInfo.LEFT]]);
+        Debug.LogFormat("[The Modkit #{0}] Solving Wire Signaling. Symbols present: {1}. Arrows: [Up: {2}, Right: {3}, Down: {4}, Left: {5}].", moduleId, info.GetSymbols(), ComponentInfo.COLORNAMES[info.arrows[ComponentInfo.UP]], ComponentInfo.COLORNAMES[info.arrows[ComponentInfo.RIGHT]], ComponentInfo.COLORNAMES[info.arrows[ComponentInfo.DOWN]], ComponentInfo.COLORNAMES[info.arrows[ComponentInfo.LEFT]]);
 
         CalcSolution();
     }
@@ -31,7 +31,7 @@ class WireSignaling : Puzzle
 
         if(!module.CheckValidComponents())
         {
-		    Debug.LogFormat("[The Modkit #{0}] Strike! Cut wire {1} when component selection was [ {2} ] instead of [ {3} ].", moduleId, wire + 1, module.GetOnComponents(), module.GetTargetComponents());
+		    Debug.LogFormat("[The Modkit #{0}] Strike! Wire {1} was cut when component selection was [ {2} ] instead of [ {3} ].", moduleId, wire + 1, module.GetOnComponents(), module.GetTargetComponents());
             module.CauseStrike();
             module.RegenWires();
             CalcSolution();
@@ -42,9 +42,9 @@ class WireSignaling : Puzzle
 
         if(toCut.Contains(wire))
         {
-            Debug.LogFormat("[The Modkit #{0}] Cut wire {1}.", moduleId, wire + 1);
+            Debug.LogFormat("[The Modkit #{0}] Correctly cutted wire {1}.", moduleId, wire + 1);
             wiresCut.Add(wire);
-            if(wiresCut.Count == toCut.Count)
+            if(wiresCut.Distinct().Count() == toCut.Distinct().Count())
             {
                 Debug.LogFormat("[The Modkit #{0}] Module solved.", moduleId);
                 module.Solve();
@@ -52,14 +52,14 @@ class WireSignaling : Puzzle
         }
         else
         {
-            Debug.LogFormat("[The Modkit #{0}] Strike! Cut wire {1}.", moduleId, wire + 1);
+            Debug.LogFormat("[The Modkit #{0}] Strike! Incorrectly cutted wire {1}.", moduleId, wire + 1);
             module.CauseStrike();
         }
     }
 
     void CalcSolution()
     {
-        Debug.LogFormat("[The Modkit #{0}] Wires present are {1}.", moduleId, info.GetWireNames());
+        Debug.LogFormat("[The Modkit #{0}] Wires present: {1}.", moduleId, info.GetWireNames());
     
         toCut = new List<int>();
         wiresCut = new List<int>();
@@ -73,7 +73,7 @@ class WireSignaling : Puzzle
             if(toCut.Count != 0)
             {
                 
-                Debug.LogFormat("[The Modkit #{0}] Wires that need to be cut are {1}.", moduleId, toCut.Select(x => x + 1).Join(", "));
+                Debug.LogFormat("[The Modkit #{0}] Wires that need to be cut: {1}.", moduleId, toCut.Select(x => x + 1).Join(", "));
                 return;
             }
             else
@@ -88,16 +88,27 @@ class WireSignaling : Puzzle
         switch(i)
         {
             case 0: return (info.symbols.Contains(8) || info.symbols.Contains(28)) && info.arrows[ComponentInfo.UP] == ComponentInfo.YELLOW;
+                // hookn or weird nose present and the up arrow is yellow 
             case 1: return info.symbols.Contains(6) && (info.arrows[ComponentInfo.LEFT] == ComponentInfo.GREEN || info.arrows[ComponentInfo.DOWN] == ComponentInfo.GREEN);
+                // squidknife present and the left/down arrrow is green
             case 2: return (info.symbols.Contains(7) && info.symbols.Contains(22)) && info.arrows[ComponentInfo.RIGHT] != ComponentInfo.RED;
+                // pumpkin and left c present and right arrow is not red
             case 3: return (info.symbols.Contains(10) || info.symbols.Contains(30) || info.symbols.Contains(24)) && info.arrows[ComponentInfo.DOWN] == ComponentInfo.BLUE;
+                // six, bt, or tripod present and down arrow is blue
             case 4: return info.symbols.Contains(9) && info.AreArrowsAdjacent(ComponentInfo.RED, ComponentInfo.GREEN);
+                // teepee present and red arrow adjacent to green arrow
             case 5: return (!(info.symbols.Contains(3) || info.symbols.Contains(21))) && !info.AreArrowsAdjacent(ComponentInfo.GREEN, ComponentInfo.YELLOW);
-            case 6: return (info.symbols.Contains(23) && info.symbols.Contains(15)) && info.arrows[ComponentInfo.DOWN] != ComponentInfo.RED;
+                // No smiley face and right c and green arrow opposite to yellow arrow
+            case 6: return (info.symbols.Contains(23) && info.symbols.Contains(15)) && info.arrows[ComponentInfo.RIGHT] != ComponentInfo.RED;
+                // pitchfork and euro present and the up/down/left arrow is red
             case 7: return (info.symbols.Contains(0) || info.symbols.Contains(12)) && (info.arrows[ComponentInfo.RIGHT] == ComponentInfo.GREEN || info.arrows[ComponentInfo.RIGHT] == ComponentInfo.RED) && info.arrows[ComponentInfo.DOWN] == ComponentInfo.YELLOW;
+                // Copyright or at present and (right arrow is green/red and down arrow is yellow)
             case 8: return info.symbols.Contains(13);
+                // ae present and right arrow is (any color)
             case 9: return (info.symbols.Contains(1) || info.symbols.Contains(26) || info.symbols.Contains(20)) && info.arrows[ComponentInfo.LEFT] == ComponentInfo.BLUE;
+                // filled star, tracks, or paragraph present and left arrow is blue.
             default: return true;
+                //The last row.
         }
     }
 
@@ -118,7 +129,7 @@ class WireSignaling : Puzzle
             }
             case 1:
             {// Cut the 3rd and 5th wire.
-                toCut.Add(2);
+                toCut.Add(2); // Positions are 0-indexed.
                 toCut.Add(4);
                 break;
             }
@@ -135,14 +146,14 @@ class WireSignaling : Puzzle
             }
             case 3:
             {// Cut wires whose position makes a prime number.
-                toCut.Add(1);
+                toCut.Add(1); // Positions are 0-indexed.
                 toCut.Add(2);
                 toCut.Add(4);
                 break;
             }
             case 4:
             {// Cut stripped wires. Stripped wires are denoted by 2 numbers being different.
-                    for (int i = 0; i < info.wires.Length; i++)
+                for (int i = 0; i < info.wires.Length; i++)
                 {
                     int color1 = info.wires[i] / 10;
                     int color2 = info.wires[i] % 10;
@@ -184,9 +195,10 @@ class WireSignaling : Puzzle
                 break;
             }
             case 8:
-            {// Cut even numbered wires.
-                toCut.Add(1);
-                toCut.Add(3);
+            {// Cut odd numbered wires.
+                toCut.Add(0); // Positions are 0-indexed.
+                toCut.Add(2);
+                toCut.Add(4);
                 break;
             }
             case 9:
@@ -214,8 +226,8 @@ class WireSignaling : Puzzle
                 break;
             }
             default:
-            {
-                toCut.Add(1);
+            {// Cut wires 2 and 4.
+                toCut.Add(1); // Positions are 0-indexed.
                 toCut.Add(3);
                 break;
             }

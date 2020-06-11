@@ -54,11 +54,11 @@ class SequenceCut : Puzzle
         Debug.LogFormat("[The Modkit #{0}] Solving Sequence Cut. Symbols present are: {1}. Alphanumeric keys present are: {2}.", moduleId, info.GetSymbols(), info.alphabet.Join(", "));
         row = info.symbols.Select(x => symbolToRow[x]).Min();
         seq = sequences[row];
-        Debug.LogFormat("[The Modkit #{0}] Using sequence {1} - [ {2} ].", moduleId, row + 1, seq.Select(x => ComponentInfo.COLORNAMES[x]).Join(", "));
+        Debug.LogFormat("[The Modkit #{0}] Base sequence {1} - [ {2} ].", moduleId, row + 1, seq.Select(x => ComponentInfo.COLORNAMES[x]).Join(", "));
         
         CalcKeysSwitches();
         
-        Debug.LogFormat("[The Modkit #{0}] New sequence is [ {1} ].", moduleId, seq.Select(x => ComponentInfo.COLORNAMES[x]).Join(", "));
+        Debug.LogFormat("[The Modkit #{0}] Final sequence is [ {1} ].", moduleId, seq.Select(x => ComponentInfo.COLORNAMES[x]).Join(", "));
 
         CalcWireCuts();
     }   
@@ -99,7 +99,7 @@ class SequenceCut : Puzzle
 
         if(group.Contains(wire))
         {
-            Debug.LogFormat("[The Modkit #{0}] Cut wire {1}.", moduleId, wire + 1);
+            Debug.LogFormat("[The Modkit #{0}] Correctly cut wire {1}.", moduleId, wire + 1);
             cut.Add(wire);
             if(cut.Count() == 5)
             {
@@ -109,7 +109,7 @@ class SequenceCut : Puzzle
         }
         else
         {
-            Debug.LogFormat("[The Modkit #{0}] Strike! Cut wire {1}.", moduleId, wire + 1);
+            Debug.LogFormat("[The Modkit #{0}] Strike! Incorrectly cut wire {1}.", moduleId, wire + 1);
             module.CauseStrike();
             module.RegenWires();
             CalcWireCuts();
@@ -145,7 +145,7 @@ class SequenceCut : Puzzle
 
     void CalcWireCuts()
     {
-        Debug.LogFormat("[The Modkit #{0}] Wires present are {1}.", moduleId, info.GetWireNames());
+        Debug.LogFormat("[The Modkit #{0}] Wires present: {1}.", moduleId, info.GetWireNames());
 
         used = new List<int>();
         cut = new List<int>();
@@ -164,6 +164,6 @@ class SequenceCut : Puzzle
             }
         }
 
-        Debug.LogFormat("[The Modkit #{0}] Wires cut groups are {1}.", moduleId, cutGroups.Where(x => x.Count() != 0).Select(x => "[" + x.Select(y => y + 1).Join(", ") + "]").Join(""));
+        Debug.LogFormat("[The Modkit #{0}] Wires cut groups: {1}.", moduleId, cutGroups.Where(x => x.Count() != 0).Select(x => "[" + x.Select(y => y + 1).Join(", ") + "]").Join(""));
     }
 }

@@ -76,7 +76,8 @@ class PreciseWires : Puzzle
         if(group.Contains(wire))
         {
             Debug.LogFormat("[The Modkit #{0}] Correctly cutted wire {1}.", moduleId, wire + 1);
-            cut.Add(wire);
+            if (!cut.Contains(wire))
+                cut.Add(wire);
             if(cut.Count() == 5)
             {
 		        Debug.LogFormat("[The Modkit #{0}] Module solved.", moduleId);

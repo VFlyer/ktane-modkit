@@ -263,14 +263,14 @@ class PerspectiveSymbols : Puzzle
     
     public PerspectiveSymbols(Modkit module, int moduleId, ComponentInfo info) : base(module, moduleId, info)
     {
-        Debug.LogFormat("[The Modkit #{0}] Solving Perspective Symbols. Symbols present are: {1}.", moduleId, info.GetSymbols());
+        Debug.LogFormat("[The Modkit #{0}] Solving Perspective Symbols. Symbols present: {1}.", moduleId, info.GetSymbols());
 
         startingRow = module.bomb.GetSerialNumberNumbers().ToArray()[0];
         startingCol = module.bomb.GetSerialNumberNumbers().ToArray()[1];
         currentRow = startingRow;
         currentCol = startingCol;
 
-        Debug.LogFormat("[The Modkit #{0}] Starting position is row={1}, column={2}.", moduleId, startingRow, startingCol);
+        Debug.LogFormat("[The Modkit #{0}] Starting position: row={1}, column={2}.", moduleId, startingRow, startingCol);
     }
 
     public override void OnSymbolPress(int symbol)
@@ -298,7 +298,7 @@ class PerspectiveSymbols : Puzzle
 
         if(mazeSym[currentRow][currentCol].Contains(info.symbols[symbol]))
         {
-		    Debug.LogFormat("[The Modkit #{0}] Pressed symbol {1} at row={2}, column={3}.", moduleId, symbol + 1, currentRow, currentCol);
+		    Debug.LogFormat("[The Modkit #{0}] Correctly pressed symbol {1} at row={2}, column={3}.", moduleId, symbol + 1, currentRow, currentCol);
             pressed.Add(symbol);
             module.symbols[symbol].transform.Find("Key_TL").Find("LED").GetComponentInChildren<Renderer>().material = module.keyLightMats[1];
             if(pressed.Count == 3)
@@ -309,7 +309,7 @@ class PerspectiveSymbols : Puzzle
         }
         else
         {
-		    Debug.LogFormat("[The Modkit #{0}] Strike! Pressed symbol {1} at row={2}, column={3}.", moduleId, symbol + 1, currentRow, currentCol);
+		    Debug.LogFormat("[The Modkit #{0}] Strike! Incorrectly pressed symbol {1} at row={2}, column={3}.", moduleId, symbol + 1, currentRow, currentCol);
             module.CauseStrike();
         }
     }
@@ -336,7 +336,11 @@ class PerspectiveSymbols : Puzzle
 
         if(!mazeDir[currentRow][currentCol].Contains(arrow))
         {
-		    Debug.LogFormat("[The Modkit #{0}] Strike! You can't go {1} when you are at row={2}, column={3}.", moduleId, ComponentInfo.DIRNAMES[arrow], currentRow, currentCol);
+		    Debug.LogFormat("[The Modkit #{0}] Strike! You can't go {1} at row={2}, column={3}.", moduleId, ComponentInfo.DIRNAMES[arrow], currentRow, currentCol);
+            if (currentFlashing != null)
+                module.StopCoroutine(currentFlashing);
+            currentFlashing = HandleArrowDelayFlashSingle(arrow);
+            module.StartCoroutine(currentFlashing);
             module.CauseStrike();
             return;
         }
@@ -372,6 +376,10 @@ class PerspectiveSymbols : Puzzle
        
         module.StartSolve();
 
+        if (currentFlashing != null)
+            module.StopCoroutine(currentFlashing);
+        currentFlashing = HandleArrowDelayFlash();
+        module.StartCoroutine(currentFlashing);
         currentRow = startingRow;
         currentCol = startingCol;
         Debug.LogFormat("[The Modkit #{0}] Pressed the ❖ button. Position reset to row={1}, column={2}.", moduleId, currentRow, currentCol);

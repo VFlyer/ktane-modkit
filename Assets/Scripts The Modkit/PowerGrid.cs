@@ -42,17 +42,17 @@ class PowerGrid : Puzzle
 
         if(toCut.Contains(wire))
         {
-            Debug.LogFormat("[The Modkit #{0}] Cut wire {1}.", moduleId, wire + 1);
+            Debug.LogFormat("[The Modkit #{0}] Correctly cut wire {1}.", moduleId, wire + 1);
             cutCount++;
             if(cutCount == toCut.Count)
             {
-                Debug.LogFormat("[The Modkit #{0}] Module solve.", moduleId);
+                Debug.LogFormat("[The Modkit #{0}] Module solved.", moduleId);
                 module.Solve();
             }
         }
         else
         {
-            Debug.LogFormat("[The Modkit #{0}] Strike! Cut wire {1}.", moduleId, wire + 1);
+            Debug.LogFormat("[The Modkit #{0}] Strike! Incorrectly cut wire {1}.", moduleId, wire + 1);
             module.CauseStrike();
         }
     }
@@ -79,19 +79,19 @@ class PowerGrid : Puzzle
 
         if(toCut.Count == 0)
         {
-            Debug.LogFormat("[The Modkit #{0}] Pressed the ❖ button when no wires were valid. Module solved.", moduleId);
+            Debug.LogFormat("[The Modkit #{0}] Correctly pressed the ❖ button when no wires were valid. Module solved.", moduleId);
             module.Solve();
         }
         else
         {
-            Debug.LogFormat("[The Modkit #{0}] Strike! Pressed the ❖ button when at least one wire was valid.", moduleId);
+            Debug.LogFormat("[The Modkit #{0}] Strike! Incorrectly pressed the ❖ button when at least one wire was valid.", moduleId);
             module.CauseStrike();
         }
     }
 
     void CalcSolution()
     {
-        Debug.LogFormat("[The Modkit #{0}] Wires present are {1}.", moduleId, info.GetWireNames());
+        Debug.LogFormat("[The Modkit #{0}] Wires present: {1}.", moduleId, info.GetWireNames());
         
         String s = info.alphabet[0] + info.alphabet[1] + info.alphabet[2];
         toCut = new List<int>();
@@ -152,6 +152,6 @@ class PowerGrid : Puzzle
             }
         }
 
-        Debug.LogFormat("[The Modkit #{0}] Safe wires are {1}.", moduleId, toCut.Count != 0 ? toCut.Select(x => x + 1).Join(", ") : "none");
+        Debug.LogFormat("[The Modkit #{0}] Safe wires: {1}.", moduleId, toCut.Count != 0 ? toCut.Select(x => x + 1).Join(", ") : "none");
     }
 }

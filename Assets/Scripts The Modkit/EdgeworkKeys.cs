@@ -67,7 +67,7 @@ class EdgeworkKeys : Puzzle
                 presses.Add(i);
         }
 
-        Debug.LogFormat("[The Modkit #{0}] Keys that need to be pressed: {1}.", moduleId, presses.Select(x => x + 1).Join(", "));
+        Debug.LogFormat("[The Modkit #{0}] Valid keys: {1}", moduleId, presses.Any() ? presses.Select(x => x + 1).Join(", ") : "none");
     }
 
     public override void OnAlphabetPress(int alphabet)
@@ -95,7 +95,7 @@ class EdgeworkKeys : Puzzle
 
         if(presses.Contains(alphabet))
         {
-		    Debug.LogFormat("[The Modkit #{0}] Pressed alphanumeric key {1}.", moduleId, alphabet + 1);
+		    Debug.LogFormat("[The Modkit #{0}] Correctly pressed alphanumeric key {1}.", moduleId, alphabet + 1);
             pressed.Add(alphabet);
             module.alphabet[alphabet].transform.Find("Key_TL").Find("LED").GetComponentInChildren<Renderer>().material = module.keyLightMats[0];
             if(pressed.Count() == presses.Count())
@@ -106,7 +106,7 @@ class EdgeworkKeys : Puzzle
         }
         else
         {
-		    Debug.LogFormat("[The Modkit #{0}] Strike! Pressed alphanumeric key {1}.", moduleId, alphabet + 1);
+		    Debug.LogFormat("[The Modkit #{0}] Strike! Incorrectly pressed alphanumeric key {1}.", moduleId, alphabet + 1);
             module.CauseStrike();
         }
     }
@@ -133,12 +133,12 @@ class EdgeworkKeys : Puzzle
 
         if(presses.Count == 0)
         {
-            Debug.LogFormat("[The Modkit #{0}] Pressed the ❖ button when no keys were valid. Module solved.", moduleId);
+            Debug.LogFormat("[The Modkit #{0}] Correctly pressed the ❖ button when no keys were valid. Module solved.", moduleId);
             module.Solve();
         }
         else
         {
-            Debug.LogFormat("[The Modkit #{0}] Strike! Pressed the ❖ button when at least one key was valid.", moduleId);
+            Debug.LogFormat("[The Modkit #{0}] Strike! Incorrectly pressed the ❖ button when at least one key was valid.", moduleId);
             module.CauseStrike();
         }
     }

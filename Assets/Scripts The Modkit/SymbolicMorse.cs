@@ -8,8 +8,8 @@ using rnd = UnityEngine.Random;
 
 class SymbolicMorse : Puzzle
 {
-    readonly String alphabet = "abcdefghijklmnopqrstuvwxyz";
-	readonly String[] morseTable = { ".-", "-...", "-.-.", "-..", ".", "..-.", "--.", "....", "..", ".---", "-.-", ".-..", "--", "-.", "---", ".--.", "--.-", ".-.", "...", "-", "..-", "...-", ".--", "-..-", "-.--", "--.." };
+    readonly string alphabet = "abcdefghijklmnopqrstuvwxyz";
+	readonly string[] morseTable = { ".-", "-...", "-.-.", "-..", ".", "..-.", "--.", "....", "..", ".---", "-.-", ".-..", "--", "-.", "---", ".--.", "--.-", ".-.", "...", "-", "..-", "...-", ".--", "-..-", "-.--", "--.." };
 
     string[] words = { "air", "art", "bat", "car", "day", "eel", "fin", "fix", "gym", "hat", "ink", "jam", "key", "leg", "lip", "map", "not", "orb", "pet", "pub", "run", "set", "sob", "sun", "tar", "ten", "toy", "use", "vat", "war", "web", "win", "xis", "yes", "zip", "zoo" };
     int[][] pressOrder = new int[][] {
@@ -59,7 +59,7 @@ class SymbolicMorse : Puzzle
 
     public SymbolicMorse(Modkit module, int moduleId, ComponentInfo info) : base(module, moduleId, info)
     {
-        Debug.LogFormat("[The Modkit #{0}] Solving Symbolic Morse. Symbols present are: {1}.", moduleId, info.GetSymbols());
+        Debug.LogFormat("[The Modkit #{0}] Solving Symbolic Morse. Symbols present: {1}.", moduleId, info.GetSymbols());
 
         CalcSolution();
     }
@@ -89,21 +89,21 @@ class SymbolicMorse : Puzzle
 
         if(presses[nextPress] == symbol)
         {
-		    Debug.LogFormat("[The Modkit #{0}] Pressed symbol {1}.", moduleId, symbol + 1);
+		    Debug.LogFormat("[The Modkit #{0}] Correctly pressed symbol {1}.", moduleId, symbol + 1);
             nextPress++;
             module.symbols[symbol].transform.Find("Key_TL").Find("LED").GetComponentInChildren<Renderer>().material = module.keyLightMats[1];
             if(nextPress == 3)
             {
                 Debug.LogFormat("[The Modkit #{0}] Module solved.", moduleId);
-                foreach(GameObject led in module.LED)
-                    led.transform.Find("light").GetComponentInChildren<Renderer>().material = module.LEDMats[6];
                 module.StopAllCoroutines();
+                foreach (GameObject led in module.LED)
+                    led.transform.Find("light").GetComponentInChildren<Renderer>().material = module.LEDMats[6];
                 module.Solve();
             }
         }
         else
         {
-		    Debug.LogFormat("[The Modkit #{0}] Strike! Pressed symbol {1}. Resetting.", moduleId, symbol + 1);
+		    Debug.LogFormat("[The Modkit #{0}] Strike! Incorrectly pressed symbol {1}. Resetting.", moduleId, symbol + 1);
             module.CauseStrike();
 
             foreach(GameObject s in module.symbols)
@@ -147,7 +147,7 @@ class SymbolicMorse : Puzzle
         nextPress = 0;
 
         word = rnd.Range(0, words.Length);
-        Debug.LogFormat("[The Modkit #{0}] Flashed word is \"{1}\".", moduleId, words[word]);
+        Debug.LogFormat("[The Modkit #{0}] Flashed word: \"{1}\".", moduleId, words[word]);
 
         for(int i = 0; i < info.symbols.Length; i++)
             if(pressOrder[word][0] == info.symbols[i])
@@ -159,7 +159,7 @@ class SymbolicMorse : Puzzle
             if(!presses.Contains(pressOrder[word][i]))
                 presses.Add(pressOrder[word][i]);  
 
-        Debug.LogFormat("[The Modkit #{0}] Key press order is {1}.", moduleId, presses.Select(x => x + 1).Join(", "));
+        Debug.LogFormat("[The Modkit #{0}] Key press order: {1}.", moduleId, presses.Select(x => x + 1).Join(", "));
     }
 
     void StartFlashes()
@@ -171,7 +171,7 @@ class SymbolicMorse : Puzzle
 
 	IEnumerator FlashLight(int n)
 	{
-		String character = morseTable[Array.IndexOf(alphabet.ToCharArray(), words[word][n])];
+		string character = morseTable[Array.IndexOf(alphabet.ToCharArray(), words[word][n])];
 
         module.LED[n].transform.Find("light").GetComponentInChildren<Renderer>().material = module.LEDMats[6];
         yield return new WaitForSeconds(1f);

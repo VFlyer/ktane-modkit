@@ -26,7 +26,7 @@ class TheThirdWire : Puzzle
 
     public TheThirdWire(Modkit module, int moduleId, ComponentInfo info) : base(module, moduleId, info)
     {
-        Debug.LogFormat("[The Modkit #{0}] Solving The Third Wire. Symbols present are: {1}. Alphanumeric keys present are: {2}. LEDs are: {3}.", moduleId, info.GetSymbols(), info.alphabet.Join(", "), info.LED.Select(x => ComponentInfo.COLORNAMES[x]).Join(", "));
+        Debug.LogFormat("[The Modkit #{0}] Solving The Third Wire. Symbols present: {1}. Alphanumeric keys present: {2}. LEDs: {3}.", moduleId, info.GetSymbols(), info.alphabet.Join(", "), info.LED.Select(x => ComponentInfo.COLORNAMES[x]).Join(", "));
         CalcSolution();
     }
 
@@ -75,13 +75,13 @@ class TheThirdWire : Puzzle
 
         if(valid.Contains(symbol))
         {
-		    Debug.LogFormat("[The Modkit #{0}] Pressed symbol {1}. Module solved.", moduleId, symbol + 1);
+		    Debug.LogFormat("[The Modkit #{0}] Correctly pressed symbol {1}. Module solved.", moduleId, symbol + 1);
             module.symbols[symbol].transform.Find("Key_TL").Find("LED").GetComponentInChildren<Renderer>().material = module.keyLightMats[1];
             module.Solve();
         }
         else
         {
-		    Debug.LogFormat("[The Modkit #{0}] Strike! Pressed symbol {1}.", moduleId, symbol + 1);
+		    Debug.LogFormat("[The Modkit #{0}] Strike! Incorrectly pressed symbol {1}.", moduleId, symbol + 1);
             module.CauseStrike();
         }
     }
@@ -108,20 +108,20 @@ class TheThirdWire : Puzzle
 
         if(valid.Contains(alphabet + 3))
         {
-		    Debug.LogFormat("[The Modkit #{0}] Pressed alphanumeric key {1}. Module solved.", moduleId, alphabet + 1);
+		    Debug.LogFormat("[The Modkit #{0}] Correctly pressed alphanumeric key {1}. Module solved.", moduleId, alphabet + 1);
             module.alphabet[alphabet].transform.Find("Key_TL").Find("LED").GetComponentInChildren<Renderer>().material = module.keyLightMats[0];
             module.Solve();
         }
         else
         {
-		    Debug.LogFormat("[The Modkit #{0}] Strike! Pressed alphanumeric key {1}.", moduleId, alphabet + 1);
+		    Debug.LogFormat("[The Modkit #{0}] Strike! Incorrectly pressed alphanumeric key {1}.", moduleId, alphabet + 1);
             module.CauseStrike();
         }
     }
 
     void CalcSolution()
     {
-        Debug.LogFormat("[The Modkit #{0}] Wires present are {1}.", moduleId, info.GetWireNames());
+        Debug.LogFormat("[The Modkit #{0}] Wires present: {1}.", moduleId, info.GetWireNames());
 
         valid.Clear();
 
@@ -145,10 +145,10 @@ class TheThirdWire : Puzzle
                 col++;
 
         Debug.LogFormat("[The Modkit #{0}] {1} wires and LEDs match the colors of the third wire.", moduleId, col);
-        Debug.LogFormat("[The Modkit #{0}] Target character is {1}.", moduleId, map[row][col]);
+        Debug.LogFormat("[The Modkit #{0}] Target character: {1}.", moduleId, map[row][col]);
 
         int dist = 0;
-        while(true)
+        while(dist < 16)
         {
             for(int i = col - dist; i <= col + dist; i++)
             {
@@ -207,7 +207,7 @@ class TheThirdWire : Puzzle
 
             if(valid.Count != 0)
             {
-                Debug.LogFormat("[The Modkit #{0}] Valid keys are [ {1} ] (distance = {2}).", moduleId, valid.Select(x => x < 3 ? "symbol key " + (x + 1) : "alphanumeric key " + (x - 2)).Join(", "), dist);
+                Debug.LogFormat("[The Modkit #{0}] Valid keys: [ {1} ] (distance = {2}).", moduleId, valid.Select(x => x < 3 ? "symbol key " + (x + 1) : "alphanumeric key " + (x - 2)).Join(", "), dist);
                 break;
             }
 

@@ -26,12 +26,12 @@ class ColorOffset : Puzzle
 
     public ColorOffset(Modkit module, int moduleId, ComponentInfo info) : base(module, moduleId, info)
     {
-        Debug.LogFormat("[The Modkit #{0}] Solving Color Offset. Symbols present are: {1}. LEDs are: {2}.", moduleId, info.GetSymbols(), info.LED.Select(x => ComponentInfo.COLORNAMES[x]).Join(", "));
+        Debug.LogFormat("[The Modkit #{0}] Solving Color Offset. Symbols present: {1}. LEDs: {2}.", moduleId, info.GetSymbols(), info.LED.Select(x => ComponentInfo.COLORNAMES[x]).Join(", "));
     
         for(int i = 0; i < arrowOffset.Length; i++)
             arrowOffset[i] = rnd.Range(1, 7);
         
-        Debug.LogFormat("[The Modkit #{0}] Arrow offsets are: Up - {1}, Right - {2}, Down - {3}, Left - {4}.", moduleId, arrowOffset[ComponentInfo.UP], arrowOffset[ComponentInfo.RIGHT], arrowOffset[ComponentInfo.DOWN], arrowOffset[ComponentInfo.LEFT]);
+        Debug.LogFormat("[The Modkit #{0}] Arrow offsets: Up - {1}, Right - {2}, Down - {3}, Left - {4}.", moduleId, arrowOffset[ComponentInfo.UP], arrowOffset[ComponentInfo.RIGHT], arrowOffset[ComponentInfo.DOWN], arrowOffset[ComponentInfo.LEFT]);
     
         sol = rnd.Range(0, 3);
 
@@ -48,8 +48,8 @@ class ColorOffset : Puzzle
             }
         }
 
-        Debug.LogFormat("[The Modkit #{0}] Symbol offsets are: [ {1} ].", moduleId, symbolOffset.Join(", "));
-        Debug.LogFormat("[The Modkit #{0}] Solution is symbol {1}.", moduleId, sol + 1);
+        Debug.LogFormat("[The Modkit #{0}] Symbol offsets: [ {1} ].", moduleId, symbolOffset.Join(", "));
+        Debug.LogFormat("[The Modkit #{0}] Solution: symbol {1}.", moduleId, sol + 1);
     }
 
     public override void OnSymbolPress(int symbol)
@@ -74,13 +74,13 @@ class ColorOffset : Puzzle
 
         if(symbol == sol)
         {
-		    Debug.LogFormat("[The Modkit #{0}] Pressed symbol {1}. Module solved.", moduleId, symbol + 1);
+		    Debug.LogFormat("[The Modkit #{0}] Correctly pressed symbol {1}. Module solved.", moduleId, symbol + 1);
             module.symbols[symbol].transform.Find("Key_TL").Find("LED").GetComponentInChildren<Renderer>().material = module.keyLightMats[1];
             module.Solve();
         }
         else
         {
-		    Debug.LogFormat("[The Modkit #{0}] Strike! Pressed symbol {1}.", moduleId, symbol + 1);
+		    Debug.LogFormat("[The Modkit #{0}] Strike! Incorrectly pressed symbol {1}.", moduleId, symbol + 1);
             module.CauseStrike();
         }
     }
@@ -111,6 +111,6 @@ class ColorOffset : Puzzle
 			module.LED[i].transform.Find("light").GetComponentInChildren<Renderer>().material = module.LEDMats[info.LED[i]];
         }
 
-        Debug.LogFormat("[The Modkit #{0}] Pressed arrow {1}. LEDs are: {2}.", moduleId, ComponentInfo.DIRNAMES[arrow], info.LED.Select(x => ComponentInfo.COLORNAMES[x]).Join(", "));
+        Debug.LogFormat("[The Modkit #{0}] Pressed arrow {1}. LEDs are now: {2}.", moduleId, ComponentInfo.DIRNAMES[arrow], info.LED.Select(x => ComponentInfo.COLORNAMES[x]).Join(", "));
     }
 }

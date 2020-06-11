@@ -13,7 +13,7 @@ class ColorDominance : Puzzle
     List<int> LEDOff = new List<int>();
 
     int[] wireTable = { 0, 3, 1, 0, 4, 2 };
-    int[] keyTable = { 0, 2, 0, 1, 0, 1 };
+    int[] keyTable = { 0, 2, 1, 2, 0, 1 };
     int[] arrowTable = { ComponentInfo.DOWN, ComponentInfo.LEFT, ComponentInfo.RIGHT, ComponentInfo.LEFT, ComponentInfo.UP, ComponentInfo.DOWN };
     int[] digitTable = { 4, 2, 0, 5, 9, 8 };
 
@@ -23,8 +23,8 @@ class ColorDominance : Puzzle
 
     public ColorDominance(Modkit module, int moduleId, ComponentInfo info) : base(module, moduleId, info)
     {
-        Debug.LogFormat("[The Modkit #{0}] Solving Color Dominance. Symbols present are: {1}. LEDs are: {3}.", moduleId, info.GetSymbols(), info.alphabet.Join(", "), info.LED.Select(x => ComponentInfo.COLORNAMES[x]).Join(", "));
-        Debug.LogFormat("[The Modkit #{0}] Wires present are {1}.", moduleId, info.GetWireNames());
+        Debug.LogFormat("[The Modkit #{0}] Solving Color Dominance. Symbols present: {1}. LEDs: {3}.", moduleId, info.GetSymbols(), info.alphabet.Join(", "), info.LED.Select(x => ComponentInfo.COLORNAMES[x]).Join(", "));
+        Debug.LogFormat("[The Modkit #{0}] Wires present: {1}.", moduleId, info.GetWireNames());
     }
 
     public override void OnWireCut(int wire)
@@ -50,16 +50,16 @@ class ColorDominance : Puzzle
 
         if(dominantColor == -1)
         {
-		    Debug.LogFormat("[The Modkit #{0}] Strike! Cut wire {1} before pressing the ❖ button.", moduleId, wire + 1);
+		    Debug.LogFormat("[The Modkit #{0}] Strike! Wire {1} was cut before pressing the ❖ button.", moduleId, wire + 1);
             module.CauseStrike();
             module.RegenWires();
-            Debug.LogFormat("[The Modkit #{0}] Wires present are {1}.", moduleId, info.GetWireNames());
+            Debug.LogFormat("[The Modkit #{0}] Wires present: {1}.", moduleId, info.GetWireNames());
             return;
         }
 
         if(stage != 0)
         {
-		    Debug.LogFormat("[The Modkit #{0}] Strike! Cut wire {1} on stage {2}.", moduleId, wire + 1, stage + 1);
+		    Debug.LogFormat("[The Modkit #{0}] Strike! Wire {1} was cut on stage {2}.", moduleId, wire + 1, stage + 1);
             module.CauseStrike();
             Reset();
             return;
@@ -67,13 +67,13 @@ class ColorDominance : Puzzle
 
         if(wire != wireTable[dominantColor])
         {
-		    Debug.LogFormat("[The Modkit #{0}] Strike! Cut wire {1} on stage {2} when wire {3} was expected.", moduleId, wire + 1, stage + 1, wireTable[dominantColor] + 1);
+		    Debug.LogFormat("[The Modkit #{0}] Strike! Wire {1} was cut on stage {2} when wire {3} was expected.", moduleId, wire + 1, stage + 1, wireTable[dominantColor] + 1);
             module.CauseStrike();
             Reset();
             return;
         }
 
-        Debug.LogFormat("[The Modkit #{0}] Cut wire {1} on stage {2}.", moduleId, wire + 1, stage + 1);
+        Debug.LogFormat("[The Modkit #{0}] Correctly cut wire {1} on stage {2}.", moduleId, wire + 1, stage + 1);
         cut.Add(wire);
         stage++;
         CalcSolution(stage);
@@ -101,14 +101,14 @@ class ColorDominance : Puzzle
 
         if(dominantColor == -1)
         {
-		    Debug.LogFormat("[The Modkit #{0}] Strike! Pressed symbol {1} before pressing the ❖ button.", moduleId, symbol + 1);
+		    Debug.LogFormat("[The Modkit #{0}] Strike! Symbol {1} was pressed before pressing the ❖ button.", moduleId, symbol + 1);
             module.CauseStrike();
             return;
         }
 
         if(stage != 1)
         {
-		    Debug.LogFormat("[The Modkit #{0}] Strike! Pressed symbol {1} on stage {2}.", moduleId, symbol + 1, stage + 1);
+		    Debug.LogFormat("[The Modkit #{0}] Strike! Symbol {1} was pressed on stage {2}.", moduleId, symbol + 1, stage + 1);
             module.CauseStrike();
             Reset();
             return;
@@ -116,13 +116,13 @@ class ColorDominance : Puzzle
 
         if(symbol != keyTable[dominantColor])
         {
-		    Debug.LogFormat("[The Modkit #{0}] Strike! Pressed symbol {1} on stage {2} when symbol {3} was expected.", moduleId, symbol + 1, stage + 1, keyTable[dominantColor] + 1);
+		    Debug.LogFormat("[The Modkit #{0}] Strike! Symbol {1} was incorrectly pressed on stage {2} when symbol {3} was expected.", moduleId, symbol + 1, stage + 1, keyTable[dominantColor] + 1);
             module.CauseStrike();
             Reset();
             return;
         }
 
-        Debug.LogFormat("[The Modkit #{0}] Pressed symbol {1} on stage {2}.", moduleId, symbol + 1, stage + 1);
+        Debug.LogFormat("[The Modkit #{0}] Correctly pressed symbol {1} on stage {2}.", moduleId, symbol + 1, stage + 1);
         symbolOff.Add(symbol);
         module.symbols[symbol].transform.Find("Key_TL").Find("LED").GetComponentInChildren<Renderer>().material = module.keyLightMats[6];
         stage++;
@@ -151,14 +151,14 @@ class ColorDominance : Puzzle
 
         if(dominantColor == -1)
         {
-		    Debug.LogFormat("[The Modkit #{0}] Strike! Pressed {1} arrow before pressing the ❖ button.", moduleId, ComponentInfo.DIRNAMES[arrow]);
+		    Debug.LogFormat("[The Modkit #{0}] Strike! The {1} arrow was pressed before pressing the ❖ button.", moduleId, ComponentInfo.DIRNAMES[arrow]);
             module.CauseStrike();
             return;
         }
 
         if(stage != 2)
         {
-		    Debug.LogFormat("[The Modkit #{0}] Strike! Pressed {1} arrow on stage {2}.", moduleId, ComponentInfo.DIRNAMES[arrow], stage + 1);
+		    Debug.LogFormat("[The Modkit #{0}] Strike! The {1} arrow was pressed on stage {2}.", moduleId, ComponentInfo.DIRNAMES[arrow], stage + 1);
             module.CauseStrike();
             Reset();
             return;
@@ -166,7 +166,7 @@ class ColorDominance : Puzzle
 
         if(arrow != arrowTable[dominantColor])
         {
-		    Debug.LogFormat("[The Modkit #{0}] Strike! Pressed {1} arrow on stage {2} when symbol {3} was expected.", moduleId, ComponentInfo.DIRNAMES[arrow], stage + 1, keyTable[dominantColor] + 1);
+		    Debug.LogFormat("[The Modkit #{0}] Strike! Incorrectly pressed {1} arrow on stage {2} when symbol {3} was expected.", moduleId, ComponentInfo.DIRNAMES[arrow], stage + 1, keyTable[dominantColor] + 1);
             module.CauseStrike();
             Reset();
             return;
@@ -208,7 +208,7 @@ class ColorDominance : Puzzle
                 module.symbols[i].transform.Find("Key_TL").Find("LED").GetComponentInChildren<Renderer>().material = module.keyLightMats[keyColors[i]];
             }
 
-            Debug.LogFormat("[The Modkit #{0}] Symbol keys' lights are: {1}.", moduleId, keyColors.Select(x => ComponentInfo.COLORNAMES[x]).Join(", "));
+            Debug.LogFormat("[The Modkit #{0}] Symbol keys' lights: {1}.", moduleId, keyColors.Select(x => ComponentInfo.COLORNAMES[x]).Join(", "));
             CalcSolution(stage);
             return;
         }
@@ -225,13 +225,13 @@ class ColorDominance : Puzzle
 
         if(sec != digitTable[dominantColor])
         {
-		    Debug.LogFormat("[The Modkit #{0}] Strike! Pressed the ❖ button on stage {1} when the last digit of the countdown timer was {2}.", moduleId, stage + 1, sec);
+		    Debug.LogFormat("[The Modkit #{0}] Strike! Incorrectly pressed the ❖ button on stage {1} when the last digit of the countdown timer was {2}.", moduleId, stage + 1, sec);
             module.CauseStrike();
             Reset();
             return;
         }
 
-        Debug.LogFormat("[The Modkit #{0}] Pressed the ❖ button on stage {1} when the last digit of the countdown timer was {2}. Module solved.", moduleId, stage + 1, sec);
+        Debug.LogFormat("[The Modkit #{0}] The ❖ button was correctly pressed on stage {1} when the last digit of the countdown timer was {2}. Module solved.", moduleId, stage + 1, sec);
         module.Solve();
         for(int i = 0; i < info.symbols.Length; i++)
             module.symbols[i].transform.Find("Key_TL").Find("LED").GetComponentInChildren<Renderer>().material = module.keyLightMats[6];
@@ -288,7 +288,7 @@ class ColorDominance : Puzzle
         stage = 0;
 
         module.RegenWires();
-        Debug.LogFormat("[The Modkit #{0}] Wires present are {1}.", moduleId, info.GetWireNames());
+        Debug.LogFormat("[The Modkit #{0}] Wires present: {1}.", moduleId, info.GetWireNames());
 
         for(int i = 0; i < info.symbols.Length; i++)
             module.symbols[i].transform.Find("Key_TL").Find("LED").GetComponentInChildren<Renderer>().material = module.keyLightMats[keyColors[i]];

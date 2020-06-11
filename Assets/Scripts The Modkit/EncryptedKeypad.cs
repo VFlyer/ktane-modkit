@@ -25,7 +25,7 @@ class EncryptedKeypad : Puzzle
 
     public EncryptedKeypad(Modkit module, int moduleId, ComponentInfo info) : base(module, moduleId, info)
     {
-        Debug.LogFormat("[The Modkit #{0}] Solving Encrypted Keypad. Symbols present are: {1}. Alphanumeric keys present are: {2}.", moduleId, info.GetSymbols(), info.alphabet.Join(", "));
+        Debug.LogFormat("[The Modkit #{0}] Solving Encrypted Keypad. Symbols present: {1}. Alphanumeric keys present: {2}.", moduleId, info.GetSymbols(), info.alphabet.Join(", "));
 
         for(int i = 0; i < info.alphabet.Length; i++)
         {
@@ -46,7 +46,7 @@ class EncryptedKeypad : Puzzle
 
             convertedKeys.Add(columns[letterVal][info.alphabet[i][1] - '0']);
         }
-        Debug.LogFormat("[The Modkit #{0}] Alphanumeric keys corresponding symbols are: {1}.", moduleId, convertedKeys.Select(x => ComponentInfo.SYMBOLCHARS[x]).Join(", "));
+        Debug.LogFormat("[The Modkit #{0}] Alphanumeric keys corresponding symbols: {1}.", moduleId, convertedKeys.Select(x => ComponentInfo.SYMBOLCHARS[x]).Join(", "));
     
         for(int i = 0; i < columns.Length; i++)
             for(int j = 0; j < info.symbols.Length; j++)
@@ -70,7 +70,7 @@ class EncryptedKeypad : Puzzle
 
         presses.Sort();
 
-        Debug.LogFormat("[The Modkit #{0}] Keys that need to be pressed are symbols [ {1} ] and alphanumeric keys [ {2} ].", moduleId, presses.Where(x => x < 3).Select(x => x + 1).Join(", "), presses.Where(x => x >= 3).Select(x => x - 2).Join(", "));
+        Debug.LogFormat("[The Modkit #{0}] The following that need to be pressed: symbol keys [ {1} ] and alphanumeric keys [ {2} ].", moduleId, presses.Where(x => x < 3).Select(x => x + 1).Join(", "), presses.Where(x => x >= 3).Select(x => x - 2).Join(", "));
     }
 
     public override void OnSymbolPress(int symbol)
@@ -98,7 +98,7 @@ class EncryptedKeypad : Puzzle
 
         if(presses.Contains(symbol))
         {
-		    Debug.LogFormat("[The Modkit #{0}] Pressed symbol {1}.", moduleId, symbol + 1);
+		    Debug.LogFormat("[The Modkit #{0}] Correctly pressed symbol {1}.", moduleId, symbol + 1);
             pressed.Add(symbol);
             module.symbols[symbol].transform.Find("Key_TL").Find("LED").GetComponentInChildren<Renderer>().material = module.keyLightMats[1];
             if(pressed.Count == presses.Count)
@@ -109,7 +109,7 @@ class EncryptedKeypad : Puzzle
         }
         else
         {
-		    Debug.LogFormat("[The Modkit #{0}] Strike! Pressed symbol {1}.", moduleId, symbol + 1);
+		    Debug.LogFormat("[The Modkit #{0}] Strike! Incorrectly pressed symbol {1}.", moduleId, symbol + 1);
             module.CauseStrike();
         }
     }
@@ -139,7 +139,7 @@ class EncryptedKeypad : Puzzle
 
         if(presses.Contains(alphabet + 3))
         {
-		    Debug.LogFormat("[The Modkit #{0}] Pressed alphanumeric key {1}.", moduleId, alphabet + 1);
+		    Debug.LogFormat("[The Modkit #{0}] Correctly pressed alphanumeric key {1}.", moduleId, alphabet + 1);
             pressed.Add(alphabet + 3);
             module.alphabet[alphabet].transform.Find("Key_TL").Find("LED").GetComponentInChildren<Renderer>().material = module.keyLightMats[0];
             if(pressed.Count() == presses.Count())
@@ -150,7 +150,7 @@ class EncryptedKeypad : Puzzle
         }
         else
         {
-		    Debug.LogFormat("[The Modkit #{0}] Strike! Pressed alphanumeric key {1}.", moduleId, alphabet + 1);
+		    Debug.LogFormat("[The Modkit #{0}] Strike! Incorrectly pressed alphanumeric key {1}.", moduleId, alphabet + 1);
             module.CauseStrike();
         }
     }

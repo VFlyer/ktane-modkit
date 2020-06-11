@@ -14,9 +14,9 @@ class IndexedWires : Puzzle
 
     public IndexedWires(Modkit module, int moduleId, ComponentInfo info) : base(module, moduleId, info)
     {
-        Debug.LogFormat("[The Modkit #{0}] Solving Indexed Wires. Alphanumeric keys present are: {1}.", moduleId, info.alphabet.Join(", "));
+        Debug.LogFormat("[The Modkit #{0}] Solving Indexed Wires. Alphanumeric keys present: {1}.", moduleId, info.alphabet.Join(", "));
         SolveKeys();
-        Debug.LogFormat("[The Modkit #{0}] Wires present are {1}.", moduleId, info.GetWireNames());
+        Debug.LogFormat("[The Modkit #{0}] Wires present: {1}.", moduleId, info.GetWireNames());
     }
 
     public override void OnWireCut(int wire)
@@ -69,14 +69,14 @@ class IndexedWires : Puzzle
 
         if(alphabet != currentKey)
         {
-            Debug.LogFormat("[The Modkit #{0}] Strike! Pressed alphanumeric key {1} when key {2} was expected.", moduleId, alphabet + 1, currentKey + 1);
+            Debug.LogFormat("[The Modkit #{0}] Strike! Incorrectly pressed alphanumeric key {1} when alphanumeric key {2} was expected.", moduleId, alphabet + 1, currentKey + 1);
             module.CauseStrike();
             module.RegenWires();
-            Debug.LogFormat("[The Modkit #{0}] Wires present are {1}.", moduleId, info.GetWireNames());
+            Debug.LogFormat("[The Modkit #{0}] Wires present: {1}.", moduleId, info.GetWireNames());
             cuts = new List<int>();
             return;
         }
-
+        bool isAllCorrect = true;
         for(int i = 0; i < info.wires.Length; i++)
         {
             int color1 = info.wires[i] / 10;
@@ -84,26 +84,29 @@ class IndexedWires : Puzzle
 
             if(cuts.Contains(i) && color1 != colors[currentKey] && color2 != colors[currentKey])
             {
-                Debug.LogFormat("[The Modkit #{0}] Strike! Pressed alphanumeric key {1} and wire {2} was cut when it shoudn't have been.", moduleId, alphabet + 1, i + 1);
-                module.CauseStrike();
-                module.RegenWires();
-                Debug.LogFormat("[The Modkit #{0}] Wires present are {1}.", moduleId, info.GetWireNames());
-                cuts = new List<int>();
-                return;
+                Debug.LogFormat("[The Modkit #{0}] Wire {2} was cut when it shoudn't have been.", moduleId, alphabet + 1, i + 1);
+                isAllCorrect = false;
             }
             else if(!cuts.Contains(i) && (color1 == colors[currentKey] || color2 == colors[currentKey]))
             {
-                Debug.LogFormat("[The Modkit #{0}] Strike! Pressed alphanumeric key {1} and wire {2} was not cut when it shoud have been.", moduleId, alphabet + 1, i + 1);
-                module.CauseStrike();
-                module.RegenWires();
-                Debug.LogFormat("[The Modkit #{0}] Wires present are {1}.", moduleId, info.GetWireNames());
-                cuts = new List<int>();
-                return;
+                Debug.LogFormat("[The Modkit #{0}] Wire {2} was not cut when it shoud have been.", moduleId, alphabet + 1, i + 1);
+                isAllCorrect = false;
             }
         }
 
-        Debug.LogFormat("[The Modkit #{0}] Pressed alphanumeric key {1}.", moduleId, alphabet + 1);
-        module.alphabet[alphabet].transform.Find("Key_TL").Find("LED").GetComponentInChildren<Renderer>().material = module.keyLightMats[0];
+        if (!isAllCorrect)
+        {
+            Debug.LogFormat("[The Modkit #{0}] Strike! Upon pressing alphanumeric key {1}, not all wires were handled correctly!", moduleId, alphabet + 1);
+            module.CauseStrike();
+            module.RegenWires();
+            Debug.LogFormat("[The Modkit #{0}] Wires present: {1}.", moduleId, info.GetWireNames());
+            cuts = new List<int>();
+            return;
+        }
+
+
+        Debug.LogFormat("[The Modkit #{0}] Correctly pressed alphanumeric key {1} with the wires handled correctly.", moduleId, alphabet + 1);
+        module.alphabet[alphabet].transform.Find("Key_TL").Find("LED").GetComponentInChildren<Renderer>().material = module.keyLightMats[1];
         currentKey++;
 
         if(currentKey == 3)
@@ -114,7 +117,7 @@ class IndexedWires : Puzzle
         }
 
         module.RegenWires();
-        Debug.LogFormat("[The Modkit #{0}] Wires present are {1}.", moduleId, info.GetWireNames());
+        Debug.LogFormat("[The Modkit #{0}] Wires present: {1}.", moduleId, info.GetWireNames());
         cuts = new List<int>();
     }
 
@@ -122,9 +125,9 @@ class IndexedWires : Puzzle
     {
         for(int i = 0; i < info.alphabet.Length; i++)
         {
-            if(new char[] {'A', 'E', 'I', 'O', 'U'}.ToList().Contains(info.alphabet[i][0]))
+            if(info.alphabet[i][0] < 'N')
             {
-                if(info.alphabet.Select(x => x[0]).Min() == info.alphabet[i][0])
+                if(new char[] { 'A', 'E', 'I', 'O', 'U'}.Contains(info.alphabet[i][0]))
                 {
                     if((info.alphabet[i][1] - '0') % 2 == 0)
                         colors[i] = ComponentInfo.YELLOW;

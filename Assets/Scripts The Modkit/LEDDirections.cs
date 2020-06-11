@@ -48,7 +48,7 @@ class LEDDirections : Puzzle
             
         if(alphabet > currentStage)
         {
-		    Debug.LogFormat("[The Modkit #{0}] Strike! Pressed alphanumeric key {1} on stage {2}.", moduleId, alphabet + 1, currentStage + 1);
+		    Debug.LogFormat("[The Modkit #{0}] Strike! Incorrectly pressed alphanumeric key {1} on stage {2}.", moduleId, alphabet + 1, currentStage + 1);
             module.CauseStrike();
             input.Clear();
             return;
@@ -68,7 +68,7 @@ class LEDDirections : Puzzle
         }
         else
         {
-		    Debug.LogFormat("[The Modkit #{0}] Strike! Received input [ {1} ] on stage {2}.", moduleId, input.Select(x => ComponentInfo.DIRNAMES[x]).Join(", "), currentStage + 1);
+		    Debug.LogFormat("[The Modkit #{0}] Strike! Incorrectly received input [ {1} ] on stage {2}.", moduleId, input.Select(x => ComponentInfo.DIRNAMES[x]).Join(", "), currentStage + 1);
             module.CauseStrike();
             input.Clear();
         }

@@ -33,6 +33,8 @@ public class Modkit : MonoBehaviour
 	public GameObject[] LED;
 	public GameObject[] arrows;
 
+	
+
 
 	public Mesh wireWhole;
 	public Mesh wireCut;
@@ -55,6 +57,21 @@ public class Modkit : MonoBehaviour
 
 	private bool hasStruck = false; // TP Handling, send a strike handling if the module struck. To prevent excessive inputs.
 
+	// Use these for debugging individual puzzles.
+	private bool forceComponents, forceByModuleID = false;
+	private bool[] componentsForced;
+
+	ModkitSettings modConfig = new ModkitSettings();
+
+	string[][] passwords = {
+			new string[] { "CRY2", "HAM8", "TED6", "GIN3", "FLU4" },
+			new string[] { "CAP1", "MUD0", "KIT9", "FLY5", "HER7" },
+			new string[] { "HUT0", "RED3", "PAC8", "MIX2", "SKY9" },
+			new string[] { "REV1", "SHY7", "DIM4", "TUG6", "LAW5" },
+			new string[] { "RIB8", "MAN1", "SPY5", "GEL0", "CUT7" },
+			new string[] { "SIX6", "FRY2", "HUB9", "LEG3", "JAW4" }
+		};
+
 	void Awake()
 	{
 		moduleId = moduleIdCounter++;
@@ -62,17 +79,47 @@ public class Modkit : MonoBehaviour
         selectBtns[1].OnInteract += delegate () { ToggleComponent(); return false; };
         selectBtns[2].OnInteract += delegate () { ChangeDisplayComponent(selectBtns[2], 1); return false; };
 
+		try
+		{
+			ModConfig<ModkitSettings> modkitJSON = new ModConfig<ModkitSettings>("ModkitSettings");
+			modConfig = modkitJSON.Settings;
+
+			forceComponents = modConfig.EnforceComponents;
+			forceByModuleID = modConfig.EnforceByModID;
+
+			componentsForced = new bool[] { modConfig.EnforceWires, modConfig.EnforceSymbols, modConfig.EnforceAlphabet, modConfig.EnforceLEDs, modConfig.EnforceArrows };
+		}
+		catch
+		{
+			Debug.LogErrorFormat("[The Modkit #{0}] The settings do not work as intended! Using default settings (do not force required components).", moduleId);
+			forceComponents = false;
+			forceByModuleID = false;
+			componentsForced = new bool[] { false, false, false, false, false };
+		}
+
 	}
 
 	void Start () 
 	{
 		SetUpComponents();
-		CalcComponents();
+		if (forceComponents) // Check if the components need to be forced on.
+		{
+			ForceComponents();
+			displayText.text = "DISABLED";
+		}
+		else
+		{
+			CalcComponents();
+			displayText.text = componentNames[currentComponent];
+		}
 		AssignHandlers();
         for (int x = 0; x < 5; x++)
         {
-            SetSelectables(x, false);
+            SetSelectables(x, forceComponents ? targetComponents[x] : false);
+			onComponents[x] = forceComponents && targetComponents[x];
         }
+		if (forceComponents)
+			StartCoroutine(PlayEnforceAnim());
 	}
 	public void CauseStrike() // Cause a strike on The Modkit
 	{
@@ -123,7 +170,27 @@ public class Modkit : MonoBehaviour
     		arrows[i].transform.Find("light").GetComponentInChildren<Light>().color = ComponentInfo.LIGHTCOLORS[info.arrows[i]];
 		}
 	}
-
+	void ForceComponents()
+	{
+		Debug.LogFormat("[The Modkit #{0}] Configs have overriden the calculation procedure for The Modkit.", moduleId);
+		var curModID = moduleId * 1;
+		if (forceByModuleID)
+		{
+			Debug.LogFormat("[The Modkit #{0}] Enforcing components viva module ID.", moduleId);
+			for (int x = 0; x < componentsForced.Length; x++)
+			{
+				targetComponents[x] = curModID % 2 == 1;
+				curModID /= 2;
+			}
+		}
+		else
+		{
+			Debug.LogFormat("[The Modkit #{0}] Enforcing specific components.", moduleId);
+			for (int x = 0; x < componentsForced.Length; x++)
+				targetComponents[x] = componentsForced[x];
+		}
+		Debug.LogFormat("[The Modkit #{0}] Enforced components: [ {1} ].", moduleId, componentNames.Any() ? componentNames.Where(x => targetComponents[Array.IndexOf(componentNames, x)]).Join(", ") : "none");
+	}
 	void CalcComponents()
 	{
 		Port[] columns = { Port.Serial, Port.Parallel, Port.DVI, Port.PS2, Port.StereoRCA, Port.RJ45 };
@@ -139,22 +206,13 @@ public class Modkit : MonoBehaviour
 			}	
 
         Debug.LogFormat("[The Modkit #{0}] The {1} column is the leftmost column with the most amount of ports.", moduleId, colName[col]);
-        
-		string[][] passwords = {
-			new string[] { "CRY2", "HAM8", "TED6", "GIN3", "FLU4" },
-			new string[] { "CAP1", "MUD0", "KIT9", "FLY5", "HER7" },
-			new string[] { "HUT0", "RED3", "PAC8", "MIX2", "SKY9" },
-			new string[] { "REV1", "SHY7", "DIM4", "TUG6", "LAW5" },
-			new string[] { "RIB8", "MAN1", "SPY5", "GEL0", "CUT7" },
-			new string[] { "SIX6", "FRY2", "HUB9", "LEG3", "JAW4" }
-		};
 
 		for(int i = 0; i < passwords[col].Length; i++)
 			for(int j = 0; j < passwords[col][i].Length; j++)
 				if(bomb.GetSerialNumber().Contains(passwords[col][i][j]))
 					targetComponents[i] = true;
 
-		Debug.LogFormat("[The Modkit #{0}] Required components: [ {1} ].", moduleId, componentNames.Where(x => targetComponents[Array.IndexOf(componentNames, x)]).Join(", "));
+		Debug.LogFormat("[The Modkit #{0}] Required components: [ {1} ].", moduleId, componentNames.Any() ? componentNames.Where(x => targetComponents[Array.IndexOf(componentNames, x)]).Join(", ") : "none");
 	}
 
 	void AssignHandlers()
@@ -222,7 +280,7 @@ public class Modkit : MonoBehaviour
 		audioSelf.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, transform);
         btn.AddInteractionPunch(0.5f);
 
-		if(moduleSolved)
+		if(moduleSolved || forceComponents)
 			return;
 
 		currentComponent += delta;
@@ -233,21 +291,16 @@ public class Modkit : MonoBehaviour
 			currentComponent -= componentNames.Length;
 
 		displayText.text = componentNames[currentComponent];
-		if(onComponents[currentComponent])
-			displayText.color = new Color(0, 1, 0);
-		else
-			displayText.color = new Color(1, 0, 0);
+		displayText.color = onComponents[currentComponent] ? Color.green : Color.red;
 	}
 
 	void ToggleComponent()
 	{
-		if(animating)
-            return;
 
 		audioSelf.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, transform);
         selectBtns[2].AddInteractionPunch(0.5f);
 
-		if(moduleSolved || solving)
+		if(moduleSolved || solving || forceComponents || animating)
 			return;
 
 		onComponents[currentComponent] = !onComponents[currentComponent];
@@ -322,6 +375,19 @@ public class Modkit : MonoBehaviour
         }
         yield return true;
     }
+	IEnumerator PlayEnforceAnim()
+	{
+		bool[] leftHalfActive = { onComponents[1], onComponents[0] };
+		bool[] rightHalfActive = { onComponents[2], onComponents[3], onComponents[4] };
+		for (int x = 0; x < onComponents.Length; x++)
+		{
+			if (x == 2 && ((leftHalfActive[0] && rightHalfActive[0]) || (leftHalfActive[1] && (rightHalfActive[1] || rightHalfActive[2]))))
+				yield return new WaitForSeconds(1f);
+			if (onComponents[x])
+				StartCoroutine(ShowComponent(x));
+		}
+		yield return true;
+	}
 	public void Solve() // Puts The Modkit into a disarmed state.
 	{
 		moduleSelf.HandlePass();
@@ -440,75 +506,115 @@ public class Modkit : MonoBehaviour
 
 		yield return ShowComponent(0);
 	}
-
-    //Twitch Plays Handling
-/*    private bool isValid(string[] s)
-    {
-        for (int i = 0; i < s.Length; i++)
-        {
-            s[i] = s[i].Replace(" ", "");
-            s[i] = s[i].ToLower();
-            if (!s[i].StartsWith("cutwire") && !s[i].StartsWith("press") && !s[i].StartsWith("select"))
-            {
-                return false;
-            }
-        }
-        for (int i = 0; i < s.Length; i++)
-        {
-            if (s[i].StartsWith("cutwire") && !s[i].Equals("cutwire"))
-            {
-                for (int j = 7; j < s.Length; j++)
-                {
-                    if (j % 2 == 0)
-                    {
-                        if (!s[i].ElementAt(j).Equals(","))
-                        {
-                            return false;
-                        }
-                    }
-                    else
-                    {
-                        if (!s[i].ElementAt(j).Equals("1") && !s[i].ElementAt(j).Equals("2") && !s[i].ElementAt(j).Equals("3") && !s[i].ElementAt(j).Equals("4") && !s[i].ElementAt(j).Equals("5"))
-                        {
-                            return false;
-                        }
-                    }
-                }
-            }
-            else if (s[i].StartsWith("select") && !s[i].Equals("select"))
-            {
-                string subs = s[i].Substring(6, s[i].Length - 6);
-                string[] param = subs.Split(',');
-                for (int k = 0; k < param.Length; k++)
-                {
-                    if (!param[k].Equals("arrows") && !param[k].Equals("led") && !param[k].Equals("alphabet") && !param[k].Equals("symbols") && !param[k].Equals("wires"))
-                    {
-                        return false;
-                    }
-                }
-            }
-            else if (s[i].StartsWith("press") && !s[i].Equals("press"))
-            {
-                if (s[i].Equals("pressbigdiamondat0") || s[i].Equals("pressbigdiamondat1") || s[i].Equals("pressbigdiamondat2") || s[i].Equals("pressbigdiamondat3") || s[i].Equals("pressbigdiamondat4") || s[i].Equals("pressbigdiamondat5") || s[i].Equals("pressbigdiamondat6") || s[i].Equals("pressbigdiamondat7") || s[i].Equals("pressbigdiamondat8") || s[i].Equals("pressbigdiamondat9"))
-                {
-                    return true;
-                }
-                string subs = s[i].Substring(5, s[i].Length - 5);
-                string[] param = subs.Split(',');
-                for (int k = 0; k < param.Length; k++)
-                {
-                    if (!param[k].Equals("bigdiamond") && !param[k].Equals("up") && !param[k].Equals("right") && !param[k].Equals("down") && !param[k].Equals("left") && !param[k].Equals("symbol1") && !param[k].Equals("symbol2") && !param[k].Equals("symbol3") && !param[k].Equals("alpha1") && !param[k].Equals("alpha2") && !param[k].Equals("alpha3"))
-                    {
-                        return false;
-                    }
-                }
-            }
-        }
-        return true;
-    }
-*/
-    #pragma warning disable 414
-    private readonly string TwitchHelpMessage = "Select the specified component(s) with \"!{0} select led,arrows\" (In this example, select 'led' and 'arrows'). To cut the specified wire(s): \"!{0} cut wire 1,4\" (in this example wires 1 & 4) \n"+
+	// Mod Settings
+	public class ModkitSettings
+	{
+		public bool EnforceComponents = false;
+		public bool EnforceByModID = false;
+		public bool EnforceWires = false;
+		public bool EnforceSymbols = false;
+		public bool EnforceAlphabet = false;
+		public bool EnforceLEDs = false;
+		public bool EnforceArrows = false;
+	}
+	// For Tweaks. Commented out due to unusability
+	/*
+	static readonly Dictionary<string, object>[] TweaksEditorSettings = new Dictionary<string, object>[]
+	  {
+			new Dictionary<string, object>
+			{
+				{ "Filename", "ModkitSettings.json" },
+				{ "Name", "The Modkit Settings" },
+				{ "Listing", new List<Dictionary<string, object>>{
+					new Dictionary<string, object>
+					{
+						{ "Key", "Enforce Components" },
+						{ "Text", "Enforce specifc components to be required on the module instead of edgework." },
+						{ "Key", "Enforce Based on ModID" },
+						{ "Text", "Enforce specifc components based off of module ID, the one used for logging. Overrides Enforce Wires, LED, Arrows, Symbols, Alphabet." },
+						{ "Key", "Enforce Wires" },
+						{ "Text", "Enforce Wires to be required on The Modkit." },
+						{ "Key", "Enforce Symbols" },
+						{ "Text", "Enforce Symbols to be required on The Modkit." },
+						{ "Key", "Enforce Alphabet" },
+						{ "Text", "Enforce Alphabet to be required on The Modkit." },
+						{ "Key", "Enforce LEDs" },
+						{ "Text", "Enforce LEDs to be required on The Modkit." },
+						{ "Key", "Enforce Arrows" },
+						{ "Text", "Enforce Arrows to be required on The Modkit." },
+					},
+				} }
+			}
+	  };
+	  */
+	//Twitch Plays Handling
+	/*    private bool isValid(string[] s)
+		{
+			for (int i = 0; i < s.Length; i++)
+			{
+				s[i] = s[i].Replace(" ", "");
+				s[i] = s[i].ToLower();
+				if (!s[i].StartsWith("cutwire") && !s[i].StartsWith("press") && !s[i].StartsWith("select"))
+				{
+					return false;
+				}
+			}
+			for (int i = 0; i < s.Length; i++)
+			{
+				if (s[i].StartsWith("cutwire") && !s[i].Equals("cutwire"))
+				{
+					for (int j = 7; j < s.Length; j++)
+					{
+						if (j % 2 == 0)
+						{
+							if (!s[i].ElementAt(j).Equals(","))
+							{
+								return false;
+							}
+						}
+						else
+						{
+							if (!s[i].ElementAt(j).Equals("1") && !s[i].ElementAt(j).Equals("2") && !s[i].ElementAt(j).Equals("3") && !s[i].ElementAt(j).Equals("4") && !s[i].ElementAt(j).Equals("5"))
+							{
+								return false;
+							}
+						}
+					}
+				}
+				else if (s[i].StartsWith("select") && !s[i].Equals("select"))
+				{
+					string subs = s[i].Substring(6, s[i].Length - 6);
+					string[] param = subs.Split(',');
+					for (int k = 0; k < param.Length; k++)
+					{
+						if (!param[k].Equals("arrows") && !param[k].Equals("led") && !param[k].Equals("alphabet") && !param[k].Equals("symbols") && !param[k].Equals("wires"))
+						{
+							return false;
+						}
+					}
+				}
+				else if (s[i].StartsWith("press") && !s[i].Equals("press"))
+				{
+					if (s[i].Equals("pressbigdiamondat0") || s[i].Equals("pressbigdiamondat1") || s[i].Equals("pressbigdiamondat2") || s[i].Equals("pressbigdiamondat3") || s[i].Equals("pressbigdiamondat4") || s[i].Equals("pressbigdiamondat5") || s[i].Equals("pressbigdiamondat6") || s[i].Equals("pressbigdiamondat7") || s[i].Equals("pressbigdiamondat8") || s[i].Equals("pressbigdiamondat9"))
+					{
+						return true;
+					}
+					string subs = s[i].Substring(5, s[i].Length - 5);
+					string[] param = subs.Split(',');
+					for (int k = 0; k < param.Length; k++)
+					{
+						if (!param[k].Equals("bigdiamond") && !param[k].Equals("up") && !param[k].Equals("right") && !param[k].Equals("down") && !param[k].Equals("left") && !param[k].Equals("symbol1") && !param[k].Equals("symbol2") && !param[k].Equals("symbol3") && !param[k].Equals("alpha1") && !param[k].Equals("alpha2") && !param[k].Equals("alpha3"))
+						{
+							return false;
+						}
+					}
+				}
+			}
+			return true;
+		}
+	*/
+#pragma warning disable 414
+	private readonly string TwitchHelpMessage = "Select the specified component(s) with \"!{0} select led,arrows\" (In this example, select 'led' and 'arrows'). To cut the specified wire(s): \"!{0} cut wire 1,4\" (in this example wires 1 & 4) \n"+
 		"Press the specified buttons with \"!{0} press right,alpha2,symbol1,bigdiamond\" (In this example, the right arrow, 2nd alphabet, 1st symbol, and big diamond) Press '❖' based on the last seconds digit with: \"!{0} press bigdiamond at <#>\" Interaction commands may be chained with a semicolon (\";\", I.E \"!{0} select wires; cut wire 5\"). Combine presses/wire cuts with a comma (\",\")";
     #pragma warning restore 414
     IEnumerator ProcessTwitchCommand(string command)
@@ -648,6 +754,11 @@ public class Modkit : MonoBehaviour
 							yield break;
 					}
 				}
+			}
+			else
+			{
+				yield return "sendtochaterror The command portion \"" +parameters[x]+ "\" is not valid, check for typos.";
+				yield break;
 			}
 		}
 		for (int x = 0; x < inputTypes.Count; x++)

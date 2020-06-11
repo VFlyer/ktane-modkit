@@ -9,37 +9,37 @@ using rnd = UnityEngine.Random;
 class RunicWires : Puzzle
 {
     int[][] runes = new int[][] {
-        new int[] { ComponentInfo.RED, ComponentInfo.ORANGE },
+            new int[] { ComponentInfo.RED, ComponentInfo.ORANGE },
         new int[] { ComponentInfo.BLUE, ComponentInfo.GREEN },
         new int[] { ComponentInfo.BLUE, ComponentInfo.GREEN },
         new int[] { ComponentInfo.RED, ComponentInfo.ORANGE, ComponentInfo.YELLOW },
         new int[] { ComponentInfo.PURPLE },
-        new int[] { ComponentInfo.BLUE },
+            new int[] { ComponentInfo.BLUE },
         new int[] { ComponentInfo.GREEN },
         new int[] { ComponentInfo.RED },
         new int[] { ComponentInfo.YELLOW },
         new int[] { ComponentInfo.BLUE, ComponentInfo.GREEN },
-        new int[] { ComponentInfo.ORANGE, ComponentInfo.YELLOW },
+            new int[] { ComponentInfo.ORANGE, ComponentInfo.YELLOW },
         new int[] { ComponentInfo.PURPLE },
         new int[] { ComponentInfo.BLUE, ComponentInfo.GREEN },
         new int[] { ComponentInfo.PURPLE },
         new int[] { ComponentInfo.PURPLE },
-        new int[] { ComponentInfo.RED, ComponentInfo.ORANGE },
+            new int[] { ComponentInfo.RED, ComponentInfo.ORANGE },
         new int[] { ComponentInfo.RED, ComponentInfo.BLUE, ComponentInfo.YELLOW },
         new int[] { ComponentInfo.RED },
         new int[] { ComponentInfo.PURPLE },
         new int[] { ComponentInfo.RED, ComponentInfo.ORANGE },
-        new int[] { ComponentInfo.PURPLE },
+            new int[] { ComponentInfo.PURPLE },
         new int[] { ComponentInfo.RED, ComponentInfo.ORANGE, ComponentInfo.YELLOW },
         new int[] { ComponentInfo.RED, ComponentInfo.ORANGE, ComponentInfo.YELLOW },
         new int[] { ComponentInfo.BLUE },
         new int[] { ComponentInfo.BLUE, ComponentInfo.GREEN },
-        new int[] { ComponentInfo.YELLOW },
+            new int[] { ComponentInfo.YELLOW },
         new int[] { ComponentInfo.PURPLE },
         new int[] { ComponentInfo.BLUE, ComponentInfo.ORANGE },
         new int[] { ComponentInfo.PURPLE },
         new int[] { ComponentInfo.PURPLE },
-        new int[] { ComponentInfo.PURPLE },
+            new int[] { ComponentInfo.PURPLE },
     };
 
     List<int>[] presses = new List<int>[5]; 
@@ -49,10 +49,10 @@ class RunicWires : Puzzle
 
     public RunicWires(Modkit module, int moduleId, ComponentInfo info) : base(module, moduleId, info)
     {
-        Debug.LogFormat("[The Modkit #{0}] Solving Runic Wires. Symbols present are: {1}.", moduleId, info.GetSymbols());
+        Debug.LogFormat("[The Modkit #{0}] Solving Runic Wires. Symbols present: {1}.", moduleId, info.GetSymbols());
 
         for(int i = 0; i < info.symbols.Length; i++)
-            Debug.LogFormat("[The Modkit #{0}] Symbol {1} runes are: [ {2} ].", moduleId, i + 1, runes[info.symbols[i]].Select(x => GetRuneName(x)).Join(", "));
+            Debug.LogFormat("[The Modkit #{0}] Symbol {1} runes: [ {2} ].", moduleId, i + 1, runes[info.symbols[i]].Select(x => GetRuneName(x)).Join(", "));
        
         CalcSolution();
     }
@@ -144,7 +144,7 @@ class RunicWires : Puzzle
             return;
 
         pressed.Add(symbol);
-        module.symbols[symbol].transform.Find("Key_TL").Find("LED").GetComponentInChildren<Renderer>().material = module.keyLightMats[1];
+        module.symbols[symbol].transform.Find("Key_TL").Find("LED").GetComponentInChildren<Renderer>().material = module.keyLightMats[3];
     }
 
     void CalcSolution()

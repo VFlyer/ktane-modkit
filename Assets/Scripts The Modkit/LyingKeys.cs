@@ -26,15 +26,15 @@ class LyingKeys : Puzzle
 
     public LyingKeys(Modkit module, int moduleId, ComponentInfo info) : base(module, moduleId, info)
     {
-        Debug.LogFormat("[The Modkit #{0}] Solving Lying Keys. Symbols present are: {1}. Alphanumeric keys present are: {2}.", moduleId, info.GetSymbols(), info.alphabet.Join(", "));
+        Debug.LogFormat("[The Modkit #{0}] Solving Lying Keys. Symbols present: {1}. Alphanumeric keys present: {2}.", moduleId, info.GetSymbols(), info.alphabet.Join(", "));
 
         for(int i = 0; i < 5; i++)
         {
             patterns[selectedSeq[i]][order[i]] = !patterns[selectedSeq[i]][order[i]];
-            Debug.LogFormat("[The Modkit #{0}] Sequence {1} is [ {2} ].", moduleId, i + 1, patterns[selectedSeq[i]].Select(x => x ? "ON" : "OFF").Join(", "));
+            Debug.LogFormat("[The Modkit #{0}] Sequence {1}: [ {2} ].", moduleId, i + 1, patterns[selectedSeq[i]].Select(x => x ? "ON" : "OFF").Join(", "));
         }
 
-        Debug.LogFormat("[The Modkit #{0}] Correct key is {1}.", moduleId, order[5] > 2 ? "alphanumeric key " + (order[5] - 2) : "symbol key " + (order[5] + 1));
+        Debug.LogFormat("[The Modkit #{0}] Correct key: {1}.", moduleId, order[5] > 2 ? "alphanumeric key " + (order[5] - 2) : "symbol key " + (order[5] + 1));
     }
 
     public override void OnSymbolPress(int symbol)
@@ -57,7 +57,7 @@ class LyingKeys : Puzzle
 
         if(symbol == order[5])
         {
-		    Debug.LogFormat("[The Modkit #{0}] Pressed symbol key {1}. Module solved.", moduleId, symbol + 1);
+		    Debug.LogFormat("[The Modkit #{0}] Correctly pressed symbol key {1}. Module solved.", moduleId, symbol + 1);
             module.Solve();
             foreach(GameObject s in module.symbols)
                s.transform.Find("Key_TL").Find("LED").GetComponentInChildren<Renderer>().material = module.keyLightMats[6];
@@ -66,7 +66,7 @@ class LyingKeys : Puzzle
         }
         else
         {
-		    Debug.LogFormat("[The Modkit #{0}] Strike! Pressed symbol key {1}.", moduleId, symbol + 1);
+		    Debug.LogFormat("[The Modkit #{0}] Strike! Incorrectly pressed symbol key {1}.", moduleId, symbol + 1);
             module.CauseStrike();
         }
     }
@@ -93,7 +93,7 @@ class LyingKeys : Puzzle
 
         if(alphabet + 3 == order[5])
         {
-		    Debug.LogFormat("[The Modkit #{0}] Pressed alphanumeric key {1}. Module solved.", moduleId, alphabet + 1);
+		    Debug.LogFormat("[The Modkit #{0}] Correctly pressed alphanumeric key {1}. Module solved.", moduleId, alphabet + 1);
             module.Solve();
             foreach(GameObject s in module.symbols)
                s.transform.Find("Key_TL").Find("LED").GetComponentInChildren<Renderer>().material = module.keyLightMats[6];
@@ -102,7 +102,7 @@ class LyingKeys : Puzzle
         }
         else
         {
-		    Debug.LogFormat("[The Modkit #{0}] Strike! Pressed alphanumeric key {1}.", moduleId, alphabet + 1);
+		    Debug.LogFormat("[The Modkit #{0}] Strike! Incorrectly pressed alphanumeric key {1}.", moduleId, alphabet + 1);
             module.CauseStrike();
         }
     }
@@ -149,12 +149,12 @@ class LyingKeys : Puzzle
         {
             if(i < 3)
                 if(patterns[selectedSeq[currentSeq]][i])
-                    module.symbols[i].transform.Find("Key_TL").Find("LED").GetComponentInChildren<Renderer>().material = module.keyLightMats[1];
+                    module.symbols[i].transform.Find("Key_TL").Find("LED").GetComponentInChildren<Renderer>().material = module.keyLightMats[3];
                 else
                     module.symbols[i].transform.Find("Key_TL").Find("LED").GetComponentInChildren<Renderer>().material = module.keyLightMats[6];
             else
                 if(patterns[selectedSeq[currentSeq]][i])
-                    module.alphabet[i - 3].transform.Find("Key_TL").Find("LED").GetComponentInChildren<Renderer>().material = module.keyLightMats[1];
+                    module.alphabet[i - 3].transform.Find("Key_TL").Find("LED").GetComponentInChildren<Renderer>().material = module.keyLightMats[3];
                 else
                     module.alphabet[i - 3].transform.Find("Key_TL").Find("LED").GetComponentInChildren<Renderer>().material = module.keyLightMats[6];
         }
@@ -187,12 +187,12 @@ class LyingKeys : Puzzle
             {
                 if(i < 3)
                     if(patterns[selectedSeq[currentSeq]][i])
-                        module.symbols[i].transform.Find("Key_TL").Find("LED").GetComponentInChildren<Renderer>().material = module.keyLightMats[1];
+                        module.symbols[i].transform.Find("Key_TL").Find("LED").GetComponentInChildren<Renderer>().material = module.keyLightMats[3];
                     else
                         module.symbols[i].transform.Find("Key_TL").Find("LED").GetComponentInChildren<Renderer>().material = module.keyLightMats[6];
                 else
                     if(patterns[selectedSeq[currentSeq]][i])
-                        module.alphabet[i - 3].transform.Find("Key_TL").Find("LED").GetComponentInChildren<Renderer>().material = module.keyLightMats[1];
+                        module.alphabet[i - 3].transform.Find("Key_TL").Find("LED").GetComponentInChildren<Renderer>().material = module.keyLightMats[3];
                     else
                         module.alphabet[i - 3].transform.Find("Key_TL").Find("LED").GetComponentInChildren<Renderer>().material = module.keyLightMats[6];
             }

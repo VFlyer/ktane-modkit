@@ -26,13 +26,13 @@ class AlphanumericOrder : Puzzle
 
     public AlphanumericOrder(Modkit module, int moduleId, ComponentInfo info) : base(module, moduleId, info)
     {
-        Debug.LogFormat("[The Modkit #{0}] Solving Alphanumeric Order. Alphanumeric keys present are: {1}.", moduleId, info.alphabet.Join(", "));
+        Debug.LogFormat("[The Modkit #{0}] Solving Alphanumeric Order. Alphanumeric keys present: {1}.", moduleId, info.alphabet.Join(", "));
 
         for(int i = 0; i < 4; i++)
             if(rnd.Range(0, 2) == 1)
                 onArrows.Add(i);
 
-        Debug.LogFormat("[The Modkit #{0}] Lighten up arrows are: [ {1} ].", moduleId, onArrows.Count() == 0 ? "none" : onArrows.Select(x => ComponentInfo.COLORNAMES[x]).Join(", "));
+        Debug.LogFormat("[The Modkit #{0}] Lighten up arrows: [ {1} ].", moduleId, onArrows.Any() ? "none" : onArrows.Select(x => ComponentInfo.COLORNAMES[x]).Join(", "));
 
         CalcOrder();
 
@@ -41,7 +41,7 @@ class AlphanumericOrder : Puzzle
                 if(info.alphabet[j][0] == order[i] || info.alphabet[j][1] == order[i])
                     presses.Add(j);
 
-        Debug.LogFormat("[The Modkit #{0}] Button press order is: [ {1} ].", moduleId, presses.Select(x => x + 1).Join(", "));
+        Debug.LogFormat("[The Modkit #{0}] Button press order: [ {1} ].", moduleId, presses.Select(x => x + 1).Join(", "));
     }
 
     public override void OnAlphabetPress(int alphabet)
@@ -69,14 +69,14 @@ class AlphanumericOrder : Puzzle
 
         pressed.Add(alphabet);
         Debug.LogFormat("[The Modkit #{0}] Pressed alphanumeric key {1}.", moduleId, alphabet + 1);
-        module.alphabet[alphabet].transform.Find("Key_TL").Find("LED").GetComponentInChildren<Renderer>().material = module.keyLightMats[0];
+        module.alphabet[alphabet].transform.Find("Key_TL").Find("LED").GetComponentInChildren<Renderer>().material = module.keyLightMats[3];
 
         if(pressed.Count == 3)
         {
             for(int i = 0; i < presses.Count; i++)
                 if(pressed[i] != presses[i])
                 {
-                    Debug.LogFormat("[The Modkit #{0}] Strike! Input received was [ {1} ].", moduleId, pressed.Select(x => x + 1).Join(", "));
+                    Debug.LogFormat("[The Modkit #{0}] Strike! Incorrect input received: [ {1} ].", moduleId, pressed.Select(x => x + 1).Join(", "));
                     module.CauseStrike();
                     pressed.Clear();
                     foreach(GameObject k in module.alphabet)
@@ -84,7 +84,13 @@ class AlphanumericOrder : Puzzle
                     return;
                 }
 
-            Debug.LogFormat("[The Modkit #{0}] Input received was [ {1} ]. Module solved.", moduleId, pressed.Select(x => x + 1).Join(", "));
+            Debug.LogFormat("[The Modkit #{0}] Correct input received: [ {1} ]. Module solved.", moduleId, pressed.Select(x => x + 1).Join(", "));
+            foreach (GameObject k in module.alphabet)
+                k.transform.Find("Key_TL").Find("LED").GetComponentInChildren<Renderer>().material = module.keyLightMats[1];
+            for (int i = 0; i < info.arrows.Length; i++)
+            {
+                module.arrows[i].transform.Find("light").gameObject.SetActive(false);
+            }
             module.Solve();
         }
     }
@@ -135,8 +141,7 @@ class AlphanumericOrder : Puzzle
             light = true;
             for(int i = 0; i < info.arrows.Length; i++)
             {
-                if(onArrows.Contains(info.arrows[i]))
-                    module.arrows[i].transform.Find("light").gameObject.SetActive(true);
+                 module.arrows[i].transform.Find("light").gameObject.SetActive(onArrows.Contains(info.arrows[i]));
             }
         }
     }

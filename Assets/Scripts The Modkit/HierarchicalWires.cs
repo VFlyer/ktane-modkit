@@ -48,7 +48,7 @@ class HierarchicalWires : Puzzle
 
     public HierarchicalWires(Modkit module, int moduleId, ComponentInfo info) : base(module, moduleId, info)
     {
-        Debug.LogFormat("[The Modkit #{0}] Solving Hierarchical Wires. Symbols present are: {1}. LEDs are: {2}.", moduleId, info.GetSymbols(), info.LED.Select(x => ComponentInfo.COLORNAMES[x]).Join(", "));
+        Debug.LogFormat("[The Modkit #{0}] Solving Hierarchical Wires. Symbols present: {1}. LEDs: {2}.", moduleId, info.GetSymbols(), info.LED.Select(x => ComponentInfo.COLORNAMES[x]).Join(", "));
 
         CalcSolution();
     }
@@ -69,12 +69,12 @@ class HierarchicalWires : Puzzle
 		    Debug.LogFormat("[The Modkit #{0}] Strike! Cut wire {1} when component selection was [ {2} ] instead of [ {3} ].", moduleId, wire + 1, module.GetOnComponents(), module.GetTargetComponents());
             module.CauseStrike();
             module.RegenWires();
-            Debug.LogFormat("[The Modkit #{0}] Wires present are {1}.", moduleId, info.GetWireNames());
+            Debug.LogFormat("[The Modkit #{0}] Wires present: {1}.", moduleId, info.GetWireNames());
             return;
         }
 
         module.StartSolve();
-        Debug.LogFormat("[The Modkit #{0}] Cut wire {1}.", moduleId, wire + 1);
+        Debug.LogFormat("[The Modkit #{0}] Cutting wire {1}.", moduleId, wire + 1);
         cut.Add(wire);
     }
 
@@ -100,7 +100,7 @@ class HierarchicalWires : Puzzle
 
         if(symbol != stage)
         {
-		    Debug.LogFormat("[The Modkit #{0}] Strike! Pressed symbol {1} when stage was {2}.", moduleId, symbol + 1, stage + 1);
+		    Debug.LogFormat("[The Modkit #{0}] Strike! Incorrectly pressed symbol {1} on stage {2}.", moduleId, symbol + 1, stage + 1);
             module.CauseStrike();
             module.RegenWires();
             CalcSolution();
@@ -109,7 +109,7 @@ class HierarchicalWires : Puzzle
 
         if(!toCut.SequenceEqual(cut))
         {
-            Debug.LogFormat("[The Modkit #{0}] Strike! Cut wires [ {1} ], in that order, when wires [ {2} ] were expected, in that order.", moduleId, cut.Select(x => x + 1).Join(", "), toCut.Select(x => x + 1).Join(", "));
+            Debug.LogFormat("[The Modkit #{0}] Strike! Incorrectly cutted wires [ {1} ], in that order, when wires [ {2} ] were expected, in that order.", moduleId, cut.Any() ? cut.Select(x => x + 1).Join(", ") : "none", toCut.Any() ? toCut.Select(x => x + 1).Join(", ") : "none");
             module.CauseStrike();
             module.RegenWires();
             CalcSolution();
@@ -117,7 +117,7 @@ class HierarchicalWires : Puzzle
         }
         else
         {
-            Debug.LogFormat("[The Modkit #{0}] Successfully cut wires [ {1} ], in that order.", moduleId, toCut.Select(x => x + 1).Join(", "));
+            Debug.LogFormat("[The Modkit #{0}] Correctly cut wires [ {1} ], in that order.", moduleId, toCut.Any() ? toCut.Select(x => x + 1).Join(", ") : "none");
             module.symbols[symbol].transform.Find("Key_TL").Find("LED").GetComponentInChildren<Renderer>().material = module.keyLightMats[1];
             stage++;
         
@@ -136,8 +136,8 @@ class HierarchicalWires : Puzzle
 
     void CalcSolution()
     {
-        Debug.LogFormat("[The Modkit #{0}] Wires present are {1}.", moduleId, info.GetWireNames());
-        Debug.LogFormat("[The Modkit #{0}] Stage {1} order is {2}.", moduleId, stage + 1, cutOrder[info.symbols[stage]].Join(", "));
+        Debug.LogFormat("[The Modkit #{0}] Wires present: {1}.", moduleId, info.GetWireNames());
+        Debug.LogFormat("[The Modkit #{0}] Stage {1}'s order: {2}.", moduleId, stage + 1, cutOrder[info.symbols[stage]].Join(", "));
         
         toCut = new List<int>();
         cut = new List<int>();
@@ -151,6 +151,6 @@ class HierarchicalWires : Puzzle
                 toCut.Add(cutOrder[info.symbols[stage]][i] - 1);
         }
 
-        Debug.LogFormat("[The Modkit #{0}] Wire cut order is: [ {1} ].", moduleId, toCut.Select(x => x + 1).Join(", "));
+        Debug.LogFormat("[The Modkit #{0}] Wire cut order: [ {1} ].", moduleId, toCut.Any() ? toCut.Select(x => x + 1).Join(", ") : "none");
     }
 }
