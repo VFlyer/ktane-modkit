@@ -64,11 +64,11 @@ class ColorCompass : Puzzle
         LED = info.LED.ToList();
         off = new int[] {0, 1, 2}.OrderBy(x => rnd.Range(0, 1000)).ToList();
 
-        Debug.LogFormat("[The Modkit #{0}]] Different LED colors: [ {1} ].", moduleId, info.LED.Distinct().Select(x => ComponentInfo.COLORNAMES[x]).Join(", "));
+        Debug.LogFormat("[The Modkit #{0}] Different LED colors: [ {1} ].", moduleId, info.LED.Distinct().Select(x => ComponentInfo.COLORNAMES[x]).Join(", "));
     
         index = CalcIndex();
 
-        Debug.LogFormat("[The Modkit #{0}]] Which gives the input sequence: [ {1} ].", moduleId, GetSequenceString());
+        Debug.LogFormat("[The Modkit #{0}] Which gives the input sequence: [ {1} ].", moduleId, GetSequenceString());
     }    
 
     public override void OnArrowPress(int arrow)
@@ -107,14 +107,14 @@ class ColorCompass : Puzzle
 
                 if(stage == 3)
                 {
-                    Debug.LogFormat("[The Modkit #{0}]] Sequence is correct. Module solved.", moduleId);
+                    Debug.LogFormat("[The Modkit #{0}] Sequence is correct. Module solved.", moduleId);
                     module.Solve();
                 }
                 else
                 {
                     index = CalcIndex();
-                    Debug.LogFormat("[The Modkit #{0}]] Sequence is correct. Different LED colors are now [ {1} ].", moduleId, info.LED.Distinct().Where(x => x != -1).Select(x => ComponentInfo.COLORNAMES[x]).Join(", "));
-                    Debug.LogFormat("[The Modkit #{0}]] Which gives the input sequence: [ {1} ].", moduleId, GetSequenceString());
+                    Debug.LogFormat("[The Modkit #{0}] Sequence is correct. Different LED colors are now [ {1} ].", moduleId, info.LED.Distinct().Where(x => x != -1).Select(x => ComponentInfo.COLORNAMES[x]).Join(", "));
+                    Debug.LogFormat("[The Modkit #{0}] Which gives the input sequence: [ {1} ].", moduleId, GetSequenceString());
                     press = 0;
                 }
             }

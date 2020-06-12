@@ -144,3 +144,7 @@ table.color-dominance tr:nth-of-type(1) th
 {
 	background-color: lightgray;
 }
+q
+{
+	font-family: "Arrows";
+}

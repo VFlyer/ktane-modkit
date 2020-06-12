@@ -189,7 +189,7 @@ public class Modkit : MonoBehaviour
 			for (int x = 0; x < componentsForced.Length; x++)
 				targetComponents[x] = componentsForced[x];
 		}
-		Debug.LogFormat("[The Modkit #{0}] Enforced components: [ {1} ].", moduleId, componentNames.Any() ? componentNames.Where(x => targetComponents[Array.IndexOf(componentNames, x)]).Join(", ") : "none");
+		Debug.LogFormat("[The Modkit #{0}] Enforced components: [ {1} ].", moduleId, componentNames.Where(x => targetComponents[Array.IndexOf(componentNames, x)]).Any() ? componentNames.Where(x => targetComponents[Array.IndexOf(componentNames, x)]).Join(", ") : "none");
 	}
 	void CalcComponents()
 	{

@@ -13,7 +13,7 @@ class PowerGrid : Puzzle
 
     public PowerGrid(Modkit module, int moduleId, ComponentInfo info) : base(module, moduleId, info)
     {
-        Debug.LogFormat("[The Modkit #{0}] Solving Power Grid. Alphanumeric keys present are: {1}.", moduleId, info.alphabet.Join(", "));
+        Debug.LogFormat("[The Modkit #{0}] Solving Power Grid. Alphanumeric keys present: {1} LEDs: {2}", moduleId, info.alphabet.Join(", "), info.LED.Join(", "));
 
         CalcSolution();
     }
