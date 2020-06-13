@@ -13,7 +13,7 @@ class PowerGrid : Puzzle
 
     public PowerGrid(Modkit module, int moduleId, ComponentInfo info) : base(module, moduleId, info)
     {
-        Debug.LogFormat("[The Modkit #{0}] Solving Power Grid. Alphanumeric keys present: {1} LEDs: {2}", moduleId, info.alphabet.Join(", "), info.LED.Join(", "));
+        Debug.LogFormat("[The Modkit #{0}] Solving Power Grid. Alphanumeric keys present: {1} Distinct LEDs: {2}", moduleId, info.alphabet.Join(", "), info.LED.Distinct().Select(a => a < 0 || a >= ComponentInfo.COLORNAMES.Length ? "Unknown" : ComponentInfo.COLORNAMES[a]).Join(", "));
 
         CalcSolution();
     }
@@ -84,74 +84,216 @@ class PowerGrid : Puzzle
         }
         else
         {
-            Debug.LogFormat("[The Modkit #{0}] Strike! Incorrectly pressed the ❖ button when at least one wire was valid.", moduleId);
+            Debug.LogFormat("[The Modkit #{0}] Strike! At least one wire was valid to cut upon pressing the ❖ button!", moduleId);
             module.CauseStrike();
         }
     }
 
     void CalcSolution()
     {
-        Debug.LogFormat("[The Modkit #{0}] Wires present: {1}.", moduleId, info.GetWireNames());
+        Debug.LogFormat("[The Modkit #{0}] Wires present: {1}", moduleId, info.GetWireNames());
         
-        String s = info.alphabet[0] + info.alphabet[1] + info.alphabet[2];
+        char[] allChars = (info.alphabet[0] + info.alphabet[1] + info.alphabet[2]).ToUpper().ToCharArray();
         toCut = new List<int>();
-
-        for(int i = 0; i < info.wires.Length; i++)
+        List<int> allWires = info.wires.ToList();
+        for(int i = 0; i < info.LED.Length; i++)
         {
-            switch(info.wires[i])
+            /*
+             * Procedure:
+             * Instead of checking each individual wires, and checking if each wire has an active power channel,
+             * - Create a separate list of all wires that will be modified.
+             * - Create a character array for all characters that are present on the module.
+             * - For each active LED on the module:
+             *  + If at least 1 character is present in the given batch of wires:
+             *  + - Remove wires that are not safe on the wires list.
+             * - Then for each of the remaining wires:
+             *  + Get the index of the given wires and add that into the list of wires to cut.
+            */
+            switch (info.LED[i])
             {
-                case 0: if(!(info.LED.Contains(ComponentInfo.RED) && (s.Contains('D') || s.Contains('1'))) && !(info.LED.Contains(ComponentInfo.BLUE) && (s.Contains('I') || s.Contains('M')))) toCut.Add(i); break;
-                case 11: if(!(info.LED.Contains(ComponentInfo.GREEN) && (s.Contains('O') || s.Contains('4'))) && !(info.LED.Contains(ComponentInfo.BLUE) && (s.Contains('G') || s.Contains('8')))) toCut.Add(i); break;
-                case 22: if(!(info.LED.Contains(ComponentInfo.BLUE) && (s.Contains('G') || s.Contains('8'))) && !(info.LED.Contains(ComponentInfo.GREEN) && (s.Contains('S') || s.Contains('2')))) toCut.Add(i); break;
-                case 33: if(!(info.LED.Contains(ComponentInfo.GREEN) && (s.Contains('S') || s.Contains('2'))) && !(info.LED.Contains(ComponentInfo.ORANGE) && (s.Contains('H') || s.Contains('E')))) toCut.Add(i); break;
-                case 44: if(!(info.LED.Contains(ComponentInfo.GREEN) && (s.Contains('S') || s.Contains('2'))) && !(info.LED.Contains(ComponentInfo.ORANGE) && (s.Contains('B') || s.Contains('C')))) toCut.Add(i); break;
-                case 55: if(!(info.LED.Contains(ComponentInfo.ORANGE) && (s.Contains('W') || s.Contains('F'))) && !(info.LED.Contains(ComponentInfo.GREEN) && (s.Contains('Z') || s.Contains('T')))) toCut.Add(i); break;
-                case 66: if(!(info.LED.Contains(ComponentInfo.ORANGE) && (s.Contains('W') || s.Contains('F'))) && !(info.LED.Contains(ComponentInfo.YELLOW) && (s.Contains('Y') || s.Contains('7')))) toCut.Add(i); break;
-                case 01:
-                case 10: if(!(info.LED.Contains(ComponentInfo.ORANGE) && (s.Contains('W') || s.Contains('F')))) toCut.Add(i); break;
-                case 02:
-                case 20: if(!(info.LED.Contains(ComponentInfo.YELLOW) && (s.Contains('9') || s.Contains('3'))) && !(info.LED.Contains(ComponentInfo.ORANGE) && (s.Contains('B') || s.Contains('C')))) toCut.Add(i); break;
-                case 03:
-                case 30: if(!(info.LED.Contains(ComponentInfo.YELLOW) && (s.Contains('9') || s.Contains('3'))) && !(info.LED.Contains(ComponentInfo.ORANGE) && (s.Contains('B') || s.Contains('C')))) toCut.Add(i); break;
-                case 04:
-                case 40: if(!(info.LED.Contains(ComponentInfo.ORANGE) && (s.Contains('H') || s.Contains('E'))) && !(info.LED.Contains(ComponentInfo.RED) && (s.Contains('K') || s.Contains('6')))) toCut.Add(i); break;
-                case 05:
-                case 50: if(!(info.LED.Contains(ComponentInfo.ORANGE) && (s.Contains('H') || s.Contains('E'))) && !(info.LED.Contains(ComponentInfo.GREEN) && (s.Contains('Z') || s.Contains('T')))) toCut.Add(i); break;
-                case 06:
-                case 60: if(!(info.LED.Contains(ComponentInfo.BLUE) && (s.Contains('I') || s.Contains('M'))) && !(info.LED.Contains(ComponentInfo.RED) && (s.Contains('K') || s.Contains('6')))) toCut.Add(i); break;
-                case 12:
-                case 21: if(!(info.LED.Contains(ComponentInfo.GREEN) && (s.Contains('O') || s.Contains('4'))) && !(info.LED.Contains(ComponentInfo.PURPLE) && (s.Contains('J') || s.Contains('N')))) toCut.Add(i); break;
-                case 13:
-                case 31: if(!(info.LED.Contains(ComponentInfo.RED) && (s.Contains('D') || s.Contains('1'))) && !(info.LED.Contains(ComponentInfo.BLUE) && (s.Contains('I') || s.Contains('M')))) toCut.Add(i); break;
-                case 14:
-                case 41: if(!(info.LED.Contains(ComponentInfo.PURPLE) && (s.Contains('J') || s.Contains('N'))) && !(info.LED.Contains(ComponentInfo.BLUE) && (s.Contains('R') || s.Contains('U')))) toCut.Add(i); break;
-                case 15:
-                case 51: if(!(info.LED.Contains(ComponentInfo.BLUE) && (s.Contains('G') || s.Contains('8'))) && !(info.LED.Contains(ComponentInfo.RED) && (s.Contains('P') || s.Contains('L')))) toCut.Add(i); break;
-                case 16:
-                case 61: if(!(info.LED.Contains(ComponentInfo.BLUE) && (s.Contains('R') || s.Contains('W'))) && !(info.LED.Contains(ComponentInfo.RED) && (s.Contains('P') || s.Contains('L')))) toCut.Add(i); break;
-                case 23:
-                case 32: if(!(info.LED.Contains(ComponentInfo.RED) && (s.Contains('P') || s.Contains('L'))) && !(info.LED.Contains(ComponentInfo.BLUE) && (s.Contains('R') || s.Contains('U')))) toCut.Add(i); break;
-                case 24:
-                case 42: if(!(info.LED.Contains(ComponentInfo.PURPLE) && (s.Contains('V') || s.Contains('X'))) && !(info.LED.Contains(ComponentInfo.YELLOW) && (s.Contains('Q') || s.Contains('5')))) toCut.Add(i); break;
-                case 25:
-                case 52: if(!(info.LED.Contains(ComponentInfo.PURPLE) && (s.Contains('V') || s.Contains('X'))) && !(info.LED.Contains(ComponentInfo.YELLOW) && (s.Contains('Q') || s.Contains('5')))) toCut.Add(i); break;
-                case 26:
-                case 62: if(!(info.LED.Contains(ComponentInfo.PURPLE) && (s.Contains('V') || s.Contains('X'))) && !(info.LED.Contains(ComponentInfo.YELLOW) && (s.Contains('Q') || s.Contains('5')))) toCut.Add(i); break;
-                case 34:
-                case 43: if(!(info.LED.Contains(ComponentInfo.YELLOW) && (s.Contains('Y') || s.Contains('7'))) && !(info.LED.Contains(ComponentInfo.PURPLE) && (s.Contains('A') || s.Contains('0')))) toCut.Add(i); break;
-                case 35:
-                case 53: if(!(info.LED.Contains(ComponentInfo.YELLOW) && (s.Contains('Y') || s.Contains('7'))) && !(info.LED.Contains(ComponentInfo.PURPLE) && (s.Contains('A') || s.Contains('0')))) toCut.Add(i); break;
-                case 36:
-                case 63: if(!(info.LED.Contains(ComponentInfo.YELLOW) && (s.Contains('9') || s.Contains('3'))) && !(info.LED.Contains(ComponentInfo.PURPLE) && (s.Contains('A') || s.Contains('0')))) toCut.Add(i); break;
-                case 45:
-                case 54: if(!(info.LED.Contains(ComponentInfo.RED) && (s.Contains('D') || s.Contains('1'))) && !(info.LED.Contains(ComponentInfo.GREEN) && (s.Contains('Z') || s.Contains('T')))) toCut.Add(i); break;
-                case 46:
-                case 64: if(!(info.LED.Contains(ComponentInfo.RED) && (s.Contains('K') || s.Contains('6'))) && !(info.LED.Contains(ComponentInfo.PURPLE) && (s.Contains('N') || s.Contains('J')))) toCut.Add(i); break;
-                case 56:
-                case 65: if(!(info.LED.Contains(ComponentInfo.GREEN) && (s.Contains('O') || s.Contains('4')))) toCut.Add(i); break;
+                case ComponentInfo.RED:
+                    {
+                        if (allChars.Contains('D') || allChars.Contains('1'))
+                        {
+                            allWires.Remove(00);
+                            allWires.Remove(45);
+                            allWires.Remove(54);
+                            allWires.Remove(13);
+                            allWires.Remove(31);
+                        }
+                        if (allChars.Contains('K') || allChars.Contains('6'))
+                        {
+                            allWires.Remove(04);
+                            allWires.Remove(40);
+                            allWires.Remove(46);
+                            allWires.Remove(64);
+                            allWires.Remove(06);
+                            allWires.Remove(60);
+                        }
+                        if (allChars.Contains('P') || allChars.Contains('L'))
+                        {
+                            allWires.Remove(15);
+                            allWires.Remove(51);
+                            allWires.Remove(16);
+                            allWires.Remove(61);
+                            allWires.Remove(23);
+                            allWires.Remove(32);
+                        }
+                        break;
+                    }
+                case ComponentInfo.GREEN:
+                    {
+                        if (allChars.Contains('Z') || allChars.Contains('T'))
+                        {
+                            allWires.Remove(05);
+                            allWires.Remove(50);
+                            allWires.Remove(54);
+                            allWires.Remove(45);
+                            allWires.Remove(55);
+                        }
+                        if (allChars.Contains('O') || allChars.Contains('4'))
+                        {
+                            allWires.Remove(56);
+                            allWires.Remove(65);
+                            allWires.Remove(12);
+                            allWires.Remove(21);
+                            allWires.Remove(11);
+                        }
+                        if (allChars.Contains('S') || allChars.Contains('2'))
+                        {
+                            allWires.Remove(22);
+                            allWires.Remove(44);
+                            allWires.Remove(33);
+                        }
+                        break;
+                    }
+                case ComponentInfo.BLUE:
+                    {
+                        if (allChars.Contains('I') || allChars.Contains('M'))
+                        {
+                            allWires.Remove(31);
+                            allWires.Remove(13);
+                            allWires.Remove(00);
+                            allWires.Remove(06);
+                            allWires.Remove(60);
+                        }
+                        if (allChars.Contains('8') || allChars.Contains('G'))
+                        {
+                            allWires.Remove(11);
+                            allWires.Remove(22);
+                            allWires.Remove(15);
+                            allWires.Remove(51);
+
+                        }
+                        if (allChars.Contains('R') || allChars.Contains('U'))
+                        {
+                            allWires.Remove(14);
+                            allWires.Remove(41);
+                            allWires.Remove(16);
+                            allWires.Remove(61);
+                            allWires.Remove(23);
+                            allWires.Remove(32);
+                        }
+                        break;
+                    }
+                case ComponentInfo.YELLOW:
+                    {
+                        if (allChars.Contains('Q') || allChars.Contains('5'))
+                        {
+                            allWires.Remove(25);
+                            allWires.Remove(52);
+                            allWires.Remove(24);
+                            allWires.Remove(42);
+                            allWires.Remove(26);
+                            allWires.Remove(62);
+                        }
+                        if (allChars.Contains('9') || allChars.Contains('3'))
+                        {
+                            allWires.Remove(03);
+                            allWires.Remove(30);
+                            allWires.Remove(36);
+                            allWires.Remove(63);
+                            allWires.Remove(20);
+                            allWires.Remove(02);
+
+                        }
+                        if (allChars.Contains('7') || allChars.Contains('Y'))
+                        {
+                            allWires.Remove(66);
+                            allWires.Remove(34);
+                            allWires.Remove(43);
+                            allWires.Remove(35);
+                            allWires.Remove(53);
+                        }
+                        break;
+                    }
+                case ComponentInfo.ORANGE:
+                    {
+                        if (allChars.Contains('W') || allChars.Contains('F'))
+                        {
+                            allWires.Remove(66);
+                            allWires.Remove(55);
+                            allWires.Remove(10);
+                            allWires.Remove(01);
+                        }
+                        if (allChars.Contains('H') || allChars.Contains('E'))
+                        {
+                            allWires.Remove(04);
+                            allWires.Remove(40);
+                            allWires.Remove(05);
+                            allWires.Remove(50);
+                            allWires.Remove(33);
+                        }
+                        if (allChars.Contains('B') || allChars.Contains('C'))
+                        {
+                            allWires.Remove(02);
+                            allWires.Remove(20);
+                            allWires.Remove(03);
+                            allWires.Remove(30);
+                            allWires.Remove(44);
+                        }
+                        break;
+                    }
+                case ComponentInfo.PURPLE:
+                    {
+                        if (allChars.Contains('J') || allChars.Contains('N'))
+                        {
+                            allWires.Remove(14);
+                            allWires.Remove(41);
+                            allWires.Remove(46);
+                            allWires.Remove(64);
+                            allWires.Remove(12);
+                            allWires.Remove(21);
+                        }
+                        if (allChars.Contains('0') || allChars.Contains('A'))
+                        {
+                            allWires.Remove(34);
+                            allWires.Remove(43);
+                            allWires.Remove(35);
+                            allWires.Remove(53);
+                            allWires.Remove(36);
+                            allWires.Remove(63);
+                        }
+                        if (allChars.Contains('X') || allChars.Contains('V'))
+                        {
+                            allWires.Remove(26);
+                            allWires.Remove(62);
+                            allWires.Remove(24);
+                            allWires.Remove(42);
+                            allWires.Remove(25);
+                            allWires.Remove(52);
+                        }
+                        break;
+                    }
+                case ComponentInfo.WHITE:
+                default: break;
             }
         }
-
-        Debug.LogFormat("[The Modkit #{0}] Safe wires: {1}.", moduleId, toCut.Count != 0 ? toCut.Select(x => x + 1).Join(", ") : "none");
+        foreach (int oneColor in allWires)
+        {
+            toCut.Add(Array.IndexOf(info.wires, oneColor));
+        }
+        toCut = toCut.Where(x => x >= 0 && x < 5).ToList(); // Keep items within the range of 0-4
+        Debug.LogFormat("[The Modkit #{0}] Safe wires: {1}", moduleId, toCut.Count != 0 ? toCut.Select(x => x + 1).Join(", ") : "none");
     }
 }

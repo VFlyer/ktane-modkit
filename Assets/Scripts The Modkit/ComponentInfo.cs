@@ -8,13 +8,13 @@ using rnd = UnityEngine.Random;
 
 public class ComponentInfo
 {
-    public static readonly int RED = 0;
-    public static readonly int GREEN = 1;
-    public static readonly int BLUE = 2;
-    public static readonly int YELLOW = 3;
-    public static readonly int ORANGE = 4;
-    public static readonly int PURPLE = 5;
-    public static readonly int WHITE = 6;
+    public const int RED = 0;
+    public const int GREEN = 1;
+    public const int BLUE = 2;
+    public const int YELLOW = 3;
+    public const int ORANGE = 4;
+    public const int PURPLE = 5;
+    public const int WHITE = 6;
 
     public static readonly int UP = 0;
     public static readonly int DOWN = 1;
