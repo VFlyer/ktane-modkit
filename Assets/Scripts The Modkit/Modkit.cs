@@ -629,6 +629,12 @@ public class Modkit : MonoBehaviour
             parameters[x] = parameters[x].Trim();
 			if (parameters[x].RegexMatch(@"^select (leds?|arrows?|alphabet|wires?|symbols?)(, ?(leds?|arrows?|alphabet|wires?|symbols?))*$"))
 			{
+				if (forceComponents)
+				{
+					yield return "sendtochaterror This module has enforced components that you must use to disarm the module. Selecting components is disabled because of this.";
+					yield break;
+				}
+
 				string intereptedString = parameters[x].Substring(7);
 				string[] possibleComponents = intereptedString.Split(',');
 				for (int idx = 0; idx < possibleComponents.Length; idx++)
@@ -884,20 +890,27 @@ public class Modkit : MonoBehaviour
 				int[] rangeValues = { Math.Abs(currentComponent + 5 - goalIdx), Math.Abs(currentComponent - goalIdx) };
 				if (currentComponent != goalIdx)
 				{
-					if (1 == Array.IndexOf(rangeValues,rangeValues.Min()))
+					
+					if (1 == Array.IndexOf(rangeValues, rangeValues.Min()))
+					{
+						bool leftOrRight = currentComponent < goalIdx;
 						for (int x = 0; x < rangeValues[1]; x++)
 						{
 							yield return null;
-							selectBtns[2].OnInteract();
+							selectBtns[leftOrRight ? 2 : 0].OnInteract();
 							yield return new WaitForSeconds(0.1f);
 						}
+					}
 					else if (0 == Array.IndexOf(rangeValues, rangeValues.Min()))
+					{
+						bool leftOrRight = currentComponent < goalIdx;
 						for (int x = 0; x < rangeValues[0]; x++)
 						{
 							yield return null;
-							selectBtns[0].OnInteract();
+							selectBtns[leftOrRight ? 0 : 2].OnInteract();
 							yield return new WaitForSeconds(0.1f);
 						}
+					}
 				}
 			}
 			else if (timingType[curPressIdx] != "any")

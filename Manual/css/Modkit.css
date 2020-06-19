@@ -3,7 +3,7 @@ body{
 }
 
 table {
-	margin: 1em auto;
+	margin: 2% auto;
 	border:none;
 }
 
@@ -124,6 +124,9 @@ th .vertical
 .purple
 {
 	color: purple;
+}
+table.runicwires tr th:nth-of-type(1){
+	background-color: lightgray
 }
 table.colorcompass{
 	font-size: 80%;

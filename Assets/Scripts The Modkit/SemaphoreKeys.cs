@@ -101,7 +101,7 @@ class SemaphoreKeys : Puzzle
             while(dr > 9)
             {
                 sum += dr / 10;
-                dr = dr % 10;
+                dr %= 10;
             }
             dr += sum;
         }
@@ -140,29 +140,29 @@ class SemaphoreKeys : Puzzle
         {
             if(Math.Abs(info.alphabet[0][0] - info.alphabet[2][0]) == 1 || Math.Abs(info.alphabet[1][0] - info.alphabet[2][0]) == 1)
             {
-                presses.Add(Array.IndexOf(info.alphabet.Select(x => x[0]).ToArray(), info.alphabet.Select(x => x[0]).Min()));
+                presses.Add(Array.IndexOf(info.alphabet.Select(x => x[0]).ToArray(), info.alphabet.Select(x => x[0]).Max()));
             }
             else
             {
                 if(info.alphabet[0][0] < info.alphabet[1][0])
-                    presses.Add(0);
-                else
                     presses.Add(1);
+                else
+                    presses.Add(0);
             }
         }
         else if(Math.Abs(info.alphabet[1][0] - info.alphabet[2][0]) == 1)
         {
             if(info.alphabet[1][0] < info.alphabet[2][0])
-                    presses.Add(1);
-                else
                     presses.Add(2);
+                else
+                    presses.Add(1);
         }
         else if(Math.Abs(info.alphabet[0][0] - info.alphabet[2][0]) == 1)
         {
             if(info.alphabet[0][0] < info.alphabet[2][0])
-                    presses.Add(0);
-                else
                     presses.Add(2);
+                else
+                    presses.Add(0);
         }
 
         if(presses.Count != 0)
