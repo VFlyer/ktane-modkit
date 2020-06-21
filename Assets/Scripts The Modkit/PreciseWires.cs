@@ -29,12 +29,12 @@ class PreciseWires : Puzzle
 
     public PreciseWires(Modkit module, int moduleId, ComponentInfo info) : base(module, moduleId, info)
     {
-        Debug.LogFormat("[The Modkit #{0}] Solving Precise Wires. Alphanumeric keys present are: {1}. LEDs are: {2}.", moduleId, info.alphabet.Join(", "), info.LED.Select(x => ComponentInfo.COLORNAMES[x]).Join(", "));
+        Debug.LogFormat("[The Modkit #{0}] Solving Precise Wires. Alphanumeric keys present: {1}. LEDs: {2}.", moduleId, info.alphabet.Join(", "), info.LED.Select(x => ComponentInfo.COLORNAMES[x]).Join(", "));
     
         for(int i = 0; i < info.alphabet.Length; i++)
             keyColors[i] = map[info.alphabet[i][1] - '0'][info.alphabet[i][0]-'A'];
 
-        Debug.LogFormat("[The Modkit #{0}] Alphanumeric keys colors are: {1}.", moduleId, keyColors.Select(x => ComponentInfo.COLORNAMES[x]).Join(", "));
+        Debug.LogFormat("[The Modkit #{0}] Alphanumeric keys colors: {1}.", moduleId, keyColors.Select(x => ComponentInfo.COLORNAMES[x]).Join(", "));
         CalcSolution();
     }
 
@@ -95,7 +95,7 @@ class PreciseWires : Puzzle
 
     void CalcSolution()
     {
-        Debug.LogFormat("[The Modkit #{0}] Wires present are {1}.", moduleId, info.GetWireNames());
+        Debug.LogFormat("[The Modkit #{0}] Wires present: {1}.", moduleId, info.GetWireNames());
     
         for(int i = 0; i < cutGroups.Length; i++)
             cutGroups[i] = new List<int>();

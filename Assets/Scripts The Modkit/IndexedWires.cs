@@ -35,7 +35,7 @@ class IndexedWires : Puzzle
 		    Debug.LogFormat("[The Modkit #{0}] Strike! Cut wire {1} when component selection was [ {2} ] instead of [ {3} ].", moduleId, wire + 1, module.GetOnComponents(), module.GetTargetComponents());
             module.CauseStrike();
             module.RegenWires();
-            Debug.LogFormat("[The Modkit #{0}] Wires present are {1}.", moduleId, info.GetWireNames());
+            Debug.LogFormat("[The Modkit #{0}] New wires present:{1}.", moduleId, info.GetWireNames());
             return;
         }
 

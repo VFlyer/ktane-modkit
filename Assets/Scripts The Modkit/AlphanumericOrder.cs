@@ -139,11 +139,27 @@ class AlphanumericOrder : Puzzle
         if(!light)
         {
             light = true;
-            for(int i = 0; i < info.arrows.Length; i++)
-            {
-                 module.arrows[i].transform.Find("light").gameObject.SetActive(onArrows.Contains(info.arrows[i]));
-            }
+            module.StartCoroutine(HandleArrowFlash());
         }
+    }
+
+    public IEnumerator HandleArrowFlash()
+    {
+        int[] flashOrder = rnd.Range(0, 2) == 0 ? new int[] { ComponentInfo.UP, ComponentInfo.RIGHT, ComponentInfo.DOWN, ComponentInfo.LEFT } : new int[] { ComponentInfo.UP, ComponentInfo.LEFT, ComponentInfo.DOWN, ComponentInfo.RIGHT };
+        for (int i = 0; i < info.arrows.Length; i++)
+        {
+
+            for (int x = 0; x < info.arrows.Length; x++)
+            {
+                module.arrows[x].transform.Find("light").gameObject.SetActive(flashOrder[i] == x);
+            }
+            yield return new WaitForSeconds(0.2f);
+        }
+        for (int i = 0; i < info.arrows.Length; i++)
+        {
+            module.arrows[i].transform.Find("light").gameObject.SetActive(onArrows.Contains(info.arrows[i]));
+        }
+        yield return null;
     }
 
     void CalcOrder()

@@ -423,6 +423,6 @@ class TheLastInLine : Puzzle
 
     void CalcSolution()
     {
-        Debug.LogFormat("[The Modkit #{0}] Wires present are {1}.", moduleId, info.GetWireNames());
+        Debug.LogFormat("[The Modkit #{0}] Wires present: {1}.", moduleId, info.GetWireNames());
     }
 }

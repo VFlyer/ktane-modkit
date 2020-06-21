@@ -266,15 +266,9 @@ class GatedMaze : Puzzle
             for(int i = 0; i < n.Length; i++)
             {
                 if(i < 3)
-                    if(n[i] == '1')
-                        module.symbols[i].transform.Find("Key_TL").Find("LED").GetComponentInChildren<Renderer>().material = module.keyLightMats[3];
-                    else
-                        module.symbols[i].transform.Find("Key_TL").Find("LED").GetComponentInChildren<Renderer>().material = module.keyLightMats[6];
+                    module.symbols[i].transform.Find("Key_TL").Find("LED").GetComponentInChildren<Renderer>().material = n[i] == '1' ? module.keyLightMats[3] : module.keyLightMats[6];
                 else
-                    if(n[i] == '1')
-                        module.alphabet[i - 3].transform.Find("Key_TL").Find("LED").GetComponentInChildren<Renderer>().material = module.keyLightMats[3];
-                    else
-                        module.alphabet[i - 3].transform.Find("Key_TL").Find("LED").GetComponentInChildren<Renderer>().material = module.keyLightMats[6];
+                    module.alphabet[i - 3].transform.Find("Key_TL").Find("LED").GetComponentInChildren<Renderer>().material = n[i] == '1' ? module.keyLightMats[3] : module.keyLightMats[6];
             }
             if (currentFlashing != null)
                 module.StopCoroutine(currentFlashing);

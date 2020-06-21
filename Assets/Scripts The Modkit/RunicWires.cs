@@ -149,7 +149,7 @@ class RunicWires : Puzzle
 
     void CalcSolution()
     {
-        Debug.LogFormat("[The Modkit #{0}] Wires present are {1}.", moduleId, info.GetWireNames());
+        Debug.LogFormat("[The Modkit #{0}] Wires present: {1}.", moduleId, info.GetWireNames());
 
         for(int i = 0; i < info.wires.Length; i++)
         {

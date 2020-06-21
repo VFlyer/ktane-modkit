@@ -18,8 +18,8 @@ class ParanormalWires : Puzzle
 
     public ParanormalWires(Modkit module, int moduleId, ComponentInfo info) : base(module, moduleId, info)
     {
-        Debug.LogFormat("[The Modkit #{0}] Solving Paranormal Wires. Symbols present are: {1}. Alphanumeric keys present are: {2}. LEDs are: {3}. Arrows are [Up: {4}, Right: {5}, Down: {6}, Left: {7}]", moduleId, info.GetSymbols(), info.alphabet.Join(", "), info.LED.Select(x => ComponentInfo.COLORNAMES[x]).Join(", "), ComponentInfo.COLORNAMES[info.arrows[ComponentInfo.UP]], ComponentInfo.COLORNAMES[info.arrows[ComponentInfo.RIGHT]], ComponentInfo.COLORNAMES[info.arrows[ComponentInfo.DOWN]], ComponentInfo.COLORNAMES[info.arrows[ComponentInfo.LEFT]]);
-        Debug.LogFormat("[The Modkit #{0}] Wires present are {1}.", moduleId, info.GetWireNames());
+        Debug.LogFormat("[The Modkit #{0}] Solving Paranormal Wires. Symbols present: {1}. Alphanumeric keys present: {2}. LEDs: {3}. Arrows: [Up: {4}, Right: {5}, Down: {6}, Left: {7}]", moduleId, info.GetSymbols(), info.alphabet.Join(", "), info.LED.Select(x => ComponentInfo.COLORNAMES[x]).Join(", "), ComponentInfo.COLORNAMES[info.arrows[ComponentInfo.UP]], ComponentInfo.COLORNAMES[info.arrows[ComponentInfo.RIGHT]], ComponentInfo.COLORNAMES[info.arrows[ComponentInfo.DOWN]], ComponentInfo.COLORNAMES[info.arrows[ComponentInfo.LEFT]]);
+        Debug.LogFormat("[The Modkit #{0}] Wires present: {1}.", moduleId, info.GetWireNames());
     
         options = options.OrderBy(x => rnd.Range(0, 10000)).ToArray();
     }
@@ -40,7 +40,7 @@ class ParanormalWires : Puzzle
 		    Debug.LogFormat("[The Modkit #{0}] Strike! Cut wire {1} when component selection was [ {2} ] instead of [ {3} ].", moduleId, wire + 1, module.GetOnComponents(), module.GetTargetComponents());
             module.CauseStrike();
             module.RegenWires();
-            Debug.LogFormat("[The Modkit #{0}] Wires present are {1}.", moduleId, info.GetWireNames());
+            Debug.LogFormat("[The Modkit #{0}] Wires present: {1}.", moduleId, info.GetWireNames());
             return;
         }
 
@@ -48,12 +48,12 @@ class ParanormalWires : Puzzle
 
         if(cut.Count == 0 || wire == toCut)
         {
-            Debug.LogFormat("[The Modkit #{0}] Cut wire {1}.", moduleId, wire + 1);
+            Debug.LogFormat("[The Modkit #{0}] Correctly cut wire {1}.", moduleId, wire + 1);
             toCut = -1;
         }
         else
         {
-            Debug.LogFormat("[The Modkit #{0}] Strike! Cut wire {1}.", moduleId, wire + 1);
+            Debug.LogFormat("[The Modkit #{0}] Strike! Incorrectly cut wire {1}.", moduleId, wire + 1);
             module.CauseStrike();
         }
 

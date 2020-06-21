@@ -303,7 +303,7 @@ class CruelWireSequence : Puzzle
 		
             if(cuts[currentPannel].Contains(i))
             {
-                module.wires[i].transform.Find("hl").gameObject.SetActive(true);
+                module.wires[i].transform.Find("hl").gameObject.SetActive(false);
 			    module.wires[i].GetComponent<MeshFilter>().mesh = module.wireCut;
             }
             else

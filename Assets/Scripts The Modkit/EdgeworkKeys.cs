@@ -97,7 +97,7 @@ class EdgeworkKeys : Puzzle
         {
 		    Debug.LogFormat("[The Modkit #{0}] Correctly pressed alphanumeric key {1}.", moduleId, alphabet + 1);
             pressed.Add(alphabet);
-            module.alphabet[alphabet].transform.Find("Key_TL").Find("LED").GetComponentInChildren<Renderer>().material = module.keyLightMats[0];
+            module.alphabet[alphabet].transform.Find("Key_TL").Find("LED").GetComponentInChildren<Renderer>().material = module.keyLightMats[1];
             if(pressed.Count() == presses.Count())
             {
                 Debug.LogFormat("[The Modkit #{0}] Module solved.", moduleId);

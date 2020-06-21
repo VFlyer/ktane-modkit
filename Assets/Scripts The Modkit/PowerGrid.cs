@@ -9,7 +9,7 @@ using rnd = UnityEngine.Random;
 class PowerGrid : Puzzle
 {
     List<int> toCut;
-    int cutCount;
+    List<int> wiresCut = new List<int>();
 
     public PowerGrid(Modkit module, int moduleId, ComponentInfo info) : base(module, moduleId, info)
     {
@@ -43,8 +43,9 @@ class PowerGrid : Puzzle
         if(toCut.Contains(wire))
         {
             Debug.LogFormat("[The Modkit #{0}] Correctly cut wire {1}.", moduleId, wire + 1);
-            cutCount++;
-            if(cutCount == toCut.Count)
+            if (!wiresCut.Contains(wire))
+                wiresCut.Add(wire);
+            if(wiresCut.Count == toCut.Count)
             {
                 Debug.LogFormat("[The Modkit #{0}] Module solved.", moduleId);
                 module.Solve();

@@ -12,7 +12,7 @@ class SemaphoreKeys : Puzzle
     
     public SemaphoreKeys(Modkit module, int moduleId, ComponentInfo info) : base(module, moduleId, info)
     {
-        Debug.LogFormat("[The Modkit #{0}] Solving Semaphore Keys. Alphanumeric keys present are: {1}. LEDs are: {2}.", moduleId, info.alphabet.Join(", "),  info.LED.Select(x => ComponentInfo.COLORNAMES[x]).Join(", "));
+        Debug.LogFormat("[The Modkit #{0}] Solving Semaphore Keys. Alphanumeric keys present: {1}. LEDs: {2}.", moduleId, info.alphabet.Join(", "),  info.LED.Select(x => ComponentInfo.COLORNAMES[x]).Join(", "));
     
         CalcSolution();
 
@@ -42,7 +42,7 @@ class SemaphoreKeys : Puzzle
         if(presses.Contains(alphabet))
         {
 		    Debug.LogFormat("[The Modkit #{0}] Correctly pressed alphanumeric key {1}. Module solved.", moduleId, alphabet + 1);
-            module.alphabet[alphabet].transform.Find("Key_TL").Find("LED").GetComponentInChildren<Renderer>().material = module.keyLightMats[0];
+            module.alphabet[alphabet].transform.Find("Key_TL").Find("LED").GetComponentInChildren<Renderer>().material = module.keyLightMats[1];
             module.Solve();
         }
         else
@@ -54,13 +54,20 @@ class SemaphoreKeys : Puzzle
 
     void CalcSolution()
     {
-        for(int i = 0; i < info.alphabet.Length; i++)
+        int[] initialIdxList = { 0, 1, 2 };
+        List<char> alphabetOrderings = info.alphabet.Select(a => a[0]).OrderBy(a => a).ToList();
+        List<int> idxList = initialIdxList.OrderBy(x => info.alphabet.Select(a => a[0]).ToArray()[x]).ToList();
+
+        Debug.LogFormat("[The Modkit #{0}] Sorted Alphabet Keys: {1}", moduleId, alphabetOrderings.Join());
+        Debug.LogFormat("[The Modkit #{0}] Key Indexes sorted by alphabet: {1}", moduleId, idxList.Select(a => a + 1).Join());
+
+        for (int i = 0; i < info.alphabet.Length; i++)
             if(module.bomb.GetSerialNumber().Contains(info.alphabet[i][0]) && module.bomb.GetSerialNumber().Contains(info.alphabet[i][1]))
                 presses.Add(i);
 
-        if(presses.Count != 0)
+        if(presses.Any())
         {
-            Debug.LogFormat("[The Modkit #{0}] Rule 1 applies.", moduleId);
+            Debug.LogFormat("[The Modkit #{0}] At least 1 of the keys has a letter and digit in the serial number.", moduleId);
             return;
         }
 
@@ -68,29 +75,16 @@ class SemaphoreKeys : Puzzle
             if(new[] {2, 3, 5, 7}.Contains(info.alphabet[i][1] - '0') && info.LED.Contains(ComponentInfo.GREEN))
                 presses.Add(i);
 
-        if(presses.Count != 0)
+        if(presses.Any())
         {
-            Debug.LogFormat("[The Modkit #{0}] Rule 2 applies.", moduleId);
+            Debug.LogFormat("[The Modkit #{0}] A green LED is on and one of the keys' number is prime.", moduleId);
             return;
         }
 
         if(info.LED.Distinct().Count() == 1)
         {
-            int val = 1000;
-            int key = -1;
-            for(int i = 0; i < info.alphabet.Length; i++)
-                if(info.alphabet[i][0] < val)
-                {
-                    val = info.alphabet[i][0];
-                    key = 0;
-                }
-
-            presses.Add(key);
-        }
-
-        if(presses.Count != 0)
-        {
-            Debug.LogFormat("[The Modkit #{0}] Rule 3 applies.", moduleId);
+            presses.Add(idxList[0]);
+            Debug.LogFormat("[The Modkit #{0}] All 3 LEDs have the same color.", moduleId);
             return;
         }
 
@@ -110,19 +104,20 @@ class SemaphoreKeys : Puzzle
             if(info.alphabet[i][1] - '0' == dr)
                 presses.Add(i);
 
-        if(presses.Count != 0)
+        if(presses.Any())
         {
-            Debug.LogFormat("[The Modkit #{0}] Rule 4 applies.", moduleId);
+            Debug.LogFormat("[The Modkit #{0}] One of the keys is the digital root of the sum of the serial number digits.", moduleId);
             return;
         }
 
-        for(int i = 0; i < info.alphabet.Length; i++)
-            if(new[] {'A', 'E', 'I', 'O', 'U'}.Contains(info.alphabet[i][0]) && info.LED.Contains(ComponentInfo.YELLOW))
-                presses.Add(i);
+        if (info.LED.Contains(ComponentInfo.YELLOW))
+            for(int i = 0; i < info.alphabet.Length; i++)
+                if(new[] {'A', 'E', 'I', 'O', 'U'}.Contains(info.alphabet[i][0]))
+                    presses.Add(i);
 
-        if(presses.Count != 0)
+        if(presses.Any())
         {
-            Debug.LogFormat("[The Modkit #{0}] Rule 5 applies.", moduleId);
+            Debug.LogFormat("[The Modkit #{0}] There is a yellow LED on and at least one of the keys' letter is a vowel.", moduleId);
             return;
         }
 
@@ -130,58 +125,73 @@ class SemaphoreKeys : Puzzle
             if(info.alphabet[i][1] - '0' == info.LED.ToList().Where(x => x == ComponentInfo.ORANGE).Count() )
                 presses.Add(i);
 
-        if(presses.Count != 0)
+        if(presses.Any())
         {
-            Debug.LogFormat("[The Modkit #{0}] Rule 6 applies.", moduleId);
+            Debug.LogFormat("[The Modkit #{0}] One of the keys' digit is equal to the number of orange LEDs.", moduleId);
             return;
         }
 
-        if(Math.Abs(info.alphabet[0][0] - info.alphabet[1][0]) == 1)
-        {
-            if(Math.Abs(info.alphabet[0][0] - info.alphabet[2][0]) == 1 || Math.Abs(info.alphabet[1][0] - info.alphabet[2][0]) == 1)
-            {
-                presses.Add(Array.IndexOf(info.alphabet.Select(x => x[0]).ToArray(), info.alphabet.Select(x => x[0]).Max()));
-            }
-            else
-            {
-                if(info.alphabet[0][0] < info.alphabet[1][0])
-                    presses.Add(1);
-                else
-                    presses.Add(0);
-            }
-        }
-        else if(Math.Abs(info.alphabet[1][0] - info.alphabet[2][0]) == 1)
-        {
-            if(info.alphabet[1][0] < info.alphabet[2][0])
-                    presses.Add(2);
-                else
-                    presses.Add(1);
-        }
-        else if(Math.Abs(info.alphabet[0][0] - info.alphabet[2][0]) == 1)
-        {
-            if(info.alphabet[0][0] < info.alphabet[2][0])
-                    presses.Add(2);
-                else
-                    presses.Add(0);
-        }
+        
 
-        if(presses.Count != 0)
+        /*      // Old Handling, this DOES NOT ACCOUNT FOR senarios such as (Z,X,Y)
+                if (Math.Abs(info.alphabet[0][0] - info.alphabet[1][0]) == 1)
+                {
+                    if(Math.Abs(info.alphabet[0][0] - info.alphabet[2][0]) == 1 || Math.Abs(info.alphabet[1][0] - info.alphabet[2][0]) == 1)
+                    {
+                        presses.Add(Array.IndexOf(info.alphabet.Select(x => x[0]).ToArray(), info.alphabet.Select(x => x[0]).Max()));
+                    }
+                    else
+                    {
+                        if(info.alphabet[0][0] < info.alphabet[1][0])
+                            presses.Add(1);
+                        else
+                            presses.Add(0);
+                    }
+                }
+                else if(Math.Abs(info.alphabet[1][0] - info.alphabet[2][0]) == 1)
+                {
+                    if(info.alphabet[1][0] < info.alphabet[2][0])
+                            presses.Add(2);
+                        else
+                            presses.Add(1);
+                }
+                else if(Math.Abs(info.alphabet[0][0] - info.alphabet[2][0]) == 1)
+                {
+                    if(info.alphabet[0][0] < info.alphabet[2][0])
+                            presses.Add(2);
+                        else
+                            presses.Add(0);
+                }
+        */
+        int lastIDx = -1;
+        for (int x = 1; x < 3; x++)
         {
-            Debug.LogFormat("[The Modkit #{0}] Rule 7 applies.", moduleId);
+            if (Math.Abs(alphabetOrderings[x] - alphabetOrderings[x - 1]) == 1)
+            {
+                lastIDx = alphabetOrderings[x] < alphabetOrderings[x - 1] ? x - 1 : x;
+            }
+        }
+        if (lastIDx >= 0 && idxList.Count() > lastIDx)
+        {
+            presses.Add(idxList[lastIDx]);
+        }
+        if(presses.Any())
+        {
+            Debug.LogFormat("[The Modkit #{0}] Two or more keys have consecutive letters.", moduleId);
             return;
         }
-
-        for(int i = 0; i < info.alphabet.Length; i++)
-            if(new[] {'P', 'R', 'E', 'S'}.Contains(info.alphabet[i][0]) && info.LED.Distinct().Count() < 3)
-                presses.Add(i);
+        if (info.LED.Distinct().Count() < 3)
+            for(int i = 0; i < info.alphabet.Length; i++)
+                if(new[] {'P', 'R', 'E', 'S'}.Contains(info.alphabet[i][0]))
+                    presses.Add(i);
 
         if(presses.Count != 0)
         {
-            Debug.LogFormat("[The Modkit #{0}] Rule 8 applies.", moduleId);
+            Debug.LogFormat("[The Modkit #{0}] 2 or more LEDs have the same color and one of the keys' letter is in the word \"PRESS\".", moduleId);
             return;
         }
 
         presses.Add(1);
-        Debug.LogFormat("[The Modkit #{0}] Rule 9 applies.", moduleId);
+        Debug.LogFormat("[The Modkit #{0}] The last otherwise condition applies.", moduleId);
     }
 }

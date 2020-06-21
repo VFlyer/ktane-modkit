@@ -34,7 +34,7 @@ class SimonShifts : Puzzle
 
     public SimonShifts(Modkit module, int moduleId, ComponentInfo info) : base(module, moduleId, info)
     {
-        Debug.LogFormat("[The Modkit #{0}] Solving Simon Shifts. Arrows are [Up: {1}, Right: {2}, Down: {3}, Left: {4}].", moduleId, ComponentInfo.COLORNAMES[info.arrows[ComponentInfo.UP]], ComponentInfo.COLORNAMES[info.arrows[ComponentInfo.RIGHT]], ComponentInfo.COLORNAMES[info.arrows[ComponentInfo.DOWN]], ComponentInfo.COLORNAMES[info.arrows[ComponentInfo.LEFT]]);
+        Debug.LogFormat("[The Modkit #{0}] Solving Simon Shifts. Arrows: [Up: {1}, Right: {2}, Down: {3}, Left: {4}].", moduleId, ComponentInfo.COLORNAMES[info.arrows[ComponentInfo.UP]], ComponentInfo.COLORNAMES[info.arrows[ComponentInfo.RIGHT]], ComponentInfo.COLORNAMES[info.arrows[ComponentInfo.DOWN]], ComponentInfo.COLORNAMES[info.arrows[ComponentInfo.LEFT]]);
 
         for(int i = 0; i < sequence.Length; i++)
             sequence[i] = rnd.Range(0, 4);
@@ -89,7 +89,7 @@ class SimonShifts : Puzzle
                     input = 0;
                     for(int i = 0; i <= stage; i++)
                         expected.Add(direction[info.arrows[sequence[i]]][sequence[i]]);
-                    Debug.LogFormat("[The Modkit #{0}] Input is correct. Flashing: [ {1} ]. Input expected is: [ {2} ]", moduleId, sequence.Take(stage + 1).Select(x => ComponentInfo.DIRNAMES[x]).Join(", "), expected.Select(x => ComponentInfo.DIRNAMES[x]).Join(", "));
+                    Debug.LogFormat("[The Modkit #{0}] Input is correct. Flashing: [ {1} ]. next inputs expected: [ {2} ]", moduleId, sequence.Take(stage + 1).Select(x => ComponentInfo.DIRNAMES[x]).Join(", "), expected.Select(x => ComponentInfo.DIRNAMES[x]).Join(", "));
                     flash = module.StartCoroutine(FlashSequence());
                 }
             }
@@ -122,7 +122,7 @@ class SimonShifts : Puzzle
                     input = 0;
                     for(int i = 0; i <= stage; i++)
                         expected.Add(colors[info.arrows[sequence[i]]][sequence[i]]);
-                    Debug.LogFormat("[The Modkit #{0}] Input is correct. Flashing: [ {1} ]. Input expected is: [ {2} ]", moduleId, sequence.Take(stage + 1).Select(x => ComponentInfo.DIRNAMES[x]).Join(", "), expected.Select(x => ComponentInfo.COLORNAMES[x]).Join(", "));
+                    Debug.LogFormat("[The Modkit #{0}] Input is correct. Flashing: [ {1} ]. Next inputs expected: [ {2} ]", moduleId, sequence.Take(stage + 1).Select(x => ComponentInfo.DIRNAMES[x]).Join(", "), expected.Select(x => ComponentInfo.COLORNAMES[x]).Join(", "));
                     flash = module.StartCoroutine(FlashSequence());
                 }
             }
@@ -163,7 +163,7 @@ class SimonShifts : Puzzle
             expected = new List<int>();
 
             expected.Add(colors[info.arrows[sequence[0]]][sequence[0]]);
-            Debug.LogFormat("[The Modkit #{0}] Flashing: [ {1} ]. Input expected is: [ {2} ]", moduleId, sequence.Take(stage + 1).Select(x => ComponentInfo.DIRNAMES[x]).Join(", "), expected.Select(x => ComponentInfo.COLORNAMES[x]).Join(", "));
+            Debug.LogFormat("[The Modkit #{0}] Flashing: [ {1} ]. Input expected: [ {2} ]", moduleId, sequence.Take(stage + 1).Select(x => ComponentInfo.DIRNAMES[x]).Join(", "), expected.Select(x => ComponentInfo.COLORNAMES[x]).Join(", "));
             
             flashing = true;
             flash = module.StartCoroutine(FlashSequence());

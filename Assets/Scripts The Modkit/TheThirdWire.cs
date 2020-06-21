@@ -109,7 +109,7 @@ class TheThirdWire : Puzzle
         if(valid.Contains(alphabet + 3))
         {
 		    Debug.LogFormat("[The Modkit #{0}] Correctly pressed alphanumeric key {1}. Module solved.", moduleId, alphabet + 1);
-            module.alphabet[alphabet].transform.Find("Key_TL").Find("LED").GetComponentInChildren<Renderer>().material = module.keyLightMats[0];
+            module.alphabet[alphabet].transform.Find("Key_TL").Find("LED").GetComponentInChildren<Renderer>().material = module.keyLightMats[1];
             module.Solve();
         }
         else
@@ -205,7 +205,7 @@ class TheThirdWire : Puzzle
                 }
             }
 
-            if(valid.Count != 0)
+            if(valid.Any())
             {
                 Debug.LogFormat("[The Modkit #{0}] Valid keys: [ {1} ] (distance = {2}).", moduleId, valid.Select(x => x < 3 ? "symbol key " + (x + 1) : "alphanumeric key " + (x - 2)).Join(", "), dist);
                 break;

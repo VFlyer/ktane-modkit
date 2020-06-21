@@ -162,7 +162,7 @@ class WireMaze : Puzzle
 
         if(!wireCut)
         {
-		    Debug.LogFormat("[The Modkit #{0}] Strike! You have not cut a wire corresponding to your current position.", moduleId);
+		    Debug.LogFormat("[The Modkit #{0}] Strike! You have not yet cut a wire corresponding to your current position.", moduleId);
             module.CauseStrike();
             return;
         }

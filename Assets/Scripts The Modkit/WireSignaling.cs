@@ -43,7 +43,8 @@ class WireSignaling : Puzzle
         if(toCut.Contains(wire))
         {
             Debug.LogFormat("[The Modkit #{0}] Correctly cutted wire {1}.", moduleId, wire + 1);
-            wiresCut.Add(wire);
+            if (!wiresCut.Contains(wire))
+                wiresCut.Add(wire);
             if(wiresCut.Distinct().Count() == toCut.Distinct().Count())
             {
                 Debug.LogFormat("[The Modkit #{0}] Module solved.", moduleId);
@@ -78,7 +79,7 @@ class WireSignaling : Puzzle
             }
             else
             {
-                Debug.LogFormat("[The Modkit #{0}] Row {1} returned no applicable wires to cut. Skipping to the next row.", moduleId, i + 1);
+                Debug.LogFormat("[The Modkit #{0}] However, row {1} returned no applicable wires to cut. Skipping to the next row.", moduleId, i + 1);
             }
         }
     }
@@ -213,7 +214,7 @@ class WireSignaling : Puzzle
                 {
                     int color1 = info.wires[i] / 10;
                     int color2 = info.wires[i] % 10;
-                    if((color1 == ComponentInfo.RED || color2 == ComponentInfo.RED) && !foundRed)
+                    if(!foundRed && (color1 == ComponentInfo.RED || color2 == ComponentInfo.RED))
                     {
                         foundRed = true;
                         toCut.Add(i);

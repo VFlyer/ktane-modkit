@@ -14,12 +14,12 @@ class LEDDirections : Puzzle
     
     public LEDDirections(Modkit module, int moduleId, ComponentInfo info) : base(module, moduleId, info)
     {
-        Debug.LogFormat("[The Modkit #{0}] Solving LED Directions. Alphanumeric keys present are: {1}. LEDs are: {2}.", moduleId, info.alphabet.Join(", "),  info.LED.Select(x => ComponentInfo.COLORNAMES[x]).Join(", "));
+        Debug.LogFormat("[The Modkit #{0}] Solving LED Directions. Alphanumeric keys present: {1}. LEDs: {2}.", moduleId, info.alphabet.Join(", "),  info.LED.Select(x => ComponentInfo.COLORNAMES[x]).Join(", "));
     
         for(int i = 0; i < stages.Length; i++)
         {
             CalcStage(i);
-            Debug.LogFormat("[The Modkit #{0}] Stage {1} presses are {2}.", moduleId, i + 1, stages[i].Select(x => ComponentInfo.DIRNAMES[x]).Join(", "));
+            Debug.LogFormat("[The Modkit #{0}] Stage {1} presses: {2}.", moduleId, i + 1, stages[i].Select(x => ComponentInfo.DIRNAMES[x]).Join(", "));
         }
     }
 

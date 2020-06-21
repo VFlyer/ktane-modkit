@@ -164,9 +164,8 @@ class SymbolicMorse : Puzzle
 
     void StartFlashes()
 	{
-		module.StartCoroutine(FlashLight(0));
-		module.StartCoroutine(FlashLight(1));
-		module.StartCoroutine(FlashLight(2));
+        for (int x = 0; x < 3; x++)
+            module.StartCoroutine(FlashLight(x));
 	}
 
 	IEnumerator FlashLight(int n)
