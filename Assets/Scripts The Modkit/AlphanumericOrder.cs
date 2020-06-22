@@ -32,7 +32,7 @@ class AlphanumericOrder : Puzzle
             if(rnd.Range(0, 2) == 1)
                 onArrows.Add(i);
 
-        Debug.LogFormat("[The Modkit #{0}] Lighten up arrows: [ {1} ].", moduleId, onArrows.Any() ? "none" : onArrows.Select(x => ComponentInfo.COLORNAMES[x]).Join(", "));
+        Debug.LogFormat("[The Modkit #{0}] Lighten up arrows: [ {1} ].", moduleId, !onArrows.Any() ? "none" : onArrows.Select(x => ComponentInfo.COLORNAMES[x]).Join(", "));
 
         CalcOrder();
 
