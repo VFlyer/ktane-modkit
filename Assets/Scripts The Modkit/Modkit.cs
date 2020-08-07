@@ -667,9 +667,9 @@ public class Modkit : MonoBehaviour
 					}
 				}
 			}
-			else if (parameters[x].RegexMatch(@"^cut ?wire\s\d(, ?\d)*$"))
+			else if (parameters[x].RegexMatch(@"^cut ?wires?\s\d(, ?\d)*$"))
 			{
-				string intereptedString = parameters[x].Replace("cut wire", "").Replace("cutwire", "").Trim();
+				string intereptedString = parameters[x].Replace("cut wire", "").Replace("cutwire", "").Replace("cut wires", "").Replace("cutwires", "").Trim();
 				string[] possibleWires = intereptedString.Split(',');
 				for (int idx = 0; idx < possibleWires.Length; idx++)
 				{

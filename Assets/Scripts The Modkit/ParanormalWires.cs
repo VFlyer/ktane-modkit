@@ -46,7 +46,12 @@ class ParanormalWires : Puzzle
 
         module.StartSolve();
 
-        if(cut.Count == 0 || wire == toCut)
+        if(cut.Count == 0)
+        {
+            Debug.LogFormat("[The Modkit #{0}] Cutting wire {1}.", moduleId, wire + 1);
+            toCut = -1;
+        }
+        else if (wire == toCut)
         {
             Debug.LogFormat("[The Modkit #{0}] Correctly cut wire {1}.", moduleId, wire + 1);
             toCut = -1;
@@ -64,6 +69,14 @@ class ParanormalWires : Puzzle
         {
             Debug.LogFormat("[The Modkit #{0}] Module solved.", moduleId);
             module.StopAllCoroutines();
+            foreach (GameObject arrow in module.arrows)
+                arrow.transform.Find("light").gameObject.SetActive(false);
+            foreach (GameObject s in module.symbols)
+                s.transform.Find("Key_TL").Find("LED").GetComponentInChildren<Renderer>().material = module.keyLightMats[6];
+            foreach (GameObject a in module.alphabet)
+                a.transform.Find("Key_TL").Find("LED").GetComponentInChildren<Renderer>().material = module.keyLightMats[6];
+            foreach (GameObject led in module.LED)
+                led.transform.Find("light").GetComponentInChildren<Renderer>().material = module.LEDMats[6];
             module.Solve();
             return;
         }
