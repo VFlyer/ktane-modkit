@@ -17,7 +17,7 @@ class TheLastInLine : Puzzle
 
     public TheLastInLine(Modkit module, int moduleId, ComponentInfo info) : base(module, moduleId, info)
     {
-        Debug.LogFormat("[The Modkit #{0}] Solving The Last In Line. Symbols present are: {1}. Alphanumeric keys present are: {2}.", moduleId, info.GetSymbols(), info.alphabet.Join(", "));
+        Debug.LogFormat("[The Modkit #{0}] Solving The Last In Line. Symbols present: {1}. Alphanumeric keys present: {2}.", moduleId, info.GetSymbols(), info.alphabet.Join(", "));
         
         string snLetters = module.bomb.GetSerialNumberLetters().Join("");
         string snDigits = module.bomb.GetSerialNumberNumbers().Join("");
@@ -283,7 +283,7 @@ class TheLastInLine : Puzzle
 
             Debug.LogFormat("[The Modkit #{0}] Successfully went from {1} to {2} using {3}.", moduleId, lastPress == "**" ? "symbol" : lastPress, info.alphabet[alphabet], ComponentInfo.DIRNAMES[arrow]);
             pressed.Add(alphabet + 3);
-            module.alphabet[alphabet].transform.Find("Key_TL").Find("LED").GetComponentInChildren<Renderer>().material = module.keyLightMats[0];
+            module.alphabet[alphabet].transform.Find("Key_TL").Find("LED").GetComponentInChildren<Renderer>().material = module.keyLightMats[1];
             if(pressed.Count == 6)
             {
                 Debug.LogFormat("[The Modkit #{0}] Module solved.", moduleId);
@@ -325,7 +325,12 @@ class TheLastInLine : Puzzle
             module.CauseStrike();
             return;
         }
-
+        if (lastPress == null)
+        {
+            Debug.LogFormat("[The Modkit #{0}] Strike! The {1} arrow was pressed before Symbol 1 was pressed!", moduleId, ComponentInfo.DIRNAMES[arrow]);
+            module.CauseStrike();
+            return;
+        }
         Debug.LogFormat("[The Modkit #{0}] Pressed the {1} arrow.", moduleId, ComponentInfo.DIRNAMES[arrow]);
         this.arrow = arrow;
     }
@@ -385,7 +390,7 @@ class TheLastInLine : Puzzle
                 }
             }
         }
-
+        arrow = -1;
         while(true)
         {
             info.RegenWires();
