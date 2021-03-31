@@ -517,36 +517,52 @@ public class Modkit : MonoBehaviour
 		public bool EnforceLEDs = false;
 		public bool EnforceArrows = false;
 	}
-	// For Tweaks. Commented out due to unusability
-	/*
 	static readonly Dictionary<string, object>[] TweaksEditorSettings = new Dictionary<string, object>[]
 	  {
 			new Dictionary<string, object>
 			{
 				{ "Filename", "ModkitSettings.json" },
 				{ "Name", "The Modkit Settings" },
-				{ "Listing", new List<Dictionary<string, object>>{
+				{ "Listings", new List<Dictionary<string, object>>{
 					new Dictionary<string, object>
 					{
-						{ "Key", "Enforce Components" },
-						{ "Text", "Enforce specifc components to be required on the module instead of edgework." },
-						{ "Key", "Enforce Based on ModID" },
-						{ "Text", "Enforce specifc components based off of module ID, the one used for logging. Overrides Enforce Wires, LED, Arrows, Symbols, Alphabet." },
-						{ "Key", "Enforce Wires" },
-						{ "Text", "Enforce Wires to be required on The Modkit." },
-						{ "Key", "Enforce Symbols" },
-						{ "Text", "Enforce Symbols to be required on The Modkit." },
-						{ "Key", "Enforce Alphabet" },
-						{ "Text", "Enforce Alphabet to be required on The Modkit." },
-						{ "Key", "Enforce LEDs" },
-						{ "Text", "Enforce LEDs to be required on The Modkit." },
-						{ "Key", "Enforce Arrows" },
-						{ "Text", "Enforce Arrows to be required on The Modkit." },
+						{ "Key", "EnforceComponents" },
+						{ "Text", "Enforce Components" },
+						{ "Description", "Enforce specifc components to be required on the module instead of edgework." },
+					},
+					new Dictionary<string, object>{
+						{ "Key", "EnforceByModID" },
+						{ "Text", "Enforce Based on ModID" },
+						{ "Description", "Enforce specifc components based off of module ID, the one used for logging.\nOverrides Enforce Wires, LED, Arrows, Symbols, Alphabet." },
+					},
+					new Dictionary<string, object> {
+						{ "Key", "EnforceWires" },
+						{ "Text", "Enforce Wires" },
+						{ "Description", "Enforce Wires to be required on The Modkit." },
+					},
+					new Dictionary<string, object> {
+						{ "Key", "EnforceSymbols" },
+						{ "Text", "Enforce Symbols" },
+						{ "Description", "Enforce Symbols to be required on The Modkit." },
+					},
+					new Dictionary<string, object> {
+						{ "Key", "EnforceAlphabet" },
+						{ "Text", "Enforce Alphabet" },
+						{ "Description", "Enforce Alphabet to be required on The Modkit." },
+					},
+					new Dictionary<string, object> {
+						{ "Key", "EnforceLEDs" },
+						{ "Text", "Enforce LEDs" },
+						{ "Description", "Enforce LEDs to be required on The Modkit." },
+					},
+					new Dictionary<string, object> {
+						{ "Key", "EnforceArrows" },
+						{ "Text", "Enforce Arrows" },
+						{ "Description", "Enforce Arrows to be required on The Modkit." },
 					},
 				} }
 			}
 	  };
-	  */
 	//Twitch Plays Handling
 	/*    private bool isValid(string[] s)
 		{
