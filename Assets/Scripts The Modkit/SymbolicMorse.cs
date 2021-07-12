@@ -69,7 +69,7 @@ class SymbolicMorse : Puzzle
         if(module.IsAnimating())
             return;
 
-        module.GetComponent<KMAudio>().PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, module.transform);
+        module.audioSelf.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, module.transform);
         module.symbols[symbol].GetComponentInChildren<KMSelectable>().AddInteractionPunch(0.5f);
     
         if(module.IsSolved())
@@ -77,7 +77,7 @@ class SymbolicMorse : Puzzle
 
         if(!module.CheckValidComponents())
         {
-		    Debug.LogFormat("[The Modkit #{0}] Strike! Pressed symbol {1} when component selection was [ {2} ] instead of [ {3} ].", moduleId, symbol + 1, module.GetOnComponents(), module.GetTargetComponents());
+		    Debug.LogFormat("[The Modkit #{0}] Strike! Symbol {1} was pressed when the component selection was [ {2} ] instead of [ {3} ].", moduleId, symbol + 1, module.GetOnComponents(), module.GetTargetComponents());
             module.CauseStrike();
             return;
         }
@@ -119,7 +119,7 @@ class SymbolicMorse : Puzzle
         if(module.IsAnimating())
             return;
 
-        module.GetComponent<KMAudio>().PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, module.transform);
+        module.audioSelf.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, module.transform);
         module.utilityBtn.GetComponentInChildren<KMSelectable>().AddInteractionPunch(0.5f);
     
         if(module.IsSolved())
@@ -127,7 +127,7 @@ class SymbolicMorse : Puzzle
 
         if(!module.CheckValidComponents())
         {
-		    Debug.LogFormat("[The Modkit #{0}] Strike! Pressed the ❖ button when component selection was [ {1} ] instead of [ {2} ].", moduleId, module.GetOnComponents(), module.GetTargetComponents());
+		    Debug.LogFormat("[The Modkit #{0}] Strike! The ❖ button was pressed when the component selection was [ {1} ] instead of [ {2} ].", moduleId, module.GetOnComponents(), module.GetTargetComponents());
             module.CauseStrike();
             return;
         }

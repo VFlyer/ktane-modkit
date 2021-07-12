@@ -53,7 +53,7 @@ class SimonShifts : Puzzle
 
         if(!module.CheckValidComponents())
         {
-		    Debug.LogFormat("[The Modkit #{0}] Strike! Pressed {1} arrow when component selection was [ {2} ] instead of [ {3} ].", moduleId, ComponentInfo.DIRNAMES[arrow], module.GetOnComponents(), module.GetTargetComponents());
+		    Debug.LogFormat("[The Modkit #{0}] Strike! The {1} arrow was pressed when the component selection was [ {2} ] instead of [ {3} ].", moduleId, ComponentInfo.DIRNAMES[arrow], module.GetOnComponents(), module.GetTargetComponents());
             module.CauseStrike();
             return;
         }
@@ -149,7 +149,7 @@ class SimonShifts : Puzzle
 
         if(!module.CheckValidComponents())
         {
-		    Debug.LogFormat("[The Modkit #{0}] Strike! Pressed the ❖ button when component selection was [ {1} ] instead of [ {2} ].", moduleId, module.GetOnComponents(), module.GetTargetComponents());
+		    Debug.LogFormat("[The Modkit #{0}] Strike! The ❖ button was pressed when the component selection was [ {1} ] instead of [ {2} ].", moduleId, module.GetOnComponents(), module.GetTargetComponents());
             module.CauseStrike();
             return;
         }

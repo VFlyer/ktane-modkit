@@ -24,7 +24,7 @@ class SemaphoreKeys : Puzzle
         if(module.IsAnimating())
             return;
 
-        module.GetComponent<KMAudio>().PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, module.transform);
+        module.audioSelf.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, module.transform);
         module.alphabet[alphabet].GetComponentInChildren<KMSelectable>().AddInteractionPunch(0.5f);
     
         if(module.IsSolved())
@@ -32,7 +32,7 @@ class SemaphoreKeys : Puzzle
 
         if(!module.CheckValidComponents())
         {
-		    Debug.LogFormat("[The Modkit #{0}] Strike! Pressed alphanumeric key {1} when component selection was [ {2} ] instead of [ {3} ].", moduleId, alphabet + 1, module.GetOnComponents(), module.GetTargetComponents());
+		    Debug.LogFormat("[The Modkit #{0}] Strike! Alphanumeric key {1} was pressed when the component selection was [ {2} ] instead of [ {3} ].", moduleId, alphabet + 1, module.GetOnComponents(), module.GetTargetComponents());
             module.CauseStrike();
             return;
         }

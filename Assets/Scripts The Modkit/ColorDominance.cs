@@ -32,7 +32,7 @@ class ColorDominance : Puzzle
         if(module.IsAnimating())
             return;
 
-        module.GetComponent<KMAudio>().PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.WireSnip, module.transform);
+        module.audioSelf.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.WireSnip, module.transform);
 		module.CutWire(wire);
 
         if(module.IsSolved())
@@ -40,7 +40,7 @@ class ColorDominance : Puzzle
 
         if(!module.CheckValidComponents())
         {
-		    Debug.LogFormat("[The Modkit #{0}] Strike! Cut wire {1} when component selection was [ {2} ] instead of [ {3} ].", moduleId, wire + 1, module.GetOnComponents(), module.GetTargetComponents());
+		    Debug.LogFormat("[The Modkit #{0}] Strike! Wire {1} was cut when the component selection was [ {2} ] instead of [ {3} ].", moduleId, wire + 1, module.GetOnComponents(), module.GetTargetComponents());
             module.CauseStrike();
             module.RegenWires();
             return;
@@ -84,7 +84,7 @@ class ColorDominance : Puzzle
         if(module.IsAnimating())
             return;
 
-        module.GetComponent<KMAudio>().PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, module.transform);
+        module.audioSelf.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, module.transform);
         module.symbols[symbol].GetComponentInChildren<KMSelectable>().AddInteractionPunch(0.5f);
     
         if(module.IsSolved())
@@ -92,7 +92,7 @@ class ColorDominance : Puzzle
 
         if(!module.CheckValidComponents())
         {
-		    Debug.LogFormat("[The Modkit #{0}] Strike! Pressed symbol {1} when component selection was [ {2} ] instead of [ {3} ].", moduleId, symbol + 1, module.GetOnComponents(), module.GetTargetComponents());
+		    Debug.LogFormat("[The Modkit #{0}] Strike! Symbol {1} was pressed when the component selection was [ {2} ] instead of [ {3} ].", moduleId, symbol + 1, module.GetOnComponents(), module.GetTargetComponents());
             module.CauseStrike();
             return;
         }
@@ -134,7 +134,7 @@ class ColorDominance : Puzzle
         if(module.IsAnimating())
             return;
 
-        module.GetComponent<KMAudio>().PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, module.transform);
+        module.audioSelf.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, module.transform);
         module.arrows[arrow].GetComponentInChildren<KMSelectable>().AddInteractionPunch(0.5f);
     
         if(module.IsSolved())
@@ -142,7 +142,7 @@ class ColorDominance : Puzzle
 
         if(!module.CheckValidComponents())
         {
-		    Debug.LogFormat("[The Modkit #{0}] Strike! Pressed {1} arrow when component selection was [ {2} ] instead of [ {3} ].", moduleId, ComponentInfo.DIRNAMES[arrow], module.GetOnComponents(), module.GetTargetComponents());
+		    Debug.LogFormat("[The Modkit #{0}] Strike! The {1} arrow was pressed when the component selection was [ {2} ] instead of [ {3} ].", moduleId, ComponentInfo.DIRNAMES[arrow], module.GetOnComponents(), module.GetTargetComponents());
             module.CauseStrike();
             return;
         }
@@ -185,7 +185,7 @@ class ColorDominance : Puzzle
         if(module.IsAnimating())
             return;
 
-        module.GetComponent<KMAudio>().PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, module.transform);
+        module.audioSelf.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, module.transform);
         module.utilityBtn.GetComponentInChildren<KMSelectable>().AddInteractionPunch(0.5f);
     
         if(module.IsSolved())
@@ -193,7 +193,7 @@ class ColorDominance : Puzzle
 
         if(!module.CheckValidComponents())
         {
-		    Debug.LogFormat("[The Modkit #{0}] Strike! Pressed the ❖ button when component selection was [ {1} ] instead of [ {2} ].", moduleId, module.GetOnComponents(), module.GetTargetComponents());
+		    Debug.LogFormat("[The Modkit #{0}] Strike! The ❖ button was pressed when the component selection was [ {1} ] instead of [ {2} ].", moduleId, module.GetOnComponents(), module.GetTargetComponents());
             module.CauseStrike();
             return;
         }
@@ -215,7 +215,7 @@ class ColorDominance : Puzzle
 
         if(stage != 3)
         {
-		    Debug.LogFormat("[The Modkit #{0}] Strike! Pressed the ❖ button on stage {1}.", moduleId, stage + 1);
+		    Debug.LogFormat("[The Modkit #{0}] Strike! The ❖ button was pressed on stage {1}.", moduleId, stage + 1);
             module.CauseStrike();
             Reset();
             return;
@@ -225,7 +225,7 @@ class ColorDominance : Puzzle
 
         if(sec != digitTable[dominantColor])
         {
-		    Debug.LogFormat("[The Modkit #{0}] Strike! Incorrectly pressed the ❖ button on stage {1} when the last digit of the countdown timer was {2}.", moduleId, stage + 1, sec);
+		    Debug.LogFormat("[The Modkit #{0}] Strike! The ❖ button was incorrectly pressed on stage {1} when the last digit of the countdown timer was {2}.", moduleId, stage + 1, sec);
             module.CauseStrike();
             Reset();
             return;
@@ -276,7 +276,24 @@ class ColorDominance : Puzzle
             }
         }
 
-        Debug.LogFormat("[The Modkit #{0}] Dominant color for stage {1} is {2}.", moduleId, stage + 1, ComponentInfo.COLORNAMES[dominantColor]);
+        Debug.LogFormat("[The Modkit #{0}] Stage {1}'s dominant color is {2}.", moduleId, stage + 1, ComponentInfo.COLORNAMES[dominantColor]);
+        var toLog = "report on this bug occuring. Oops.";
+        switch (stage + 1)
+        {
+            case 1:
+                toLog = string.Format("cut the wire numbered {0}.", wireTable[dominantColor] + 1);
+                break;
+            case 2:
+                toLog = string.Format("press the {0} symbol.", new[] { "left", "middle", "right", }[keyTable[dominantColor]]);
+                break;
+            case 3:
+                toLog = string.Format("press the {0} arrow.", ComponentInfo.DIRNAMES[arrowTable[dominantColor]]);
+                break;
+            case 4:
+                toLog = string.Format("press ❖ when the last seconds digit is {0}.", digitTable[dominantColor]);
+                break;
+        }
+        Debug.LogFormat("[The Modkit #{0}] Therefore you should {1}", moduleId, toLog);
     }
 
     void Reset()

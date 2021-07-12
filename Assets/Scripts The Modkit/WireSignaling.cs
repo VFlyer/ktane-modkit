@@ -23,7 +23,7 @@ class WireSignaling : Puzzle
         if(module.IsAnimating())
             return;
 
-        module.GetComponent<KMAudio>().PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.WireSnip, module.transform);
+        module.audioSelf.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.WireSnip, module.transform);
 		module.CutWire(wire);
 
         if(module.IsSolved())

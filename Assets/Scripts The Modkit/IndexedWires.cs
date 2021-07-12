@@ -24,7 +24,7 @@ class IndexedWires : Puzzle
         if(module.IsAnimating())
             return;
 
-        module.GetComponent<KMAudio>().PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.WireSnip, module.transform);
+        module.audioSelf.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.WireSnip, module.transform);
 		module.CutWire(wire);
 
         if(module.IsSolved())
@@ -32,10 +32,10 @@ class IndexedWires : Puzzle
 
         if(!module.CheckValidComponents())
         {
-		    Debug.LogFormat("[The Modkit #{0}] Strike! Cut wire {1} when component selection was [ {2} ] instead of [ {3} ].", moduleId, wire + 1, module.GetOnComponents(), module.GetTargetComponents());
+		    Debug.LogFormat("[The Modkit #{0}] Strike! Wire {1} was cut when the component selection was [ {2} ] instead of [ {3} ].", moduleId, wire + 1, module.GetOnComponents(), module.GetTargetComponents());
             module.CauseStrike();
             module.RegenWires();
-            Debug.LogFormat("[The Modkit #{0}] New wires present:{1}.", moduleId, info.GetWireNames());
+            Debug.LogFormat("[The Modkit #{0}] New wires present: {1}", moduleId, info.GetWireNames());
             return;
         }
 
@@ -49,7 +49,7 @@ class IndexedWires : Puzzle
         if(module.IsAnimating())
             return;
 
-        module.GetComponent<KMAudio>().PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, module.transform);
+        module.audioSelf.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, module.transform);
         module.alphabet[alphabet].GetComponentInChildren<KMSelectable>().AddInteractionPunch(0.5f);
     
         if(module.IsSolved())
@@ -57,7 +57,7 @@ class IndexedWires : Puzzle
 
         if(!module.CheckValidComponents())
         {
-		    Debug.LogFormat("[The Modkit #{0}] Strike! Pressed alphanumeric key {1} when component selection was [ {2} ] instead of [ {3} ].", moduleId, alphabet + 1, module.GetOnComponents(), module.GetTargetComponents());
+		    Debug.LogFormat("[The Modkit #{0}] Strike! Alphanumeric key {1} was pressed when the component selection was [ {2} ] instead of [ {3} ].", moduleId, alphabet + 1, module.GetOnComponents(), module.GetTargetComponents());
             module.CauseStrike();
             return;
         }
@@ -125,42 +125,66 @@ class IndexedWires : Puzzle
     {
         for(int i = 0; i < info.alphabet.Length; i++)
         {
-            if(info.alphabet[i][0] < 'N')
+            var directionSet = new bool[3];
+            if (info.alphabet[i][0] < 'N')
             {
-                if(new char[] { 'A', 'E', 'I', 'O', 'U'}.Contains(info.alphabet[i][0]))
+                directionSet[0] = true;
+                if (new char[] { 'A', 'E', 'I', 'O', 'U'}.Contains(info.alphabet[i][0]))
                 {
-                    if((info.alphabet[i][1] - '0') % 2 == 0)
+                    directionSet[1] = true;
+                    if ((info.alphabet[i][1] - '0') % 2 == 0)
+                    {
+                        directionSet[2] = true;
                         colors[i] = ComponentInfo.YELLOW;
+                    }
                     else
+                    {
                         colors[i] = ComponentInfo.RED;
+                    }
                 }
                 else
                 {
-                    if(module.bomb.GetSerialNumberNumbers().Contains(info.alphabet[i][1] - '0'))
+                    if (module.bomb.GetSerialNumberNumbers().Contains(info.alphabet[i][1] - '0'))
+                    {
+                        directionSet[2] = true;
                         colors[i] = ComponentInfo.GREEN;
+                    }
                     else
+                    {
                         colors[i] = ComponentInfo.BLUE;
+                    }
                 }
             }
             else
             {
-                if(module.bomb.GetSerialNumberLetters().Contains(info.alphabet[i][0]))
+                if (module.bomb.GetSerialNumberLetters().Contains(info.alphabet[i][0]))
                 {
-                    if(new int[] { 2, 3, 5, 7 }.Contains(info.alphabet[i][1] - '0'))
+                    directionSet[1] = true;
+                    if (new int[] { 2, 3, 5, 7 }.Contains(info.alphabet[i][1] - '0'))
+                    {
+                        directionSet[2] = true;
                         colors[i] = ComponentInfo.ORANGE;
+                    }
                     else
+                    {
                         colors[i] = ComponentInfo.PURPLE;
+                    }
                 }
                 else
                 {
-                    if(info.alphabet[i][1] - '0' > 4)
+                    if (info.alphabet[i][1] - '0' > 4)
+                    {
+                        directionSet[2] = true;
                         colors[i] = ComponentInfo.PURPLE;
+                    }
                     else
+                    {
                         colors[i] = ComponentInfo.RED;
+                    }
                 }
             }
 
-            Debug.LogFormat("[The Modkit #{0}] Key {1} color is {2}.", moduleId, i + 1, ComponentInfo.COLORNAMES[colors[i]]);
+            Debug.LogFormat("[The Modkit #{0}] Alphanumeric Key {1}'s color: {2}. (Flowchart direction: {3})", moduleId, i + 1, ComponentInfo.COLORNAMES[colors[i]], directionSet.Select(a => a ? "L" : "R").Join(""));
         }
     }
 }

@@ -16,10 +16,10 @@ public class ComponentInfo
     public const int PURPLE = 5;
     public const int WHITE = 6;
 
-    public static readonly int UP = 0;
-    public static readonly int DOWN = 1;
-    public static readonly int RIGHT = 2;
-    public static readonly int LEFT = 3;
+    public const int UP = 0;
+    public const int DOWN = 1;
+    public const int RIGHT = 2;
+    public const int LEFT = 3;
 
     public static readonly string[] COLORNAMES = { "Red", "Green", "Blue", "Yellow", "Orange", "Purple", "White" };
     public static readonly string[] DIRNAMES = { "Up", "Down", "Right", "Left" };

@@ -43,7 +43,7 @@ class PreciseWires : Puzzle
         if(module.IsAnimating())
             return;
 
-        module.GetComponent<KMAudio>().PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.WireSnip, module.transform);
+        module.audioSelf.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.WireSnip, module.transform);
 		module.CutWire(wire);
 
         if(module.IsSolved())
@@ -51,7 +51,7 @@ class PreciseWires : Puzzle
 
         if(!module.CheckValidComponents())
         {
-		    Debug.LogFormat("[The Modkit #{0}] Strike! Cut wire {1} when component selection was [ {2} ] instead of [ {3} ].", moduleId, wire + 1, module.GetOnComponents(), module.GetTargetComponents());
+		    Debug.LogFormat("[The Modkit #{0}] Strike! Wire {1} was cut when the component selection was [ {2} ] instead of [ {3} ].", moduleId, wire + 1, module.GetOnComponents(), module.GetTargetComponents());
             module.CauseStrike();
             module.RegenWires();
             CalcSolution();
@@ -103,7 +103,7 @@ class PreciseWires : Puzzle
         List<int> used = new List<int>();
         List<int> colors = new List<int>();
         cut = new List<int>();
-
+        // First instruction
         colors.Add(keyColors[0] * 10 + keyColors[1]);
         colors.Add(keyColors[0] * 10 + keyColors[2]);
         colors.Add(keyColors[1] * 10 + keyColors[0]);
@@ -120,7 +120,7 @@ class PreciseWires : Puzzle
             }
 
         colors.Clear();
-
+        // Second instruction
         colors.Add(info.LED[0] * 10 + info.LED[1]);
         colors.Add(info.LED[0] * 10 + info.LED[2]);
         colors.Add(info.LED[1] * 10 + info.LED[0]);
@@ -137,7 +137,7 @@ class PreciseWires : Puzzle
             }
 
         colors.Clear();
-
+        // Third instruction
         colors.Add(info.arrows[ComponentInfo.UP] * 10 + info.arrows[ComponentInfo.DOWN]);
         colors.Add(info.arrows[ComponentInfo.DOWN] * 10 + info.arrows[ComponentInfo.UP]);
         colors.Add(info.arrows[ComponentInfo.LEFT] * 10 + info.arrows[ComponentInfo.RIGHT]);
@@ -152,7 +152,7 @@ class PreciseWires : Puzzle
             }
 
         colors.Clear();
-
+        // Fourth instruction
         colors.Add(info.arrows[ComponentInfo.UP] * 10 + info.arrows[ComponentInfo.RIGHT]);
         colors.Add(info.arrows[ComponentInfo.RIGHT] * 10 + info.arrows[ComponentInfo.UP]);
         colors.Add(info.arrows[ComponentInfo.RIGHT] * 10 + info.arrows[ComponentInfo.DOWN]);
@@ -171,7 +171,7 @@ class PreciseWires : Puzzle
             }
 
         colors.Clear();
-
+        // Fifth instruction
         colors.Add(info.LED[0] * 10 + keyColors[0]);
         colors.Add(keyColors[0] * 10 + info.LED[0]);
         colors.Add(info.LED[1] * 10 + keyColors[1]);
@@ -186,7 +186,7 @@ class PreciseWires : Puzzle
                 cutGroups[4].Add(i);
                 Debug.LogFormat("[The Modkit #{0}] Wire {1} has a combination matching the 5th instruction.", moduleId, i + 1);
             }
-
+        // Remaining uncut wires
         for (int i = 0; i < info.wires.Length; i++)
             if (!used.Contains(i))
             {

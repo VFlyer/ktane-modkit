@@ -14,7 +14,7 @@ class PerspectiveSymbols : Puzzle
     int startingCol = -1;
 
     List<int> pressed = new List<int>();
-
+    List<string> coordinateLogging = new List<string>();
     int[][][] mazeDir = new int[][][] {
         new int [][] {
             new int[] { ComponentInfo.RIGHT, ComponentInfo.DOWN },
@@ -263,14 +263,14 @@ class PerspectiveSymbols : Puzzle
     
     public PerspectiveSymbols(Modkit module, int moduleId, ComponentInfo info) : base(module, moduleId, info)
     {
-        Debug.LogFormat("[The Modkit #{0}] Solving Perspective Symbols. Symbols present: {1}.", moduleId, info.GetSymbols());
+        Debug.LogFormat("[The Modkit #{0}] Solving Perspective Symbols. Symbols present: {1}", moduleId, info.GetSymbols());
 
-        startingRow = module.bomb.GetSerialNumberNumbers().ToArray()[0];
-        startingCol = module.bomb.GetSerialNumberNumbers().ToArray()[1];
+        startingRow = module.bomb.GetSerialNumberNumbers().FirstOrDefault();
+        startingCol = module.bomb.GetSerialNumberNumbers().ElementAtOrDefault(1);
         currentRow = startingRow;
         currentCol = startingCol;
-
-        Debug.LogFormat("[The Modkit #{0}] Starting position: row={1}, column={2}.", moduleId, startingRow, startingCol);
+        coordinateLogging.Add(string.Format("({0},{1})", currentRow, currentCol));
+        Debug.LogFormat("[The Modkit #{0}] Starting position: row {1}, column {2}", moduleId, startingRow, startingCol);
     }
 
     public override void OnSymbolPress(int symbol)
@@ -278,7 +278,7 @@ class PerspectiveSymbols : Puzzle
         if(module.IsAnimating())
             return;
 
-        module.GetComponent<KMAudio>().PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, module.transform);
+        module.audioSelf.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, module.transform);
         module.symbols[symbol].GetComponentInChildren<KMSelectable>().AddInteractionPunch(0.5f);
     
         if(module.IsSolved())
@@ -286,7 +286,7 @@ class PerspectiveSymbols : Puzzle
 
         if(!module.CheckValidComponents())
         {
-		    Debug.LogFormat("[The Modkit #{0}] Strike! Pressed symbol {1} when component selection was [ {2} ] instead of [ {3} ].", moduleId, symbol + 1, module.GetOnComponents(), module.GetTargetComponents());
+		    Debug.LogFormat("[The Modkit #{0}] Strike! Symbol {1} was pressed when the component selection was [ {2} ] instead of [ {3} ].", moduleId, symbol + 1, module.GetOnComponents(), module.GetTargetComponents());
             module.CauseStrike();
             return;
         }
@@ -295,10 +295,11 @@ class PerspectiveSymbols : Puzzle
 
         if(pressed.Contains(symbol))
             return;
-
-        if(mazeSym[currentRow][currentCol].Contains(info.symbols[symbol]))
+        if (coordinateLogging.Count > 1)
+            Debug.LogFormat("[The Modkit #{0}] Uncompressed moves upon pressing an unlit symbol button (row, col): {1}", moduleId, coordinateLogging.Join(" -> "));
+        if (mazeSym[currentRow][currentCol].Contains(info.symbols[symbol]))
         {
-		    Debug.LogFormat("[The Modkit #{0}] Correctly pressed symbol {1} at row={2}, column={3}.", moduleId, symbol + 1, currentRow, currentCol);
+		    Debug.LogFormat("[The Modkit #{0}] Correctly pressed symbol {1} at row {2}, column {3}", moduleId, symbol + 1, currentRow, currentCol);
             pressed.Add(symbol);
             module.symbols[symbol].transform.Find("Key_TL").Find("LED").GetComponentInChildren<Renderer>().material = module.keyLightMats[1];
             if(pressed.Count == 3)
@@ -309,9 +310,11 @@ class PerspectiveSymbols : Puzzle
         }
         else
         {
-		    Debug.LogFormat("[The Modkit #{0}] Strike! Incorrectly pressed symbol {1} at row={2}, column={3}.", moduleId, symbol + 1, currentRow, currentCol);
+		    Debug.LogFormat("[The Modkit #{0}] Strike! Incorrectly pressed symbol {1} at row {2}, column {3}", moduleId, symbol + 1, currentRow, currentCol);
             module.CauseStrike();
         }
+        coordinateLogging.Clear();
+        coordinateLogging.Add(string.Format("({0},{1})", currentRow, currentCol));
     }
 
     public override void OnArrowPress(int arrow)
@@ -319,7 +322,7 @@ class PerspectiveSymbols : Puzzle
         if(module.IsAnimating())
             return;
 
-        module.GetComponent<KMAudio>().PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, module.transform);
+        module.audioSelf.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, module.transform);
         module.arrows[arrow].GetComponentInChildren<KMSelectable>().AddInteractionPunch(0.5f);
     
         if(module.IsSolved())
@@ -327,7 +330,7 @@ class PerspectiveSymbols : Puzzle
 
         if(!module.CheckValidComponents())
         {
-		    Debug.LogFormat("[The Modkit #{0}] Strike! Pressed {1} arrow when component selection was [ {2} ] instead of [ {3} ].", moduleId, ComponentInfo.DIRNAMES[arrow], module.GetOnComponents(), module.GetTargetComponents());
+		    Debug.LogFormat("[The Modkit #{0}] Strike! The {1} arrow was pressed when the component selection was [ {2} ] instead of [ {3} ].", moduleId, ComponentInfo.DIRNAMES[arrow], module.GetOnComponents(), module.GetTargetComponents());
             module.CauseStrike();
             return;
         }
@@ -336,12 +339,16 @@ class PerspectiveSymbols : Puzzle
 
         if(!mazeDir[currentRow][currentCol].Contains(arrow))
         {
-		    Debug.LogFormat("[The Modkit #{0}] Strike! You can't go {1} at row={2}, column={3}.", moduleId, ComponentInfo.DIRNAMES[arrow], currentRow, currentCol);
+            if (coordinateLogging.Count > 1)
+                Debug.LogFormat("[The Modkit #{0}] Uncompressed moves upon attempting to move into a wall (row, col): {1}", moduleId, coordinateLogging.Join(" -> "));
+            Debug.LogFormat("[The Modkit #{0}] Strike! You can't go {1} at row {2}, column {3}.", moduleId, ComponentInfo.DIRNAMES[arrow], currentRow, currentCol);
             if (currentFlashing != null)
                 module.StopCoroutine(currentFlashing);
             currentFlashing = HandleArrowDelayFlashSingle(arrow);
             module.StartCoroutine(currentFlashing);
             module.CauseStrike();
+            coordinateLogging.Clear();
+            coordinateLogging.Add(string.Format("({0},{1})", currentRow, currentCol));
             return;
         }
 
@@ -353,7 +360,8 @@ class PerspectiveSymbols : Puzzle
             case 3: currentCol--; break;
         }
 
-        Debug.LogFormat("[The Modkit #{0}] Went {1} to row={2}, column={3}.", moduleId, ComponentInfo.DIRNAMES[arrow], currentRow, currentCol);
+        //Debug.LogFormat("[The Modkit #{0}] Went {1} to row {2}, column {3}.", moduleId, ComponentInfo.DIRNAMES[arrow], currentRow, currentCol);
+        coordinateLogging.Add(string.Format("({0},{1})", currentRow, currentCol));
     }
 
     public override void OnUtilityPress()
@@ -361,7 +369,7 @@ class PerspectiveSymbols : Puzzle
         if(module.IsAnimating())
             return;
 
-        module.GetComponent<KMAudio>().PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, module.transform);
+        module.audioSelf.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, module.transform);
         module.utilityBtn.GetComponentInChildren<KMSelectable>().AddInteractionPunch(0.5f);
     
         if(module.IsSolved())
@@ -369,7 +377,7 @@ class PerspectiveSymbols : Puzzle
 
         if(!module.CheckValidComponents())
         {
-		    Debug.LogFormat("[The Modkit #{0}] Strike! Pressed the ❖ button when component selection was [ {1} ] instead of [ {2} ].", moduleId, module.GetOnComponents(), module.GetTargetComponents());
+		    Debug.LogFormat("[The Modkit #{0}] Strike! The ❖ button was pressed when the component selection was [ {1} ] instead of [ {2} ].", moduleId, module.GetOnComponents(), module.GetTargetComponents());
             module.CauseStrike();
             return;
         }
@@ -380,8 +388,12 @@ class PerspectiveSymbols : Puzzle
             module.StopCoroutine(currentFlashing);
         currentFlashing = HandleArrowDelayFlash();
         module.StartCoroutine(currentFlashing);
+        if (coordinateLogging.Count > 1)
+            Debug.LogFormat("[The Modkit #{0}] Uncompressed moves upon resetting (row, col): {1}", moduleId, coordinateLogging.Join(" -> "));
+        coordinateLogging.Clear();
+        coordinateLogging.Add(string.Format("({0},{1})", currentRow, currentCol));
         currentRow = startingRow;
         currentCol = startingCol;
-        Debug.LogFormat("[The Modkit #{0}] Pressed the ❖ button. Position reset to row={1}, column={2}.", moduleId, currentRow, currentCol);
+        Debug.LogFormat("[The Modkit #{0}] Pressed the ❖ button. Position reset to row {1}, column {2}.", moduleId, currentRow, currentCol);
     }
 }

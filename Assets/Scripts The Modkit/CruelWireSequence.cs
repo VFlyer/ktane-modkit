@@ -29,7 +29,7 @@ class CruelWireSequence : Puzzle
         if(module.IsAnimating())
             return;
 
-        module.GetComponent<KMAudio>().PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.WireSnip, module.transform);
+        module.audioSelf.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.WireSnip, module.transform);
 		module.CutWire(wire);
 
         if(module.IsSolved())
@@ -37,7 +37,7 @@ class CruelWireSequence : Puzzle
 
         if(!module.CheckValidComponents())
         {
-		    Debug.LogFormat("[The Modkit #{0}] Strike! Cut wire {1} when component selection was [ {2} ] instead of [ {3} ].", moduleId, wire + 1, module.GetOnComponents(), module.GetTargetComponents());
+		    Debug.LogFormat("[The Modkit #{0}] Strike! Wire {1} was cut when the component selection was [ {2} ] instead of [ {3} ].", moduleId, wire + 1, module.GetOnComponents(), module.GetTargetComponents());
             module.CauseStrike();
             module.RegenWires();
             CalcSolution();
@@ -64,7 +64,7 @@ class CruelWireSequence : Puzzle
         if(module.IsAnimating())
             return;
 
-        module.GetComponent<KMAudio>().PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, module.transform);
+        module.audioSelf.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, module.transform);
         module.arrows[arrow].GetComponentInChildren<KMSelectable>().AddInteractionPunch(0.5f);
     
         if(module.IsSolved())
@@ -72,7 +72,7 @@ class CruelWireSequence : Puzzle
 
         if(!module.CheckValidComponents())
         {
-		    Debug.LogFormat("[The Modkit #{0}] Strike! Pressed {1} arrow when component selection was [ {2} ] instead of [ {3} ].", moduleId, ComponentInfo.DIRNAMES[arrow], module.GetOnComponents(), module.GetTargetComponents());
+		    Debug.LogFormat("[The Modkit #{0}] Strike! The {1} arrow was pressed when the component selection was [ {2} ] instead of [ {3} ].", moduleId, ComponentInfo.DIRNAMES[arrow], module.GetOnComponents(), module.GetTargetComponents());
             module.CauseStrike();
             return;
         }
@@ -84,7 +84,7 @@ class CruelWireSequence : Puzzle
             if(currentPannel > 0)
             {
                 currentPannel--;
-                module.StartCoroutine(SwitchPannel());
+                module.StartCoroutine(SwitchPanel());
             }
         }
         else if(arrow == ComponentInfo.DOWN)
@@ -105,7 +105,7 @@ class CruelWireSequence : Puzzle
                 //module.StartCoroutine(module.HideComponent(0));
             }
             else
-                module.StartCoroutine(SwitchPannel());
+                module.StartCoroutine(SwitchPanel());
         }
     }
 
@@ -119,7 +119,7 @@ class CruelWireSequence : Puzzle
         cuts = new List<int>[] { new List<int>(), new List<int>(), new List<int>() };
         toCut = new List<int>[] { new List<int>(), new List<int>(), new List<int>() };
 
-        String s = info.alphabet[0] + info.alphabet[1] + info.alphabet[2];
+        string s = info.alphabet[0] + info.alphabet[1] + info.alphabet[2];
 
         for(int i = 0; i < pannels.Length; i++)
             for(int j = 0; j < pannels[i].wires.Length; j++)
@@ -140,7 +140,7 @@ class CruelWireSequence : Puzzle
         Debug.LogFormat("[The Modkit #{0}] Third panel wires that need to be cut: [ {1} ].", moduleId, toCut[2].Any() ? toCut[2].Select(x => x + 1).Join(", ") : "none");
     }
 
-    bool CheckCut(int color, String s)
+    bool CheckCut(int color, string s)
     {
         switch(color)
         {
@@ -281,7 +281,7 @@ class CruelWireSequence : Puzzle
         return false;
     }
 
-    IEnumerator SwitchPannel()
+    IEnumerator SwitchPanel()
 	{
 		yield return module.HideComponent(0);
 

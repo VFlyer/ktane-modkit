@@ -60,7 +60,7 @@ public class Modkit : MonoBehaviour
 	// Use these for debugging individual puzzles.
 	private bool forceComponents, forceByModuleID = false;
 	private bool[] componentsForced;
-
+	public bool enableBruteTest = false;
 	ModkitSettings modConfig = new ModkitSettings();
 
 	string[][] passwords = {
@@ -75,9 +75,15 @@ public class Modkit : MonoBehaviour
 	void Awake()
 	{
 		moduleId = moduleIdCounter++;
-        selectBtns[0].OnInteract += delegate () { ChangeDisplayComponent(selectBtns[0], -1); return false; };
-        selectBtns[1].OnInteract += delegate () { ToggleComponent(); return false; };
-        selectBtns[2].OnInteract += delegate () { ChangeDisplayComponent(selectBtns[2], 1); return false; };
+        selectBtns[0].OnInteract += delegate () {
+			ChangeDisplayComponent(selectBtns[0], -1);
+			return false; };
+        selectBtns[1].OnInteract += delegate () {
+			ToggleComponent();
+			return false; };
+        selectBtns[2].OnInteract += delegate () {
+			ChangeDisplayComponent(selectBtns[2], 1);
+			return false; };
 
 		try
 		{
@@ -189,7 +195,7 @@ public class Modkit : MonoBehaviour
 			for (int x = 0; x < componentsForced.Length; x++)
 				targetComponents[x] = componentsForced[x];
 		}
-		Debug.LogFormat("[The Modkit #{0}] Enforced components: [ {1} ].", moduleId, componentNames.Where(x => targetComponents[Array.IndexOf(componentNames, x)]).Any() ? componentNames.Where(x => targetComponents[Array.IndexOf(componentNames, x)]).Join(", ") : "none");
+		Debug.LogFormat("[The Modkit #{0}] Enforced components: [ {1} ].", moduleId, componentNames.Any(x => targetComponents[Array.IndexOf(componentNames, x)]) ? componentNames.Where(x => targetComponents[Array.IndexOf(componentNames, x)]).Join(", ") : "none");
 	}
 	void CalcComponents()
 	{
@@ -212,12 +218,13 @@ public class Modkit : MonoBehaviour
 				if(bomb.GetSerialNumber().Contains(passwords[col][i][j]))
 					targetComponents[i] = true;
 
-		Debug.LogFormat("[The Modkit #{0}] Required components: [ {1} ].", moduleId, componentNames.Any() ? componentNames.Where(x => targetComponents[Array.IndexOf(componentNames, x)]).Join(", ") : "none");
+		Debug.LogFormat("[The Modkit #{0}] Required components: [ {1} ].", moduleId, targetComponents.Any(x => x) ? componentNames.Where(x => targetComponents[Array.IndexOf(componentNames, x)]).Join(", ") : "none");
 	}
 
 	void AssignHandlers()
 	{
-		if(targetComponents.SequenceEqual(new[] {true, false, false, false, false})) p = new ColorfulWires(this, moduleId, info);
+		Debug.LogFormat("[The Modkit #{0}] --------------------------------------------------", moduleId);
+		if (targetComponents.SequenceEqual(new[] {true, false, false, false, false})) p = new ColorfulWires(this, moduleId, info);
 		else if(targetComponents.SequenceEqual(new[] {false, true, false, false, false})) p = new AdjacentSymbols(this, moduleId, info);
 		else if(targetComponents.SequenceEqual(new[] {false, false, true, false, false})) p = new EdgeworkKeys(this, moduleId, info);
 		else if(targetComponents.SequenceEqual(new[] {false, false, false, true, false})) p = new LEDPattern(this, moduleId, info);
@@ -258,29 +265,46 @@ public class Modkit : MonoBehaviour
         for (int x = 0; x < symbols.Length; x++)
         {
             int y = x;
-            symbols[x].GetComponentInChildren<KMSelectable>().OnInteract += delegate { p.OnSymbolPress(y); return false; };
+            symbols[x].GetComponentInChildren<KMSelectable>().OnInteract += delegate {
+				StartCoroutine(AnimateButtonPress(symbols[y].transform, Vector3.down * 0.005f));
+				p.OnSymbolPress(y);
+				return false;
+			};
         }
 
         for (int x = 0; x < alphabet.Length; x++)
         {
             int y = x;
-            alphabet[x].GetComponentInChildren<KMSelectable>().OnInteract += delegate { p.OnAlphabetPress(y); return false; };
+            alphabet[x].GetComponentInChildren<KMSelectable>().OnInteract += delegate {
+				StartCoroutine(AnimateButtonPress(alphabet[y].transform, Vector3.down * 0.005f));
+				p.OnAlphabetPress(y);
+				return false;
+			};
         }
         for (int x = 0; x < arrows.Length; x++)
         {
             int y = x;
-            arrows[x].GetComponentInChildren<KMSelectable>().OnInteract += delegate { p.OnArrowPress(y); return false; };
+            arrows[x].GetComponentInChildren<KMSelectable>().OnInteract += delegate {
+				StartCoroutine(AnimateButtonPress(arrows[y].transform, Vector3.down * 0.005f));
+				p.OnArrowPress(y);
+				return false; };
         }
-
-		utilityBtn.OnInteract += delegate { p.OnUtilityPress(); return false; };
+		
+		utilityBtn.OnInteract += delegate {
+			StartCoroutine(AnimateButtonPress(utilityBtn.transform, Vector3.down * 0.005f));
+			p.OnUtilityPress();
+			return false;
+		};
+		if (enableBruteTest)
+			p.BruteForceTest();
 	}
 
 	void ChangeDisplayComponent(KMSelectable btn, int delta)
 	{
-		audioSelf.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, transform);
+		audioSelf.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, btn.transform);
         btn.AddInteractionPunch(0.5f);
-
-		if(moduleSolved || forceComponents)
+		StartCoroutine(AnimateButtonPress(btn.transform, Vector3.down * 0.005f));
+		if (moduleSolved || forceComponents)
 			return;
 
 		currentComponent += delta;
@@ -297,10 +321,11 @@ public class Modkit : MonoBehaviour
 	void ToggleComponent()
 	{
 
-		audioSelf.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, transform);
-        selectBtns[2].AddInteractionPunch(0.5f);
+		audioSelf.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, selectBtns[1].transform);
+        selectBtns[1].AddInteractionPunch(0.5f);
+		StartCoroutine(AnimateButtonPress(selectBtns[1].transform, Vector3.down * 0.005f));
 
-		if(moduleSolved || solving || forceComponents || animating)
+		if (moduleSolved || solving || forceComponents || animating)
 			return;
 
 		onComponents[currentComponent] = !onComponents[currentComponent];
@@ -333,13 +358,17 @@ public class Modkit : MonoBehaviour
 
 	public string GetOnComponents()
 	{
-		return componentNames.Where(x => onComponents[Array.IndexOf(componentNames, x)]).Join(", ");
-	}
+        return onComponents.Any(a => a)
+			? componentNames.Where(x => onComponents[Array.IndexOf(componentNames, x)]).Join(", ")
+			: "none";
+    }
 
 	public string GetTargetComponents()
 	{
-		return componentNames.Where(x => targetComponents[Array.IndexOf(componentNames, x)]).Join(", ");
-	}
+        return targetComponents.Any(a => a)
+            ? componentNames.Where(x => targetComponents[Array.IndexOf(componentNames, x)]).Join(", ")
+            : "none";
+    }
 
 	public bool IsAnimating()
 	{
@@ -425,6 +454,20 @@ public class Modkit : MonoBehaviour
 			}
 		}
 	}
+
+	public IEnumerator AnimateButtonPress(Transform affectedObject, Vector3 offset)
+    {
+        for (int x = 0; x < 5; x++)
+        {
+			affectedObject.localPosition += offset / 5;
+			yield return new WaitForSeconds(0.01f);
+        }
+        for (int x = 0; x < 5; x++)
+        {
+			affectedObject.localPosition -= offset / 5;
+			yield return new WaitForSeconds(0.01f);
+        }
+    }
 
 	public IEnumerator ShowComponent(int n)
 	{

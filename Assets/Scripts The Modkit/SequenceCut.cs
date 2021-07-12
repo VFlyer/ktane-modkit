@@ -51,14 +51,14 @@ class SequenceCut : Puzzle
 
     public SequenceCut(Modkit module, int moduleId, ComponentInfo info) : base(module, moduleId, info)
     {
-        Debug.LogFormat("[The Modkit #{0}] Solving Sequence Cut. Symbols present are: {1}. Alphanumeric keys present are: {2}.", moduleId, info.GetSymbols(), info.alphabet.Join(", "));
+        Debug.LogFormat("[The Modkit #{0}] Solving Sequence Cut. Symbols present: {1}. Alphanumeric keys present: {2}.", moduleId, info.GetSymbols(), info.alphabet.Join(", "));
         row = info.symbols.Select(x => symbolToRow[x]).Min();
         seq = sequences[row];
-        Debug.LogFormat("[The Modkit #{0}] Base sequence {1} - [ {2} ].", moduleId, row + 1, seq.Select(x => ComponentInfo.COLORNAMES[x]).Join(", "));
+        Debug.LogFormat("[The Modkit #{0}] Base sequence: [ {2} ] (from number {1}).", moduleId, row + 1, seq.Select(x => ComponentInfo.COLORNAMES[x]).Join(", "));
         
         CalcKeysSwitches();
         
-        Debug.LogFormat("[The Modkit #{0}] Final sequence is [ {1} ].", moduleId, seq.Select(x => ComponentInfo.COLORNAMES[x]).Join(", "));
+        Debug.LogFormat("[The Modkit #{0}] Final sequence: [ {1} ].", moduleId, seq.Select(x => ComponentInfo.COLORNAMES[x]).Join(", "));
 
         CalcWireCuts();
     }   
@@ -68,7 +68,7 @@ class SequenceCut : Puzzle
         if(module.IsAnimating())
             return;
 
-        module.GetComponent<KMAudio>().PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.WireSnip, module.transform);
+        module.audioSelf.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.WireSnip, module.transform);
 		module.CutWire(wire);
 
         if(module.IsSolved())
@@ -76,9 +76,10 @@ class SequenceCut : Puzzle
 
         if(!module.CheckValidComponents())
         {
-		    Debug.LogFormat("[The Modkit #{0}] Strike! Cut wire {1} when component selection was [ {2} ] instead of [ {3} ].", moduleId, wire + 1, module.GetOnComponents(), module.GetTargetComponents());
+		    Debug.LogFormat("[The Modkit #{0}] Strike! Wire {1} was cut when the component selection was [ {2} ] instead of [ {3} ].", moduleId, wire + 1, module.GetOnComponents(), module.GetTargetComponents());
             module.CauseStrike();
             module.RegenWires();
+            CalcWireCuts();
             return;
         }
 
@@ -109,7 +110,7 @@ class SequenceCut : Puzzle
         }
         else
         {
-            Debug.LogFormat("[The Modkit #{0}] Strike! Incorrectly cut wire {1}.", moduleId, wire + 1);
+            Debug.LogFormat("[The Modkit #{0}] Strike! Incorrectly cut wire {1}. Generating new wires...", moduleId, wire + 1);
             module.CauseStrike();
             module.RegenWires();
             CalcWireCuts();
@@ -130,12 +131,12 @@ class SequenceCut : Puzzle
 
             if((info.alphabet[i][1] - '0') >= 1 && (info.alphabet[i][1] - '0') <= 7)
                 pos2 = (info.alphabet[i][1] - '0') - 1;
-            else if ((info.alphabet[i][1] - '0') == 0)
-                pos2 = module.bomb.GetSerialNumber().IndexOf(module.bomb.GetSerialNumberNumbers().ToArray()[0].ToString()[0]);
+            else if (info.alphabet[i][1] == '0')
+                pos2 = module.bomb.GetSerialNumber().IndexOf(module.bomb.GetSerialNumberNumbers().First().ToString());
             else
                 pos2 = 6;
 
-            Debug.LogFormat("[The Modkit #{0}] Alphanumeric key {1} switches positions {2} and {3}.", moduleId, i + 1, pos1 + 1, pos2 + 1);
+            Debug.LogFormat("[The Modkit #{0}] Alphanumeric key {1} switches positions {2} and {3} in the color order.", moduleId, i + 1, pos1 + 1, pos2 + 1);
 
             int temp = seq[pos1];
             seq[pos1] = seq[pos2];

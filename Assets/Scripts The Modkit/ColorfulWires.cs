@@ -18,10 +18,10 @@ class ColorfulWires : Puzzle
 
     public ColorfulWires(Modkit module, int moduleId, ComponentInfo info) : base(module, moduleId, info)
     {
-        index = indexes[module.bomb.GetSerialNumberNumbers().ToArray()[0]];
+        index = indexes[module.bomb.GetSerialNumberNumbers().FirstOrDefault()];
         direction = module.bomb.GetSerialNumberNumbers().Count() % 2 == 0 ? 1 : -1;
 
-        Debug.LogFormat("[The Modkit #{0}] Solving Colorful Wires. Starting color is {1} and direction is {2}.", moduleId, ComponentInfo.COLORNAMES[colors[index]], direction == 1 ? "clockwise" : "counter-clockwise");
+        Debug.LogFormat("[The Modkit #{0}] Solving Colorful Wires. Starting color: {1} ({3} being the first serial number digit), Direction to move: {2} ({4} digits in the serial number).", moduleId, ComponentInfo.COLORNAMES[colors[index]], direction == 1 ? "Clockwise" : "Counter-Clockwise", module.bomb.GetSerialNumberNumbers().FirstOrDefault(), module.bomb.GetSerialNumberNumbers().Count());
     
         CalcSolution();
     }
@@ -31,7 +31,7 @@ class ColorfulWires : Puzzle
         if(module.IsAnimating())
             return;
 
-        module.GetComponent<KMAudio>().PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.WireSnip, module.transform);
+        module.audioSelf.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.WireSnip, module.transform);
 		module.CutWire(wire);
 
         if(module.IsSolved())
@@ -39,7 +39,7 @@ class ColorfulWires : Puzzle
 
         if(!module.CheckValidComponents())
         {
-		    Debug.LogFormat("[The Modkit #{0}] Strike! Cut wire {1} when component selection was [ {2} ] instead of [ {3} ].", moduleId, wire + 1, module.GetOnComponents(), module.GetTargetComponents());
+		    Debug.LogFormat("[The Modkit #{0}] Strike! Wire {1} was cut when the component selection was [ {2} ] instead of [ {3} ].", moduleId, wire + 1, module.GetOnComponents(), module.GetTargetComponents());
             module.CauseStrike();
             module.RegenWires();
             CalcSolution();
@@ -71,7 +71,7 @@ class ColorfulWires : Puzzle
         if(module.IsAnimating())
             return;
 
-        module.GetComponent<KMAudio>().PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, module.transform);
+        module.audioSelf.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, module.transform);
         module.utilityBtn.GetComponentInChildren<KMSelectable>().AddInteractionPunch(0.5f);
     
         if(module.IsSolved())
@@ -79,7 +79,7 @@ class ColorfulWires : Puzzle
 
         if(!module.CheckValidComponents())
         {
-		    Debug.LogFormat("[The Modkit #{0}] Strike! Pressed the ❖ button when component selection was [ {1} ] instead of [ {2} ].", moduleId, module.GetOnComponents(), module.GetTargetComponents());
+		    Debug.LogFormat("[The Modkit #{0}] Strike! The ❖ button was pressed when the component selection was [ {1} ] instead of [ {2} ].", moduleId, module.GetOnComponents(), module.GetTargetComponents());
             module.CauseStrike();
             return;
         }
@@ -100,7 +100,7 @@ class ColorfulWires : Puzzle
 
     void CalcSolution()
     {
-        Debug.LogFormat("[The Modkit #{0}] Wires present: {1}.", moduleId, info.GetWireNames());
+        Debug.LogFormat("[The Modkit #{0}] Wires present: {1}", moduleId, info.GetWireNames());
 
         validCuts = 0;
         wiresToCut = new List<int>();
@@ -122,8 +122,10 @@ class ColorfulWires : Puzzle
                color2 == colors[checkColorIndexes[1] % colors.Length] ||
                color2 == colors[checkColorIndexes[2] % colors.Length])
                 wiresToCut.Add(i);
+
+            Debug.LogFormat("[The Modkit #{0}] Wire {1} required colors: {2}", moduleId, i + 1, checkColorIndexes.Select(x => ComponentInfo.COLORNAMES[colors[x % colors.Length]]).Join(", "));
         }
 
-        Debug.LogFormat("[The Modkit #{0}] Wires that need to be cut: {1}.", moduleId, wiresToCut.Select(x => x + 1).Join(", "));
+        Debug.LogFormat("[The Modkit #{0}] Wires that need to be cut: {1}", moduleId, wiresToCut.Select(x => x + 1).Join(", "));
     }
 }

@@ -62,7 +62,7 @@ class RunicWires : Puzzle
         if(module.IsAnimating())
             return;
 
-        module.GetComponent<KMAudio>().PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.WireSnip, module.transform);
+        module.audioSelf.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.WireSnip, module.transform);
 		module.CutWire(wire);
 
         if(module.IsSolved())
@@ -70,7 +70,7 @@ class RunicWires : Puzzle
 
         if(!module.CheckValidComponents())
         {
-		    Debug.LogFormat("[The Modkit #{0}] Strike! Cut wire {1} when component selection was [ {2} ] instead of [ {3} ].", moduleId, wire + 1, module.GetOnComponents(), module.GetTargetComponents());
+		    Debug.LogFormat("[The Modkit #{0}] Strike! Wire {1} was cut when the component selection was [ {2} ] instead of [ {3} ].", moduleId, wire + 1, module.GetOnComponents(), module.GetTargetComponents());
             module.CauseStrike();
             module.RegenWires();
             CalcSolution();
@@ -82,38 +82,44 @@ class RunicWires : Puzzle
         
         if(wire != currentWire)
         {
-		    Debug.LogFormat("[The Modkit #{0}] Strike! Cut wire {1} when wire {2} was expected.", moduleId, wire + 1, currentWire + 1);
+		    Debug.LogFormat("[The Modkit #{0}] Strike! Wire {1} was cut when wire {2} was expected.", moduleId, wire + 1, currentWire + 1);
             module.CauseStrike();
-            pressed = new List<int>();
+            pressed.Clear();
             foreach(GameObject s in module.symbols)
                s.transform.Find("Key_TL").Find("LED").GetComponentInChildren<Renderer>().material = module.keyLightMats[6];
         }
         else if(presses[currentWire].Exists(x => !pressed.Contains(x)) || pressed.Exists(x => !presses[currentWire].Contains(x)))
         {
-            Debug.LogFormat("[The Modkit #{0}] Strike! Incorrectly cutted wire {1} when pressed symbols were [ {2} ], but expected sybmols [ {3} ].", moduleId, wire + 1, pressed.Any() ? pressed.Select(x => x + 1).Join(", ") : "none", presses[wire].Any() ? presses[wire].Select(x => x + 1).Join(", ") : "none");
+            Debug.LogFormat("[The Modkit #{0}] Strike! Incorrectly cutted wire {1} when active symbols were [ {2} ], but expected sybmols [ {3} ].", moduleId, wire + 1, pressed.Any() ? pressed.Select(x => x + 1).Join(", ") : "none", presses[wire].Any() ? presses[wire].Select(x => x + 1).Join(", ") : "none");
             module.CauseStrike();
-            pressed = new List<int>();
+            pressed.Clear();
             foreach(GameObject s in module.symbols)
                s.transform.Find("Key_TL").Find("LED").GetComponentInChildren<Renderer>().material = module.keyLightMats[6];
 
-            do{currentWire++;}
-            while(cuts.Contains(currentWire));
+            do { currentWire++; }
+            while (cuts.Contains(currentWire));
 
-            if(currentWire == 5)
+            if (currentWire == 5)
+            {
                 module.StartCoroutine(DelayedSolve());
+            }
         }
         else
         {
-            Debug.LogFormat("[The Modkit #{0}] Corrected cutted wire {1} when pressed symbols were [ {2} ].", moduleId, wire + 1, pressed.Any() ? pressed.Select(x => x + 1).Join(", ") : "none");
-            pressed = new List<int>();
+            Debug.LogFormat("[The Modkit #{0}] Corrected cutted wire {1} when active symbols were [ {2} ].", moduleId, wire + 1, pressed.Any() ? pressed.Select(x => x + 1).Join(", ") : "none");
+            /*
+            pressed.Clear();
             foreach(GameObject s in module.symbols)
                s.transform.Find("Key_TL").Find("LED").GetComponentInChildren<Renderer>().material = module.keyLightMats[6];
-
-            do{currentWire++;}
+            */
+            do { currentWire++; }
             while(cuts.Contains(currentWire));
 
             if(currentWire == 5)
             {
+                pressed.Clear();
+                foreach (GameObject s in module.symbols)
+                    s.transform.Find("Key_TL").Find("LED").GetComponentInChildren<Renderer>().material = module.keyLightMats[6];
                 Debug.LogFormat("[The Modkit #{0}] No more wires. Module solved.", moduleId);
                 module.Solve();
             }
@@ -125,7 +131,7 @@ class RunicWires : Puzzle
         if(module.IsAnimating())
             return;
 
-        module.GetComponent<KMAudio>().PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, module.transform);
+        module.audioSelf.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, module.transform);
         module.symbols[symbol].GetComponentInChildren<KMSelectable>().AddInteractionPunch(0.5f);
     
         if(module.IsSolved())
@@ -133,16 +139,19 @@ class RunicWires : Puzzle
 
         if(!module.CheckValidComponents())
         {
-		    Debug.LogFormat("[The Modkit #{0}] Strike! Pressed symbol {1} when component selection was [ {2} ] instead of [ {3} ].", moduleId, symbol + 1, module.GetOnComponents(), module.GetTargetComponents());
+		    Debug.LogFormat("[The Modkit #{0}] Strike! Symbol {1} was pressed when the component selection was [ {2} ] instead of [ {3} ].", moduleId, symbol + 1, module.GetOnComponents(), module.GetTargetComponents());
             module.CauseStrike();
             return;
         }
 
         module.StartSolve();
 
-        if(pressed.Contains(symbol))
+        if (pressed.Contains(symbol))
+        {
+            pressed.Remove(symbol);
+            module.symbols[symbol].transform.Find("Key_TL").Find("LED").GetComponentInChildren<Renderer>().material = module.keyLightMats[6];
             return;
-
+        }
         pressed.Add(symbol);
         module.symbols[symbol].transform.Find("Key_TL").Find("LED").GetComponentInChildren<Renderer>().material = module.keyLightMats[3];
     }
@@ -164,7 +173,7 @@ class RunicWires : Puzzle
                     presses[i].Add(j);
             }
 
-            Debug.LogFormat("[The Modkit #{0}] Symbols that need to be pressed for wire {1}: [ {2} ].", moduleId, i + 1, presses[i].Count == 0 ? "none" : presses[i].Select(x => x + 1).Join(", "));
+            Debug.LogFormat("[The Modkit #{0}] Symbols that need to be active for wire {1}: [ {2} ].", moduleId, i + 1, presses[i].Count == 0 ? "none" : presses[i].Select(x => x + 1).Join(", "));
         }
     }
 
