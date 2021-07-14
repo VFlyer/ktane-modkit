@@ -111,6 +111,6 @@ class ColorOffset : Puzzle
 			module.LED[i].transform.Find("light").GetComponentInChildren<Renderer>().material = module.LEDMats[info.LED[i]];
         }
 
-        Debug.LogFormat("[The Modkit #{0}] Pressed arrow {1}. LEDs are now: {2}.", moduleId, ComponentInfo.DIRNAMES[arrow], info.LED.Select(x => ComponentInfo.COLORNAMES[x]).Join(", "));
+        Debug.LogFormat("[The Modkit #{0}] Pressing the {1} arrow changed the LEDs to these colors: {2}.", moduleId, ComponentInfo.DIRNAMES[arrow], info.LED.Select(x => ComponentInfo.COLORNAMES[x]).Join(", "));
     }
 }

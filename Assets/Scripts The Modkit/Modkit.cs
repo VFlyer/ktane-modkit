@@ -571,12 +571,12 @@ public class Modkit : MonoBehaviour
 					{
 						{ "Key", "EnforceComponents" },
 						{ "Text", "Enforce Components" },
-						{ "Description", "Enforce specifc components to be required on the module instead of edgework." },
+						{ "Description", "Enforce specific components to be required on the module instead of edgework." },
 					},
 					new Dictionary<string, object>{
 						{ "Key", "EnforceByModID" },
 						{ "Text", "Enforce Based on ModID" },
-						{ "Description", "Enforce specifc components based off of module ID, the one used for logging.\nOverrides Enforce Wires, LED, Arrows, Symbols, Alphabet." },
+						{ "Description", "Enforce specific components based off of module ID, the one used for logging.\nOverrides Enforce Wires, LED, Arrows, Symbols, Alphabet." },
 					},
 					new Dictionary<string, object> {
 						{ "Key", "EnforceWires" },
