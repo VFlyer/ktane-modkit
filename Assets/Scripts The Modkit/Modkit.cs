@@ -32,7 +32,7 @@ public class Modkit : MonoBehaviour
 	public GameObject[] alphabet;
 	public GameObject[] LED;
 	public GameObject[] arrows;
-
+	public Transform arrowsBase;
 	
 
 
@@ -285,7 +285,8 @@ public class Modkit : MonoBehaviour
         {
             int y = x;
             arrows[x].GetComponentInChildren<KMSelectable>().OnInteract += delegate {
-				StartCoroutine(AnimateButtonPress(arrows[y].transform, Vector3.down * 0.005f));
+				StartCoroutine(AnimateButtonPress(arrowsBase.transform, Vector3.down * 0.002f));
+				StartCoroutine(AnimateButtonRotationPress(arrowsBase.transform, new[] { Vector3.right , Vector3.left , Vector3.back , Vector3.forward }.ElementAt(y) * 5));
 				p.OnArrowPress(y);
 				return false; };
         }
@@ -465,6 +466,20 @@ public class Modkit : MonoBehaviour
         for (int x = 0; x < 5; x++)
         {
 			affectedObject.localPosition -= offset / 5;
+			yield return new WaitForSeconds(0.01f);
+        }
+    }
+
+	public IEnumerator AnimateButtonRotationPress(Transform affectedObject, Vector3 angle)
+    {
+        for (int x = 0; x < 5; x++)
+        {
+			affectedObject.localEulerAngles += angle / 5;
+			yield return new WaitForSeconds(0.01f);
+        }
+        for (int x = 0; x < 5; x++)
+        {
+			affectedObject.localEulerAngles -= angle / 5;
 			yield return new WaitForSeconds(0.01f);
         }
     }

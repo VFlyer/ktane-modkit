@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,8 +21,10 @@ class ColorOffset : Puzzle
     int[] standardSymbolOffset = { 4, 6, 1, 5, 6, 6, 6, 3, 1, 3, 3, 2, 2, 5, 4, 1, 4, 1, 4, 3, 6, 5, 5, 2, 1, 3, 4, 2, 2, 5, 1 };
 
     int sol;
+    int expectedArrowPressCount, arrowPressCount;
     int[] arrowOffset = new int[4];
     int[] symbolOffset = new int[3];
+    int[] initialLEDState;
 
     public ColorOffset(Modkit module, int moduleId, ComponentInfo info) : base(module, moduleId, info)
     {
@@ -34,7 +36,7 @@ class ColorOffset : Puzzle
         Debug.LogFormat("[The Modkit #{0}] Arrow offsets: Up - {1}, Right - {2}, Down - {3}, Left - {4}.", moduleId, arrowOffset[ComponentInfo.UP], arrowOffset[ComponentInfo.RIGHT], arrowOffset[ComponentInfo.DOWN], arrowOffset[ComponentInfo.LEFT]);
     
         sol = rnd.Range(0, 3);
-
+        initialLEDState = info.LED.ToArray();
         for(int i = 0; i < symbolOffset.Length; i++)
         {
             if(i != sol)
@@ -50,6 +52,39 @@ class ColorOffset : Puzzle
 
         Debug.LogFormat("[The Modkit #{0}] Symbol offsets: [ {1} ].", moduleId, symbolOffset.Join(", "));
         Debug.LogFormat("[The Modkit #{0}] Solution: symbol {1}.", moduleId, sol + 1);
+    }
+
+    public override void OnUtilityPress()
+    {
+        if (module.IsAnimating())
+            return;
+
+        module.audioSelf.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, module.transform);
+        module.utilityBtn.AddInteractionPunch(0.5f);
+
+        if (module.IsSolved())
+            return;
+
+        if (!module.CheckValidComponents())
+        {
+            Debug.LogFormat("[The Modkit #{0}] Strike! The ❖ button was pressed when the component selection was [ {1} ] instead of [ {2} ].", moduleId, module.GetOnComponents(), module.GetTargetComponents());
+            module.CauseStrike();
+            return;
+        }
+
+        module.StartSolve();
+        if (arrowPressCount >= expectedArrowPressCount)
+        {
+            for (int i = 0; i < info.LED.Length; i++)
+            {
+                info.LED[i] = initialLEDState[i];
+                module.LED[i].transform.Find("light").GetComponentInChildren<Renderer>().material = module.LEDMats[info.LED[i]];
+            }
+            Debug.LogFormat("[The Modkit #{0}] Pressing the ❖ button reverted the LEDs back to these colors: {1}.", moduleId, info.LED.Select(x => ComponentInfo.COLORNAMES[x]).Join(", "));
+            expectedArrowPressCount++;
+            Debug.LogFormat("[The Modkit #{0}] {1} arrow press{2} now required to revert the LEDs back to their initial colors.", moduleId, expectedArrowPressCount, expectedArrowPressCount == 1 ? " is" : "es are");
+        }
+        arrowPressCount = 0;
     }
 
     public override void OnSymbolPress(int symbol)
@@ -110,7 +145,7 @@ class ColorOffset : Puzzle
             info.LED[i] = colorMap[info.LED[i]][(arrowOffset[arrow] + symbolOffset[i]) % 6];
 			module.LED[i].transform.Find("light").GetComponentInChildren<Renderer>().material = module.LEDMats[info.LED[i]];
         }
-
+        arrowPressCount++;
         Debug.LogFormat("[The Modkit #{0}] Pressing the {1} arrow changed the LEDs to these colors: {2}.", moduleId, ComponentInfo.DIRNAMES[arrow], info.LED.Select(x => ComponentInfo.COLORNAMES[x]).Join(", "));
     }
 }

@@ -20,7 +20,7 @@ class EncryptedKeypad : Puzzle
     List<int> convertedKeys = new List<int>();
     int[] symbolMatches = { 0, 0, 0, 0, 0, 0 };
     int correctColumn;
-    List<int> presses = new List<int>();
+    List<int> correctPresses = new List<int>();
     List<int> pressed = new List<int>();
 
     public EncryptedKeypad(Modkit module, int moduleId, ComponentInfo info) : base(module, moduleId, info)
@@ -47,8 +47,9 @@ class EncryptedKeypad : Puzzle
             convertedKeys.Add(columns[letterVal][info.alphabet[i][1] - '0']);
         }
         Debug.LogFormat("[The Modkit #{0}] Alphanumeric keys corresponding symbols: {1}.", moduleId, convertedKeys.Select(x => ComponentInfo.SYMBOLCHARS[x]).Join(", "));
-    
-        for(int i = 0; i < columns.Length; i++)
+        Debug.LogFormat("[The Modkit #{0}] The actual symbols, from left to right, from the 1st symbol key to the last alphanumeric key should be: {2}, {1}.", moduleId, convertedKeys.Select(x => ComponentInfo.SYMBOLCHARS[x]).Join(", "), info.GetSymbols());
+
+        for (int i = 0; i < columns.Length; i++)
             for(int j = 0; j < info.symbols.Length; j++)
             {
                 if(columns[i].Contains(info.symbols[j]))
@@ -58,19 +59,19 @@ class EncryptedKeypad : Puzzle
             }
 
         correctColumn = Array.IndexOf(symbolMatches, symbolMatches.Max());
-        Debug.LogFormat("[The Modkit #{0}] Using column {1} ({2} matched symbols).", moduleId, correctColumn + 1, symbolMatches.Max());
+        Debug.LogFormat("[The Modkit #{0}] Including duplicate symbols, column {1} is the left-most column that has the most matched symbols. ({2} counted in this column)", moduleId, correctColumn + 1, symbolMatches.Max());
     
         for(int j = 0; j < info.symbols.Length; j++)
         {
             if(columns[correctColumn].Contains(info.symbols[j]))
-                presses.Add(j);
+                correctPresses.Add(j);
             if(columns[correctColumn].Contains(convertedKeys[j]))
-                presses.Add(j + 3);
+                correctPresses.Add(j + 3);
         }
 
-        presses.Sort();
+        correctPresses.Sort();
 
-        Debug.LogFormat("[The Modkit #{0}] The following that need to be pressed: symbol keys [ {1} ] and alphanumeric keys [ {2} ].", moduleId, presses.Where(x => x < 3).Select(x => x + 1).Join(", "), presses.Where(x => x >= 3).Select(x => x - 2).Join(", "));
+        Debug.LogFormat("[The Modkit #{0}] The following that need to be pressed: symbol keys [ {1} ] and alphanumeric keys [ {2} ].", moduleId, correctPresses.Where(x => x < 3).Select(x => x + 1).Join(", "), correctPresses.Where(x => x >= 3).Select(x => x - 2).Join(", "));
     }
 
     public override void OnSymbolPress(int symbol)
@@ -96,12 +97,12 @@ class EncryptedKeypad : Puzzle
         if(pressed.Contains(symbol))
             return;
 
-        if(presses.Contains(symbol))
+        if(correctPresses.Contains(symbol))
         {
 		    Debug.LogFormat("[The Modkit #{0}] Correctly pressed symbol {1}.", moduleId, symbol + 1);
             pressed.Add(symbol);
             module.symbols[symbol].transform.Find("Key_TL").Find("LED").GetComponentInChildren<Renderer>().material = module.keyLightMats[1];
-            if(pressed.Count == presses.Count)
+            if(pressed.Count == correctPresses.Count)
             {
 		        Debug.LogFormat("[The Modkit #{0}] Module solved.", moduleId);
                 module.Solve();
@@ -137,12 +138,12 @@ class EncryptedKeypad : Puzzle
         if(pressed.Contains(alphabet + 3))
             return;
 
-        if(presses.Contains(alphabet + 3))
+        if(correctPresses.Contains(alphabet + 3))
         {
 		    Debug.LogFormat("[The Modkit #{0}] Correctly pressed alphanumeric key {1}.", moduleId, alphabet + 1);
             pressed.Add(alphabet + 3);
             module.alphabet[alphabet].transform.Find("Key_TL").Find("LED").GetComponentInChildren<Renderer>().material = module.keyLightMats[1];
-            if(pressed.Count() == presses.Count())
+            if(pressed.Count() == correctPresses.Count())
             {
                 Debug.LogFormat("[The Modkit #{0}] Module solved.", moduleId);
                 module.Solve();
