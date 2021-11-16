@@ -1,10 +1,7 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using KModkit;
-using rnd = UnityEngine.Random;
 
 class LEDDirections : Puzzle
 {
@@ -14,7 +11,10 @@ class LEDDirections : Puzzle
     
     public LEDDirections(Modkit module, int moduleId, ComponentInfo info) : base(module, moduleId, info)
     {
-        Debug.LogFormat("[The Modkit #{0}] Solving LED Directions. Alphanumeric keys present: {1}. LEDs: {2}.", moduleId, info.alphabet.Join(", "),  info.LED.Select(x => ComponentInfo.COLORNAMES[x]).Join(", "));
+        Debug.LogFormat("[The Modkit #{0}] Solving LED Directions. Alphanumeric keys present: {1}. LEDs: {2}. Arrows: [{3}]", moduleId,
+            info.alphabet.Join(", "), 
+            info.LED.Select(x => ComponentInfo.COLORNAMES[x]).Join(", "),
+            Enumerable.Range(0, 4).Select(a => ComponentInfo.DIRNAMES[a] + ": " + ComponentInfo.COLORNAMES[info.arrows[a]]).Join("], ["));
     
         for(int i = 0; i < stages.Length; i++)
         {
@@ -138,7 +138,7 @@ class LEDDirections : Puzzle
                     stages[n].Add(ComponentInfo.DOWN);
                 if(info.arrows[ComponentInfo.LEFT] == ComponentInfo.RED || info.arrows[ComponentInfo.LEFT] == ComponentInfo.BLUE)
                     stages[n].Add(ComponentInfo.UP);
-                if("019".Contains(info.alphabet[n][1]))
+                if("09".Contains(info.alphabet[n][1]))
                     stages[n].Add(ComponentInfo.LEFT);
                 if(info.alphabet[n][0] > 'H' && info.alphabet[n][0] < 'P')
                     stages[n].Add(ComponentInfo.RIGHT);

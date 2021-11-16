@@ -2,12 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using UnityEngine;
 using KModkit;
-using rnd = UnityEngine.Random;
-using System.Reflection;
-using UnityEngine.SocialPlatforms;
 
 public class Modkit : MonoBehaviour 
 {
