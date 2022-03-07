@@ -204,9 +204,11 @@ class WireSignaling : Puzzle
             }
             case 9:
             {// Cut the first red and last yellow wire.
+                // Remove this condition as it negatively affects the module.
+                /*
                 if(!info.wires.Contains(ComponentInfo.RED) && !info.wires.Contains(ComponentInfo.YELLOW))
                     break;
-
+                */
                 bool foundRed = false;
                 int lastYellow = -1;
 
@@ -222,8 +224,8 @@ class WireSignaling : Puzzle
                     if(color1 == ComponentInfo.YELLOW || color2 == ComponentInfo.YELLOW)
                         lastYellow = i;
                 }
-
-                toCut.Add(lastYellow);
+                if (lastYellow != -1)
+                    toCut.Add(lastYellow);
                 break;
             }
             default:

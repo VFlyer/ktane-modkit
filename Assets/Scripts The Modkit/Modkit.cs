@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using KModkit;
+using KeepCoding;
+using System.Text.RegularExpressions;
 
 public class Modkit : MonoBehaviour 
 {
@@ -36,7 +38,7 @@ public class Modkit : MonoBehaviour
 	public Mesh wireCut;
     List<int> listWiresCut = new List<int>();
 
-	string[] componentNames = new string[] { "WIRES", "SYMBOLS", "ALPHABET", "LED", "ARROWS" };
+	readonly string[] componentNames = new string[] { "WIRES", "SYMBOLS", "ALPHABET", "LED", "ARROWS" };
 	bool[] onComponents = new bool[] { false, false, false, false, false };
 	bool[] targetComponents = new bool[] { false, false, false, false, false };
 	int currentComponent = 0;
@@ -104,6 +106,8 @@ public class Modkit : MonoBehaviour
 	void Start () 
 	{
 		SetUpComponents();
+		TryOverrideSettings();
+
 		if (forceComponents) // Check if the components need to be forced on.
 		{
 			ForceComponents();
@@ -123,6 +127,50 @@ public class Modkit : MonoBehaviour
 		if (forceComponents)
 			StartCoroutine(PlayEnforceAnim());
 	}
+	void TryOverrideSettings()
+    {
+        try
+        {
+			var missionID = Application.isEditor ? "freeplay" : Game.Mission.ID ?? "unknown";
+			var overwriteSuccessful = false;
+			Debug.LogFormat("<The Modkit #{0}> Mission ID: {1}", moduleId, missionID);
+			switch (missionID)
+            {
+				case "freeplay":
+					Debug.LogFormat("<The Modkit #{0}> MISSION DETECTED AS FREEPLAY. NOT OVERWRITING SETTINGS.", moduleId);
+					return;
+				case "mod_theBombsBlanMade_deafsHell":
+					Debug.LogFormat("<The Modkit #{0}> \"Deaf's Hell\" from \"The Bombs Blan Made\" detected.", moduleId);
+					forceComponents = true;
+					forceByModuleID = true;
+					overwriteSuccessful = true;
+					break;
+            }
+			if (overwriteSuccessful) {
+				Debug.LogFormat("<The Modkit #{0}> OVERWRITE SUCCESSFUL BY MISSION ID.", moduleId);
+				return;
+			}
+			/*
+			var regexMatchOverrideDescription = Regex.Match(Game.Mission.Description ?? "", @"\[ModkitOverride\]\sEnforce(ModID|((Wires?|Symbols?|Alphabet|LED|Arrows?),)+)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant );
+			if (regexMatchOverrideDescription.Success)
+            {
+
+            }
+			else
+            {*/
+				Debug.LogFormat("<The Modkit #{0}> PREVENTING COMPONENTS FROM BEING OVERRIDDEN.", moduleId);
+				forceComponents = false;
+            //}
+        }
+		catch (Exception error)
+        {
+			Debug.LogWarningFormat("<The Modkit #{0}> Override does not work as intended! ", moduleId);
+			Debug.LogException(error);
+			Debug.LogWarningFormat("<The Modkit #{0}> Using default settings.", moduleId);
+			forceComponents = false;
+		}
+    }
+
 	public void CauseStrike() // Cause a strike on The Modkit
 	{
 		moduleSelf.HandleStrike();
@@ -174,7 +222,7 @@ public class Modkit : MonoBehaviour
 	}
 	void ForceComponents()
 	{
-		Debug.LogFormat("[The Modkit #{0}] Configs have overriden the calculation procedure for The Modkit.", moduleId);
+		Debug.LogFormat("[The Modkit #{0}] The calculation procedure for The Modkit has been overridden.", moduleId);
 		var curModID = moduleId * 1;
 		if (forceByModuleID)
 		{
