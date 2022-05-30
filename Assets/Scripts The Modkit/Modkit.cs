@@ -137,6 +137,7 @@ public class Modkit : MonoBehaviour
 			switch (missionID)
             {
 				case "freeplay":
+				case "custom":
 					Debug.LogFormat("<The Modkit #{0}> MISSION DETECTED AS FREEPLAY. NOT OVERWRITING SETTINGS.", moduleId);
 					return;
 				case "mod_theBombsBlanMade_deafsHell":
