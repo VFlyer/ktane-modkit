@@ -20,7 +20,7 @@ class BlinkingWires : Puzzle
     {
         Debug.LogFormat("[The Modkit #{0}] Solving Blinking Wires.", moduleId);
         CalcSolution();
-    }    
+    }
 
     public override void OnWireCut(int wire)
     {
@@ -46,7 +46,7 @@ class BlinkingWires : Puzzle
         bool isAllCorrect = true;
         if(!info.LED.SequenceEqual(targetLED))
         {
-            Debug.LogFormat("[The Modkit #{0}] Expected LEDs to be [ {1} ], but they were [ {2} ] instead.", moduleId, info.LED.Select(x => ComponentInfo.COLORNAMES[x]).Join(", "), targetLED.Select(x => ComponentInfo.COLORNAMES[x]).Join(", "));
+            Debug.LogFormat("[The Modkit #{0}] Expected LEDs to be [ {2} ], but they were [ {1} ] instead.", moduleId, info.LED.Select(x => ComponentInfo.COLORNAMES[x]).Join(", "), targetLED.Select(x => ComponentInfo.COLORNAMES[x]).Join(", "));
             isAllCorrect = false;
         }
 
@@ -84,7 +84,7 @@ class BlinkingWires : Puzzle
 
         module.audioSelf.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, module.transform);
         module.arrows[arrow].GetComponentInChildren<KMSelectable>().AddInteractionPunch(0.5f);
-    
+
         if(module.IsSolved())
             return;
 
@@ -210,7 +210,7 @@ class BlinkingWires : Puzzle
 
                     if(color1 == ComponentInfo.BLUE || color2 == ComponentInfo.BLUE)
                     {
-                            
+
                             bluePresent = true;
                         break;
                     }
