@@ -162,7 +162,7 @@ class CruelWireSequence : Puzzle
                     case 13: return s.Contains('F') || s.Contains('O') || s.Contains('4');
                     case 6:
                     case 14: return s.Contains('D') || s.Contains('U') || s.Contains('6');
-                    case 17: return s.Contains('L') || s.Contains('O') || s.Contains('0');
+                    case 7: return s.Contains('L') || s.Contains('O') || s.Contains('0');
                 }
                 break;
             }
@@ -184,7 +184,7 @@ class CruelWireSequence : Puzzle
                     case 13: return s.Contains('T') || s.Contains('1') || s.Contains('3');
                     case 6:
                     case 14: return s.Contains('N') || s.Contains('R') || s.Contains('7');
-                    case 17: return s.Contains('C') || s.Contains('P') || s.Contains('1');
+                    case 7: return s.Contains('C') || s.Contains('P') || s.Contains('1');
                 }
                 break;
             }
@@ -206,7 +206,7 @@ class CruelWireSequence : Puzzle
                     case 13: return s.Contains('A') || s.Contains('V') || s.Contains('W');
                     case 6:
                     case 14: return s.Contains('H') || s.Contains('M') || s.Contains('V');
-                    case 17: return s.Contains('K') || s.Contains('4') || s.Contains('8');
+                    case 7: return s.Contains('K') || s.Contains('4') || s.Contains('8');
                 }
                 break;
             }
@@ -228,7 +228,7 @@ class CruelWireSequence : Puzzle
                     case 13: return s.Contains('N') || s.Contains('P') || s.Contains('Z');
                     case 6:
                     case 14: return s.Contains('A') || s.Contains('E') || s.Contains('5');
-                    case 17: return s.Contains('F') || s.Contains('Q') || s.Contains('3');
+                    case 7: return s.Contains('F') || s.Contains('Q') || s.Contains('3');
                 }
                 break;
             }
@@ -250,7 +250,7 @@ class CruelWireSequence : Puzzle
                     case 13: return s.Contains('E') || s.Contains('G') || s.Contains('H');
                     case 6:
                     case 14: return s.Contains('T') || s.Contains('X') || s.Contains('2');
-                    case 17: return s.Contains('B') || s.Contains('J') || s.Contains('W');
+                    case 7: return s.Contains('B') || s.Contains('J') || s.Contains('W');
                 }
                 break;
             }
@@ -272,7 +272,7 @@ class CruelWireSequence : Puzzle
                     case 13: return s.Contains('Y') || s.Contains('7') || s.Contains('9');
                     case 6:
                     case 14: return s.Contains('G') || s.Contains('Y') || s.Contains('9');
-                    case 17: return s.Contains('I') || s.Contains('S') || s.Contains('Z');
+                    case 7: return s.Contains('I') || s.Contains('S') || s.Contains('Z');
                 }
                 break;
             }

@@ -269,6 +269,46 @@ public class Modkit : MonoBehaviour
 	void AssignHandlers()
 	{
 		Debug.LogFormat("[The Modkit #{0}] --------------------------------------------------", moduleId);
+		var value = Enumerable.Range(0, 5).Where(a => targetComponents[a]).Sum(a => 1 << a);
+		Debug.LogFormat("<The Modkit #{0}> Val: {1}", moduleId, value);
+		
+		switch (value)
+        {
+			default:
+			case 0: p = new Puzzle(this, moduleId, info, true); break;
+			case 1: p = new ColorfulWires(this, moduleId, info); break;
+			case 2: p = new AdjacentSymbols(this, moduleId, info); break;
+			case 3: p = new RunicWires(this, moduleId, info); break;
+			case 4: p = new EdgeworkKeys(this, moduleId, info); break;
+			case 5: p = new IndexedWires(this, moduleId, info); break;
+			case 6: p = new EncryptedKeypad(this, moduleId, info); break;
+			case 7: p = new SequenceCut(this, moduleId, info); break;
+			case 8: p = new LEDPattern(this, moduleId, info); break;
+			case 9: p = new WireInstructions(this, moduleId, info); break;
+			case 10: p = new SymbolicMorse(this, moduleId, info); break;
+			case 11: p = new HierarchicalWires(this, moduleId, info); break;
+			case 12: p = new SemaphoreKeys(this, moduleId, info); break;
+			case 13: p = new PowerGrid(this, moduleId, info); break;
+			case 14: p = new KeyScore(this, moduleId, info); break;
+			case 15: p = new TheThirdWire(this, moduleId, info); break;
+			case 16: p = new SimonShifts(this, moduleId, info); break;
+			case 17: p = new WireMaze(this, moduleId, info); break;
+			case 18: p = new PerspectiveSymbols(this, moduleId, info); break;
+			case 19: p = new WireSignaling(this, moduleId, info); break;
+			case 20: p = new AlphanumericOrder(this, moduleId, info); break;
+			case 21: p = new CruelWireSequence(this, moduleId, info); break;
+			case 22: p = new LyingKeys(this, moduleId, info); break;
+			case 23: p = new TheLastInLine(this, moduleId, info); break;
+			case 24: p = new ColorCompass(this, moduleId, info); break;
+			case 25: p = new BlinkingWires(this, moduleId, info); break;
+			case 26: p = new ColorOffset(this, moduleId, info); break;
+			case 27: p = new ColorDominance(this, moduleId, info); break;
+			case 28: p = new LEDDirections(this, moduleId, info); break;
+			case 29: p = new PreciseWires(this, moduleId, info); break;
+			case 30: p = new GatedMaze(this, moduleId, info); break;
+			case 31: p = new ParanormalWires(this, moduleId, info); break;
+		}
+		/*
 		if (targetComponents.SequenceEqual(new[] {true, false, false, false, false})) p = new ColorfulWires(this, moduleId, info);
 		else if(targetComponents.SequenceEqual(new[] {false, true, false, false, false})) p = new AdjacentSymbols(this, moduleId, info);
 		else if(targetComponents.SequenceEqual(new[] {false, false, true, false, false})) p = new EdgeworkKeys(this, moduleId, info);
@@ -301,7 +341,7 @@ public class Modkit : MonoBehaviour
 		else if(targetComponents.SequenceEqual(new[] {false, true, true, true, true})) p = new GatedMaze(this, moduleId, info);
 		else if(targetComponents.SequenceEqual(new[] {true, true, true, true, true})) p = new ParanormalWires(this, moduleId, info);
 		else p = new Puzzle(this, moduleId, info, true);	
-
+		*/
         for (int x = 0; x < wires.Length; x++)
         {
             int y = x;

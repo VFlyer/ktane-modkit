@@ -39,7 +39,7 @@ public class ComponentInfo
         while(prov.Count < 5)
         {
             int wireColor = rnd.Range(0, 7) * 10 + rnd.Range(0, 7);
-            int altcolor = (wireColor % 10) * 10 + (wireColor / 10);
+            int altcolor = 10 * (wireColor % 10) + (wireColor / 10);
             if(!(prov.Contains(wireColor) || prov.Contains(altcolor)))
                 prov.Add(wireColor);
         }        
@@ -101,6 +101,16 @@ public class ComponentInfo
         }
 
         return names.Join(", ");
+    }
+    public string GetWireName(int wireNum)
+    {
+        int color1 = wireNum / 10;
+        int color2 = wireNum % 10;
+
+        if(color1 == color2)
+            return COLORNAMES[color1];
+        else
+            return COLORNAMES[color1] + "/" + COLORNAMES[color2];
     }
 
     public string GetSymbols()

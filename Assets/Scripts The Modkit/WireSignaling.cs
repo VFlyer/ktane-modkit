@@ -15,7 +15,41 @@ class WireSignaling : Puzzle
     {
         Debug.LogFormat("[The Modkit #{0}] Solving Wire Signaling. Symbols present: {1}. Arrows: [Up: {2}, Right: {3}, Down: {4}, Left: {5}].", moduleId, info.GetSymbols(), ComponentInfo.COLORNAMES[info.arrows[ComponentInfo.UP]], ComponentInfo.COLORNAMES[info.arrows[ComponentInfo.RIGHT]], ComponentInfo.COLORNAMES[info.arrows[ComponentInfo.DOWN]], ComponentInfo.COLORNAMES[info.arrows[ComponentInfo.LEFT]]);
 
-        CalcSolution();
+        CalcSolution(false);
+    }
+
+    public override void BruteForceTest()
+    {
+        var tempComponent = info;
+        var tempExpectedWires = toCut.ToList();
+        info = new ComponentInfo();
+        var allPossibleWires = new List<int>();
+        for (var x = 0; x < ComponentInfo.COLORNAMES.Length; x++)
+            for (var y = 0; y < ComponentInfo.COLORNAMES.Length; y++)
+                if (!(allPossibleWires.Contains(x * 10 + y) || allPossibleWires.Contains(y * 10 + x)))
+                    allPossibleWires.Add(x * 10 + y);
+        Debug.Log(allPossibleWires.Count);
+        var nonPosDependentChecks = new int[] { 0, 2, 4, 5 };
+        var pickedIdxTest = 1;
+        if (nonPosDependentChecks.Contains(pickedIdxTest))
+        {
+            var idxSuccess = new List<int>();
+            for (var x = 0; x < (allPossibleWires.Count + 4) / 5; x++)
+            {
+                var subsectionedPortion = allPossibleWires.Skip(5 * x).Take(5);
+                var itemCountInPortion = subsectionedPortion.Count();
+                info.wires = (itemCountInPortion < 5 ? subsectionedPortion.Concat(Enumerable.Repeat(0, 5 - subsectionedPortion.Count())) : subsectionedPortion).ToArray();
+                toCut.Clear();
+                CalcWires(pickedIdxTest);
+                var fromIdxCut = toCut.Take(itemCountInPortion);
+                if (fromIdxCut.Any())
+                    idxSuccess.AddRange(fromIdxCut.Select(a => info.wires[a]).ToArray());
+            }
+            Debug.LogFormat("{0}: {1}", pickedIdxTest + 1, idxSuccess.Select(a => info.GetWireName(a)).Join());
+        }
+        
+        info = tempComponent;
+        toCut = tempExpectedWires;
     }
 
     public override void OnWireCut(int wire)
@@ -58,12 +92,21 @@ class WireSignaling : Puzzle
         }
     }
 
-    void CalcSolution()
+    void CalcSolution(bool overrideToTest = false)
     {
         Debug.LogFormat("[The Modkit #{0}] Wires present: {1}.", moduleId, info.GetWireNames());
     
         toCut = new List<int>();
         wiresCut = new List<int>();
+        
+        if (overrideToTest)
+        {
+            info.wires = new[] { 03, 46, 16, 02, 44 };
+            info.symbols = new[] { 2, 12, 22 };
+            info.arrows = new[] { 0, 1, 3, 2 };
+            Debug.LogFormat("[The Modkit #{0}] WARNING: TEST ACTIVE. Symbols overriden: {1}. Arrows overriden: [Up: {2}, Right: {3}, Down: {4}, Left: {5}].", moduleId, info.GetSymbols(), ComponentInfo.COLORNAMES[info.arrows[ComponentInfo.UP]], ComponentInfo.COLORNAMES[info.arrows[ComponentInfo.RIGHT]], ComponentInfo.COLORNAMES[info.arrows[ComponentInfo.DOWN]], ComponentInfo.COLORNAMES[info.arrows[ComponentInfo.LEFT]]);
+            Debug.LogFormat("[The Modkit #{0}] Wires overidden: {1}.", moduleId, info.GetWireNames());
+        }
 
         for (int i = 0; i < 11; i++)
         {
@@ -71,11 +114,10 @@ class WireSignaling : Puzzle
                 continue;
             Debug.LogFormat("[The Modkit #{0}] Row {1} returned true for both requirements.", moduleId, i + 1);
             CalcWires(i);
-            if(toCut.Count != 0)
+            if(toCut.Any())
             {
-                
                 Debug.LogFormat("[The Modkit #{0}] Wires that need to be cut: {1}.", moduleId, toCut.Select(x => x + 1).Join(", "));
-                return;
+                break;
             }
             else
             {
