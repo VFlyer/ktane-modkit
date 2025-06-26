@@ -1,10 +1,7 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using KModkit;
-using rnd = UnityEngine.Random;
 
 class SequenceCut : Puzzle
 {
@@ -23,7 +20,7 @@ class SequenceCut : Puzzle
         new int[] { ComponentInfo.ORANGE, ComponentInfo.YELLOW, ComponentInfo.BLUE, ComponentInfo.RED, ComponentInfo.PURPLE, ComponentInfo.GREEN, ComponentInfo.WHITE },
         new int[] { ComponentInfo.ORANGE, ComponentInfo.WHITE, ComponentInfo.GREEN, ComponentInfo.RED, ComponentInfo.PURPLE, ComponentInfo.YELLOW, ComponentInfo.BLUE },
         new int[] { ComponentInfo.PURPLE, ComponentInfo.YELLOW, ComponentInfo.BLUE, ComponentInfo.WHITE, ComponentInfo.RED, ComponentInfo.GREEN, ComponentInfo.ORANGE },
-        new int[] { ComponentInfo.WHITE, ComponentInfo.BLUE, ComponentInfo.RED, ComponentInfo.ORANGE, ComponentInfo.PURPLE, ComponentInfo.YELLOW, ComponentInfo.GREEN },
+        new int[] { ComponentInfo.BLUE, ComponentInfo.WHITE, ComponentInfo.RED, ComponentInfo.ORANGE, ComponentInfo.PURPLE, ComponentInfo.YELLOW, ComponentInfo.GREEN },
         new int[] { ComponentInfo.BLUE, ComponentInfo.RED, ComponentInfo.ORANGE, ComponentInfo.PURPLE, ComponentInfo.WHITE, ComponentInfo.YELLOW, ComponentInfo.GREEN },
         new int[] { ComponentInfo.GREEN, ComponentInfo.ORANGE, ComponentInfo.WHITE, ComponentInfo.YELLOW, ComponentInfo.RED, ComponentInfo.PURPLE, ComponentInfo.BLUE },
         new int[] { ComponentInfo.GREEN, ComponentInfo.ORANGE, ComponentInfo.WHITE, ComponentInfo.YELLOW, ComponentInfo.PURPLE, ComponentInfo.RED, ComponentInfo.BLUE },
