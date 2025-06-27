@@ -303,7 +303,7 @@ class ColorDominance : Puzzle
         LEDOff = new List<int>();
 
         stage = 0;
-
+        var lastInfo = new ComponentInfo(info);
         module.RegenWires();
         Debug.LogFormat("[The Modkit #{0}] Wires present: {1}.", moduleId, info.GetWireNames());
 
@@ -311,7 +311,7 @@ class ColorDominance : Puzzle
             module.symbols[i].transform.Find("Key_TL").Find("LED").GetComponentInChildren<Renderer>().material = module.keyLightMats[keyColors[i]];
         for(int i = 0; i < info.LED.Length; i++)
 			module.LED[i].transform.Find("light").GetComponentInChildren<Renderer>().material = module.LEDMats[info.LED[i]];
-
+        module.HandleColorblindAdjust(lastInfo);
         CalcSolution(stage);
     }
 }

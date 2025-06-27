@@ -33,6 +33,23 @@ public class ComponentInfo
     public int[] LED;
     public int[] arrows;
 
+    public ComponentInfo(ComponentInfo copyComp, int[] replacedWires = null, int[] replacedSymbols = null, string[] replacedAlpha = null, int[] replacedLEDs = null, int[] replacedArrows = null)
+    {
+        wires = replacedWires ?? copyComp.wires.ToArray();
+        symbols = replacedSymbols ?? copyComp.symbols.ToArray();
+        alphabet = replacedAlpha ?? copyComp.alphabet.ToArray();
+        LED = replacedLEDs ?? copyComp.LED.ToArray();
+        arrows = replacedArrows ?? copyComp.arrows.ToArray();
+    }
+    public ComponentInfo(ComponentInfo copyComp)
+    {
+        wires = copyComp.wires.ToArray();
+        symbols = copyComp.symbols.ToArray();
+        alphabet = copyComp.alphabet.ToArray();
+        LED = copyComp.LED.ToArray();
+        arrows = copyComp.arrows.ToArray();
+    }
+
     public ComponentInfo()
     {
         List<int> prov = new List<int>();

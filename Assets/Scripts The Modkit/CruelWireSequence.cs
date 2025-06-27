@@ -8,18 +8,18 @@ using rnd = UnityEngine.Random;
 
 class CruelWireSequence : Puzzle
 {
-    ComponentInfo[] pannels;
+    ComponentInfo[] panels;
 
     int[] acc;
     List<int>[] cuts;
     List<int>[] toCut;
-    int currentPannel = 0;
+    int currentPanel = 0;
 
     public CruelWireSequence(Modkit module, int moduleId, ComponentInfo info) : base(module, moduleId, info)
     {
         Debug.LogFormat("[The Modkit #{0}] Solving Cruel Wire Sequence. Alphanumeric keys present: {1}.", moduleId, info.alphabet.Join(", "));
         
-        pannels = new ComponentInfo[] { info, new ComponentInfo(), new ComponentInfo() };
+        panels = new ComponentInfo[] { info, new ComponentInfo(), new ComponentInfo() };
 
         CalcSolution();
     }
@@ -46,16 +46,16 @@ class CruelWireSequence : Puzzle
 
         module.StartSolve();
 
-        cuts[currentPannel].Add(wire);
+        cuts[currentPanel].Add(wire);
 
-        if(!toCut[currentPannel].Contains(wire))
+        if(!toCut[currentPanel].Contains(wire))
         {
-            Debug.LogFormat("[The Modkit #{0}] Strike! Incorrectly cutted wire {1} of panel {2}.", moduleId, wire + 1, currentPannel + 1);
+            Debug.LogFormat("[The Modkit #{0}] Strike! Incorrectly cutted wire {1} of panel {2}.", moduleId, wire + 1, currentPanel + 1);
             module.CauseStrike();
         }
         else
         {
-            Debug.LogFormat("[The Modkit #{0}] Correctly cutted wire {1} of panel {2}.", moduleId, wire + 1, currentPannel + 1);
+            Debug.LogFormat("[The Modkit #{0}] Correctly cutted wire {1} of panel {2}.", moduleId, wire + 1, currentPanel + 1);
         }
     }
 
@@ -81,24 +81,24 @@ class CruelWireSequence : Puzzle
 
         if(arrow == ComponentInfo.UP)
         {
-            if(currentPannel > 0)
+            if(currentPanel > 0)
             {
-                currentPannel--;
+                currentPanel--;
                 module.StartCoroutine(SwitchPanel());
             }
         }
         else if(arrow == ComponentInfo.DOWN)
         {
-            if(toCut[currentPannel].Where(x => !cuts[currentPannel].Contains(x)).Count() != 0)
+            if(toCut[currentPanel].Where(x => !cuts[currentPanel].Contains(x)).Count() != 0)
             {
-                Debug.LogFormat("[The Modkit #{0}] Strike! Can't leave panel {1} because wires {2} still need to be cut.", moduleId, currentPannel + 1, toCut[currentPannel].Where(x => !cuts[currentPannel].Contains(x)).Select(x => x + 1).Join(", "));
+                Debug.LogFormat("[The Modkit #{0}] Strike! Can't leave panel {1} because wires {2} still need to be cut.", moduleId, currentPanel + 1, toCut[currentPanel].Where(x => !cuts[currentPanel].Contains(x)).Select(x => x + 1).Join(", "));
                 module.CauseStrike();
                 return;
             }
 
-            currentPannel++;
+            currentPanel++;
 
-            if(currentPannel == 3)
+            if(currentPanel == 3)
             {
                 Debug.LogFormat("[The Modkit #{0}] Module solved.", moduleId);
                 module.Solve();
@@ -112,8 +112,8 @@ class CruelWireSequence : Puzzle
     void CalcSolution()
     {
         Debug.LogFormat("[The Modkit #{0}] First panel wires: {1}.", moduleId, info.GetWireNames());
-        Debug.LogFormat("[The Modkit #{0}] Second panel wires: {1}.", moduleId, pannels[1].GetWireNames());
-        Debug.LogFormat("[The Modkit #{0}] Third panel wires: {1}.", moduleId, pannels[2].GetWireNames());
+        Debug.LogFormat("[The Modkit #{0}] Second panel wires: {1}.", moduleId, panels[1].GetWireNames());
+        Debug.LogFormat("[The Modkit #{0}] Third panel wires: {1}.", moduleId, panels[2].GetWireNames());
 
         acc = new int[] { 0, 0, 0, 0, 0, 0, 0 };
         cuts = new List<int>[] { new List<int>(), new List<int>(), new List<int>() };
@@ -121,11 +121,11 @@ class CruelWireSequence : Puzzle
 
         string s = info.alphabet[0] + info.alphabet[1] + info.alphabet[2];
 
-        for(int i = 0; i < pannels.Length; i++)
-            for(int j = 0; j < pannels[i].wires.Length; j++)
+        for(int i = 0; i < panels.Length; i++)
+            for(int j = 0; j < panels[i].wires.Length; j++)
             {
-                int color1 = pannels[i].wires[j] / 10;
-                int color2 = pannels[i].wires[j] % 10;
+                int color1 = panels[i].wires[j] / 10;
+                int color2 = panels[i].wires[j] % 10;
 
                 if(CheckCut(color1, s) || CheckCut(color2, s))
                     toCut[i].Add(j);
@@ -285,15 +285,15 @@ class CruelWireSequence : Puzzle
 	{
 		yield return module.HideComponent(0);
 
-		for(int i = 0; i < pannels[currentPannel].wires.Length; i++)
+		for(int i = 0; i < panels[currentPanel].wires.Length; i++)
 		{
-			int color1 = pannels[currentPannel].wires[i] / 10;
-			int color2 = pannels[currentPannel].wires[i] % 10;
+			int color1 = panels[currentPanel].wires[i] / 10;
+			int color2 = panels[currentPanel].wires[i] % 10;
 
 			if(color1 > color2)
 			{
 				color1 = color2;
-				color2 = pannels[currentPannel].wires[i] / 10;
+				color2 = panels[currentPanel].wires[i] / 10;
 			}
 
 			if(color1 != color2)
@@ -301,7 +301,7 @@ class CruelWireSequence : Puzzle
 			else
 				module.wires[i].transform.GetComponentInChildren<Renderer>().material = module.wireMats.Where(x => x.name == ComponentInfo.COLORNAMES[color1]).ToArray()[0];
 		
-            if(cuts[currentPannel].Contains(i))
+            if(cuts[currentPanel].Contains(i))
             {
                 module.wires[i].transform.Find("hl").gameObject.SetActive(false);
 			    module.wires[i].GetComponent<MeshFilter>().mesh = module.wireCut;
@@ -312,7 +312,9 @@ class CruelWireSequence : Puzzle
 			    module.wires[i].GetComponent<MeshFilter>().mesh = module.wireWhole;
             }
 		}
+        var adjustedCompAdjust = new ComponentInfo(panels[currentPanel], replacedArrows: info.arrows, replacedAlpha: info.alphabet);
+        module.HandleColorblindAdjust(adjustedCompAdjust);
 
-		yield return module.ShowComponent(0);
+        yield return module.ShowComponent(0);
 	}
 }

@@ -145,6 +145,7 @@ class ColorOffset : Puzzle
             info.LED[i] = colorMap[info.LED[i]][(arrowOffset[arrow] + symbolOffset[i]) % 6];
 			module.LED[i].transform.Find("light").GetComponentInChildren<Renderer>().material = module.LEDMats[info.LED[i]];
         }
+        module.HandleColorblindAdjust();
         arrowPressCount++;
         Debug.LogFormat("[The Modkit #{0}] Pressing the {1} arrow changed the LEDs to these colors: {2}.", moduleId, ComponentInfo.DIRNAMES[arrow], info.LED.Select(x => ComponentInfo.COLORNAMES[x]).Join(", "));
     }

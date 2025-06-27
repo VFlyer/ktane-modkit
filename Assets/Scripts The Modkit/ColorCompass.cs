@@ -101,6 +101,7 @@ class ColorCompass : Puzzle
             {
                 info.LED[off[stage]] = -1;
 			    module.LED[off[stage]].transform.Find("light").GetComponentInChildren<Renderer>().material = module.LEDMats[6];
+                module.HandleColorblindAdjust();
                 LED = info.LED.ToList();
                 
                 stage++;

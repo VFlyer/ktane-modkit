@@ -12,6 +12,7 @@ public class Modkit : MonoBehaviour
 	public KMBombInfo bomb;
 	public KMAudio audioSelf;
 	public KMBombModule moduleSelf;
+	public KMColorblindMode colorblindMode;
 
 	public GameObject[] doors = new GameObject[5];
 	public GameObject[] components = new GameObject[5];
@@ -30,6 +31,7 @@ public class Modkit : MonoBehaviour
 	public GameObject[] alphabet;
 	public GameObject[] LED;
 	public GameObject[] arrows;
+	public TextMesh[] cbLEDTexts, cbArrowTexts, cbWireTexts;
 	public Transform arrowsBase;
 	
 
@@ -52,13 +54,16 @@ public class Modkit : MonoBehaviour
     private bool moduleSolved = false;
     private bool animating = false;
     private bool solving = false;
-
+	private bool colorblindDetected = false;
 	private bool hasStruck = false; // TP Handling, send a strike handling if the module struck. To prevent excessive inputs.
 
-	// Use these for debugging individual puzzles.
+	// Use these for debugging individual puzzles. May also be used for missions.
 	private bool forceComponents, forceByModuleID = false;
 	private bool[] componentsForced;
-	public bool enableBruteTest = false;
+	static int firstModuleIDActive = 0;
+	static List<int> overrideIdxComponents = new List<int>();
+	[SerializeField]
+	bool enableBruteTest = false;
 	ModkitSettings modConfig = new ModkitSettings();
 
 	string[][] passwords = {
@@ -70,9 +75,16 @@ public class Modkit : MonoBehaviour
 			new string[] { "SIX6", "FRY2", "HUB9", "LEG3", "JAW4" }
 		};
 
+	void OnDestroy()
+    {
+		firstModuleIDActive = 0;
+		overrideIdxComponents.Clear();
+    }
 	void Awake()
 	{
 		moduleId = moduleIdCounter++;
+		if (firstModuleIDActive == 0)
+			firstModuleIDActive = moduleId;
         selectBtns[0].OnInteract += delegate () {
 			ChangeDisplayComponent(selectBtns[0], -1);
 			return false; };
@@ -100,11 +112,18 @@ public class Modkit : MonoBehaviour
 			forceByModuleID = false;
 			componentsForced = new bool[] { false, false, false, false, false };
 		}
-
 	}
 
 	void Start () 
 	{
+		try
+        {
+			colorblindDetected = colorblindMode.ColorblindModeActive;
+        }
+		catch
+        {
+			colorblindDetected = false;
+        }
 		SetUpComponents();
 		TryOverrideSettings();
 
@@ -121,7 +140,7 @@ public class Modkit : MonoBehaviour
 		AssignHandlers();
         for (int x = 0; x < 5; x++)
         {
-            SetSelectables(x, forceComponents ? targetComponents[x] : false);
+            SetSelectables(x, forceComponents && targetComponents[x]);
 			onComponents[x] = forceComponents && targetComponents[x];
         }
 		if (forceComponents)
@@ -151,17 +170,17 @@ public class Modkit : MonoBehaviour
 				Debug.LogFormat("<The Modkit #{0}> OVERWRITE SUCCESSFUL BY MISSION ID.", moduleId);
 				return;
 			}
-			/*
-			var regexMatchOverrideDescription = Regex.Match(Game.Mission.Description ?? "", @"\[ModkitOverride\]\sEnforce(ModID|((Wires?|Symbols?|Alphabet|LED|Arrows?),)+)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant );
-			if (regexMatchOverrideDescription.Success)
-            {
+			
+			var rgxMatchOverrideEnforceDigits = Regex.Matches(Game.Mission.Description ?? "", @"\[ModkitOverride\](\s[0-3]?[0-9])+", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant );
+			if (rgxMatchOverrideEnforceDigits.Count > 0)
+			{
 
-            }
+			}
 			else
-            {*/
+			{
 				Debug.LogFormat("<The Modkit #{0}> PREVENTING COMPONENTS FROM BEING OVERRIDDEN.", moduleId);
 				forceComponents = false;
-            //}
+            }
         }
 		catch (Exception error)
         {
@@ -192,10 +211,17 @@ public class Modkit : MonoBehaviour
 				color2 = info.wires[i] / 10;
 			}
 
-			if(color1 != color2)
+			if (color1 != color2)
+			{
 				wires[i].transform.GetComponentInChildren<Renderer>().material = wireMats.Where(x => x.name == ComponentInfo.COLORNAMES[color1] + "_" + ComponentInfo.COLORNAMES[color2]).ToArray()[0];
+				cbWireTexts[i].text = colorblindDetected ? string.Format("{0}/{1}", ComponentInfo.COLORNAMES[color1].First(), ComponentInfo.COLORNAMES[color2].First()) : "";
+			}
 			else
+			{
 				wires[i].transform.GetComponentInChildren<Renderer>().material = wireMats.Where(x => x.name == ComponentInfo.COLORNAMES[color1]).ToArray()[0];
+				cbWireTexts[i].text = colorblindDetected ? string.Format("{0}", ComponentInfo.COLORNAMES[color1].First()) : "";
+			}
+			
 		}
 
 		for(int i = 0; i < symbols.Length; i++)
@@ -210,7 +236,10 @@ public class Modkit : MonoBehaviour
 
 		for(int i = 0; i < LED.Length; i++)
 		{
-			LED[i].transform.Find("light").GetComponentInChildren<Renderer>().material = LEDMats[info.LED[i]];
+			var ledColor = info.LED[i];
+			LED[i].transform.Find("light").GetComponentInChildren<Renderer>().material = LEDMats[ledColor];
+			cbLEDTexts[i].text = colorblindDetected ? string.Format("{0}", ComponentInfo.COLORNAMES[ledColor].First()) : "";
+			cbLEDTexts[i].color = ledColor == ComponentInfo.YELLOW ? Color.black : Color.white;
 		}
 
 		for(int i = 0; i < arrows.Length; i++)
@@ -219,6 +248,7 @@ public class Modkit : MonoBehaviour
 			float scalar = transform.lossyScale.x;
     		arrows[i].transform.Find("light").GetComponentInChildren<Light>().range *= scalar;
     		arrows[i].transform.Find("light").GetComponentInChildren<Light>().color = ComponentInfo.LIGHTCOLORS[info.arrows[i]];
+			cbArrowTexts[i].text = colorblindDetected ? string.Format("{0}", ComponentInfo.COLORNAMES[info.arrows[i]].First()) : "";
 		}
 	}
 	void ForceComponents()
@@ -541,6 +571,37 @@ public class Modkit : MonoBehaviour
 		}
 	}
 
+	public void HandleColorblindAdjust(ComponentInfo overrideComponent = null)
+    {
+		var usedComponent = overrideComponent ?? info;
+
+		for (int i = 0; i < wires.Length; i++)
+		{
+			int color1 = usedComponent.wires[i] / 10;
+			int color2 = usedComponent.wires[i] % 10;
+
+			if (color1 > color2)
+			{
+				color1 = color2;
+				color2 = usedComponent.wires[i] / 10;
+			}
+
+			if (color1 != color2)
+				cbWireTexts[i].text = colorblindDetected ? string.Format("{0}/{1}", ComponentInfo.COLORNAMES[color1].First(), ComponentInfo.COLORNAMES[color2].First()) : "";
+			else
+				cbWireTexts[i].text = colorblindDetected ? string.Format("{0}", ComponentInfo.COLORNAMES[color1].First()) : "";
+
+		}
+		for (int i = 0; i < cbLEDTexts.Length; i++)
+		{
+			var ledColor = usedComponent.LED[i];
+			cbLEDTexts[i].text = colorblindDetected ? string.Format("{0}", ledColor == ComponentInfo.WHITE ? ' ' : ComponentInfo.COLORNAMES[ledColor].First()) : "";
+			cbLEDTexts[i].color = ledColor == ComponentInfo.YELLOW ? Color.black : Color.white;
+		}
+		for (int i = 0; i < cbArrowTexts.Length; i++)
+			cbArrowTexts[i].text = colorblindDetected ? string.Format("{0}", ComponentInfo.COLORNAMES[usedComponent.arrows[i]].First()) : "";
+	}
+
 	public IEnumerator AnimateButtonPress(Transform affectedObject, Vector3 offset)
     {
         for (int x = 0; x < 5; x++)
@@ -638,11 +699,16 @@ public class Modkit : MonoBehaviour
 				color2 = info.wires[i] / 10;
 			}
 
-			if(color1 != color2)
+			if (color1 != color2)
+			{
 				wires[i].transform.GetComponentInChildren<Renderer>().material = wireMats.Where(x => x.name == ComponentInfo.COLORNAMES[color1] + "_" + ComponentInfo.COLORNAMES[color2]).ToArray()[0];
+				cbWireTexts[i].text = colorblindDetected ? string.Format("{0}/{1}", ComponentInfo.COLORNAMES[color1].First(), ComponentInfo.COLORNAMES[color2].First()) : "";
+			}
 			else
+			{
 				wires[i].transform.GetComponentInChildren<Renderer>().material = wireMats.Where(x => x.name == ComponentInfo.COLORNAMES[color1]).ToArray()[0];
-		
+				cbWireTexts[i].text = colorblindDetected ? string.Format("{0}", ComponentInfo.COLORNAMES[color1].First()) : "";
+			}
 			wires[i].transform.Find("hl").gameObject.SetActive(true);
 			wires[i].GetComponent<MeshFilter>().mesh = wireWhole;
 		}
@@ -774,11 +840,18 @@ public class Modkit : MonoBehaviour
 	*/
 #pragma warning disable 414
 	private readonly string TwitchHelpMessage = "Select the specified component(s) with \"!{0} select led,arrows\" (In this example, select 'led' and 'arrows'). To cut the specified wire(s): \"!{0} cut wire 1,4\" (in this example wires 1 & 4) \n"+
-		"Press the specified buttons with \"!{0} press right,alpha2,symbol1,bigdiamond\" (In this example, the right arrow, 2nd alphabet, 1st symbol, and big diamond) Press '❖' based on the last seconds digit with: \"!{0} press bigdiamond at <#>\" Interaction commands may be chained with a semicolon (\";\", I.E \"!{0} select wires; cut wire 5\"). Combine presses/wire cuts with a comma (\",\")";
+		"Press the specified buttons with \"!{0} press right,alpha2,symbol1,bigdiamond\" (In this example, the right arrow, 2nd alphabet, 1st symbol, and big diamond) Press '❖' based on the last seconds digit with: \"!{0} press bigdiamond at <#>\" Interaction commands may be chained with a semicolon (\";\", I.E \"!{0} select wires; cut wire 5\"). Combine presses/wire cuts with a comma (\",\") Toggle colorblind mode with \"!{0} cb/colorblind\"";
     #pragma warning restore 414
     IEnumerator ProcessTwitchCommand(string command)
     {
 		command = command.ToLower();
+		if (command.RegexMatch(@"^(cb|colou?rblind)$"))
+        {
+			yield return null;
+			colorblindDetected ^= true;
+			HandleColorblindAdjust();
+			yield break;
+        }
         string[] parameters = command.Split(';');
 		List<KMSelectable> combinedModkitPresses = new List<KMSelectable>();
 		List<string> inputTypes = new List<string>();

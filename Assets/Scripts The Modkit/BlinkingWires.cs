@@ -137,8 +137,8 @@ class BlinkingWires : Puzzle
             }
         }
         flag = true;
-
-        if(blink == null)
+        module.HandleColorblindAdjust();
+        if (blink == null)
             blink = module.StartCoroutine(Blink());
     }
 
@@ -543,7 +543,7 @@ class BlinkingWires : Puzzle
         while(!module.IsSolved())
         {
             module.LED[currentLED].transform.Find("light").GetComponentInChildren<Renderer>().material = module.LEDMats[info.LED[currentLED]];
-
+            module.HandleColorblindAdjust();
             yield return new WaitForSeconds(0.5f);
 
             while(flag)
@@ -555,9 +555,12 @@ class BlinkingWires : Puzzle
             for(int i = 0; i < module.LED.Length; i++)
             {
                 module.LED[i].transform.Find("light").GetComponentInChildren<Renderer>().material = module.LEDMats[info.LED[i]];
+                module.HandleColorblindAdjust();
             }
 
             module.LED[currentLED].transform.Find("light").GetComponentInChildren<Renderer>().material = module.LEDMats[6];
+            var adjustedComp = new ComponentInfo(info, replacedLEDs: Enumerable.Range(0, 3).Select(a => a == currentLED ? 6 : info.LED[a]).ToArray());
+            module.HandleColorblindAdjust(adjustedComp);
 
             yield return new WaitForSeconds(0.5f);
         }

@@ -273,7 +273,7 @@ class WireMaze : Puzzle
             else
                 module.wires[i].GetComponent<MeshFilter>().mesh = module.wireWhole;
 		}
-
+        module.HandleColorblindAdjust();
 		yield return module.ShowComponent(0);
 	}
 }
