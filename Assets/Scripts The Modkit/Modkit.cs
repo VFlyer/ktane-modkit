@@ -595,7 +595,7 @@ public class Modkit : MonoBehaviour
 		for (int i = 0; i < cbLEDTexts.Length; i++)
 		{
 			var ledColor = usedComponent.LED[i];
-			cbLEDTexts[i].text = colorblindDetected ? string.Format("{0}", ledColor == ComponentInfo.WHITE ? ' ' : ComponentInfo.COLORNAMES[ledColor].First()) : "";
+			cbLEDTexts[i].text = colorblindDetected ? string.Format("{0}", ledColor == ComponentInfo.WHITE || ledColor == -1 ? ' ' : ComponentInfo.COLORNAMES[ledColor].FirstOrDefault()) : "";
 			cbLEDTexts[i].color = ledColor == ComponentInfo.YELLOW ? Color.black : Color.white;
 		}
 		for (int i = 0; i < cbArrowTexts.Length; i++)
