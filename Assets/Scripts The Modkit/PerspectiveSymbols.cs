@@ -142,7 +142,7 @@ class PerspectiveSymbols : Puzzle
         new int[][] {
             new int[] { 17 },
             new int[] { 17 },
-            new int[] { 1 },
+            new int[] { 1, 4, 5, 12, 23 },
             new int[] { },
             new int[] { },
             new int[] { 15, 7 },
