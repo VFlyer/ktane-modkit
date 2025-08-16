@@ -61,7 +61,7 @@ public class Modkit : MonoBehaviour
 	private bool forceComponents, forceByModuleID = false;
 	private bool[] componentsForced;
 	static int firstModuleIDActive = 0;
-	static List<int> overrideIdxComponents = new List<int>();
+	static List<List<int>> overrideIdxComponents = new List<List<int>>();
 	[SerializeField]
 	bool enableBruteTest = false;
 	ModkitSettings modConfig = new ModkitSettings();
@@ -171,10 +171,28 @@ public class Modkit : MonoBehaviour
 				return;
 			}
 			
-			var rgxMatchOverrideEnforceDigits = Regex.Matches(Game.Mission.Description ?? "", @"\[ModkitOverride\](\s[0-3]?[0-9])+", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant );
-			if (rgxMatchOverrideEnforceDigits.Count > 0)
+			var rgxMatchEnforceDesc = Regex.Matches(Game.Mission.Description ?? "", @"\[The Modkit\](\s[0-3]?[0-9])+", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant );
+			if (rgxMatchEnforceDesc.Count > 0)
 			{
-
+				if (!overrideIdxComponents.Any())
+					foreach (Match item in rgxMatchEnforceDesc)
+					{
+						var matchingStr = item.Value;
+						var nextItems = new List<int>();
+						foreach (var splitIdx in matchingStr.Split().Skip(1))
+							nextItems.Add(int.Parse(splitIdx));
+						if (!nextItems.Any())
+							nextItems.Add(32);
+						overrideIdxComponents.Add(nextItems);
+					}
+				var idxCurTarget = moduleId - firstModuleIDActive;
+				// 0-31 Specific enforced components
+				// 32, Use edgework to determine components
+				// 33, Enforce by Module ID
+				// 34, Enforce random components, any amount.
+				// 35, Enforce random components, at least 1 enforced.
+				// 36 - 39, Enforce 1-4 random components
+				var curBatch = overrideIdxComponents[idxCurTarget % overrideIdxComponents.Count];
 			}
 			else
 			{
