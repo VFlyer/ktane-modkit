@@ -80,6 +80,7 @@ class ColorOffset : Puzzle
                 info.LED[i] = initialLEDState[i];
                 module.LED[i].transform.Find("light").GetComponentInChildren<Renderer>().material = module.LEDMats[info.LED[i]];
             }
+            module.HandleColorblindAdjust();
             Debug.LogFormat("[The Modkit #{0}] Pressing the ❖ button reverted the LEDs back to these colors: {1}.", moduleId, info.LED.Select(x => ComponentInfo.COLORNAMES[x]).Join(", "));
             expectedArrowPressCount++;
             Debug.LogFormat("[The Modkit #{0}] {1} arrow press{2} now required to revert the LEDs back to their initial colors.", moduleId, expectedArrowPressCount, expectedArrowPressCount == 1 ? " is" : "es are");
