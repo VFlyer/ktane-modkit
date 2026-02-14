@@ -6,6 +6,7 @@ using UnityEngine;
 using KModkit;
 using KeepCoding;
 using System.Text.RegularExpressions;
+using Random = UnityEngine.Random;
 
 public class Modkit : MonoBehaviour 
 {
@@ -60,7 +61,7 @@ public class Modkit : MonoBehaviour
 	// Use these for debugging individual puzzles. May also be used for missions.
 	private bool forceComponents, forceByModuleID = false;
 	private bool[] componentsForced;
-	static int firstModuleIDActive = 0;
+	static List<Modkit> loadedModkits = new List<Modkit>();
 	static List<List<int>> overrideIdxComponents = new List<List<int>>();
 	[SerializeField]
 	bool enableBruteTest = false;
@@ -77,14 +78,14 @@ public class Modkit : MonoBehaviour
 
 	void OnDestroy()
     {
-		firstModuleIDActive = 0;
-		overrideIdxComponents.Clear();
+		loadedModkits.Remove(this);
+		if (!loadedModkits.Any())
+			overrideIdxComponents.Clear();
     }
 	void Awake()
 	{
 		moduleId = moduleIdCounter++;
-		if (firstModuleIDActive == 0)
-			firstModuleIDActive = moduleId;
+		loadedModkits.Add(this);
         selectBtns[0].OnInteract += delegate () {
 			ChangeDisplayComponent(selectBtns[0], -1);
 			return false; };
@@ -135,6 +136,7 @@ public class Modkit : MonoBehaviour
 		else
 		{
 			CalcComponents();
+			currentComponent = Random.Range(0, 5);
 			displayText.text = componentNames[currentComponent];
 		}
 		AssignHandlers();
@@ -175,6 +177,8 @@ public class Modkit : MonoBehaviour
 			if (rgxMatchEnforceDesc.Count > 0)
 			{
 				if (!overrideIdxComponents.Any())
+				{
+					Debug.LogFormat("<The Modkit #{0}> DESCRIPTIONS DETECTED. CREATING BAGS FOR EACH INSTANCE.", moduleId);
 					foreach (Match item in rgxMatchEnforceDesc)
 					{
 						var matchingStr = item.Value;
@@ -185,14 +189,76 @@ public class Modkit : MonoBehaviour
 							nextItems.Add(32);
 						overrideIdxComponents.Add(nextItems);
 					}
-				var idxCurTarget = moduleId - firstModuleIDActive;
-				// 0-31 Specific enforced components
-				// 32, Use edgework to determine components
-				// 33, Enforce by Module ID
-				// 34, Enforce random components, any amount.
-				// 35, Enforce random components, at least 1 enforced.
-				// 36 - 39, Enforce 1-4 random components
+				}
+				var idxCurTarget = loadedModkits.IndexOf(this);
 				var curBatch = overrideIdxComponents[idxCurTarget % overrideIdxComponents.Count];
+				var curOverrideIdx = 0;
+				if (curBatch.Any())
+				{
+					curOverrideIdx = curBatch[Random.Range(0, curBatch.Count)];
+					curBatch.Remove(curOverrideIdx);
+				}
+				else if (overrideIdxComponents.Any(a => a.Any()))
+                {
+					for (var d = 1; d < overrideIdxComponents.Count; d++)
+					{
+						var nextBag = overrideIdxComponents[(idxCurTarget + d) % overrideIdxComponents.Count];
+						if (nextBag.Any())
+                        {
+							curBatch = nextBag;
+							break;
+                        }
+					}
+					curOverrideIdx = curBatch[Random.Range(0, curBatch.Count)];
+					curBatch.Remove(curOverrideIdx);
+				}
+				// 0, Use edgework to determine components
+				// 1-32 Specific enforced components
+				// 33 - 36, Enforce 1-4 random components
+				// 37, Enforce random components, any amount.
+				// 38, Enforce random components, at least 1 enforced.
+				// 39, Enforce by Module ID
+				switch (curOverrideIdx)
+                {
+					default: case 0: break;
+					case 1: case 2: case 3: case 4: case 5: case 6: case 7: case 8: case 9: case 10:
+					case 11: case 12: case 13: case 14: case 15: case 16: case 17: case 18: case 19: case 20:
+					case 21: case 22: case 23: case 24: case 25: case 26: case 27: case 28: case 29: case 30:
+					case 31: case 32:
+                        {
+							var binConvert = Enumerable.Range(0, 5).Select(a => ((curOverrideIdx - 1) >> a) % 2 == 1).ToArray();
+							forceComponents = true;
+							componentsForced = binConvert;
+                        }
+						break;
+					case 33: case 34: case 35: case 36:
+                        {
+							var amountToPick = curOverrideIdx - 32;
+							var pickedIdxes = Enumerable.Range(0, 5).ToArray().Shuffle().Take(amountToPick).ToArray();
+							var newEnforceComponents = new bool[5];
+							for (var x = 0; x < amountToPick; x++)
+								newEnforceComponents[pickedIdxes[x]] = true;
+							forceComponents = true;
+							componentsForced = newEnforceComponents;
+						}
+						break;
+					case 37: case 38:
+                        {
+							var alwaysOne = curOverrideIdx == 38;
+							forceComponents = true;
+							do
+								componentsForced = Enumerable.Range(0, 5).Select(a => Random.value < 0.5f).ToArray();
+							while (!alwaysOne || !componentsForced.Any());
+						}
+						break;
+					case 39:
+                        {
+							forceComponents = true;
+							forceByModuleID = true;
+                        }
+						break;
+				}
+				Debug.LogFormat("<The Modkit #{0}> OVERRIDDEN VIA MISSION DESCRIPTION USING VALUE \"{1}\".", moduleId, curOverrideIdx);
 			}
 			else
 			{

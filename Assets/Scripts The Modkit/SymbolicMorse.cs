@@ -98,6 +98,8 @@ class SymbolicMorse : Puzzle
                 module.StopAllCoroutines();
                 foreach (GameObject led in module.LED)
                     led.transform.Find("light").GetComponentInChildren<Renderer>().material = module.LEDMats[6];
+                foreach (TextMesh ledTxt in module.cbLEDTexts)
+                    ledTxt.text = "";
                 module.Solve();
             }
         }
@@ -173,6 +175,7 @@ class SymbolicMorse : Puzzle
 		string character = morseTable[Array.IndexOf(alphabet.ToCharArray(), words[word][n])];
 
         module.LED[n].transform.Find("light").GetComponentInChildren<Renderer>().material = module.LEDMats[6];
+        module.cbLEDTexts[n].text = "";
         yield return new WaitForSeconds(1f);
 
 		while(true)
@@ -180,13 +183,16 @@ class SymbolicMorse : Puzzle
 			for(int i = 0; i < character.Length; i++)
 			{
 			    module.LED[n].transform.Find("light").GetComponentInChildren<Renderer>().material = module.LEDMats[info.LED[n]];
+                module.cbLEDTexts[n].text = module.colorblindMode ? ComponentInfo.COLORNAMES[info.LED[n]].First().ToString() : "";
 				if(character[i] == '-')
 					yield return new WaitForSeconds(0.6f);
 				else
 					yield return new WaitForSeconds(0.2f);
 				
 			    module.LED[n].transform.Find("light").GetComponentInChildren<Renderer>().material = module.LEDMats[6];
-				yield return new WaitForSeconds(0.2f);
+                module.cbLEDTexts[n].text = "";
+
+                yield return new WaitForSeconds(0.2f);
 			}
 			yield return new WaitForSeconds(0.5f);
 		}

@@ -77,6 +77,8 @@ class ParanormalWires : Puzzle
                 a.transform.Find("Key_TL").Find("LED").GetComponentInChildren<Renderer>().material = module.keyLightMats[6];
             foreach (GameObject led in module.LED)
                 led.transform.Find("light").GetComponentInChildren<Renderer>().material = module.LEDMats[6];
+            foreach (var cbLED in module.cbLEDTexts)
+                cbLED.text = "";
             module.Solve();
             return;
         }
@@ -129,6 +131,7 @@ class ParanormalWires : Puzzle
             do{ info.LED[op % 10] = rnd.Range(0, 6); } while(temp == info.LED[op % 10]);
 			module.LED[op % 10].transform.Find("light").GetComponentInChildren<Renderer>().material = module.LEDMats[info.LED[op % 10]];
             Debug.LogFormat("[The Modkit #{0}] LED {1} is now {2}.", moduleId, (op % 10) + 1, ComponentInfo.COLORNAMES[info.LED[op % 10]]);
+            module.HandleColorblindAdjust();
         }
         else if(op / 10 == 5)
         {
@@ -142,6 +145,7 @@ class ParanormalWires : Puzzle
             module.arrows[op % 10].GetComponentInChildren<Renderer>().material = module.arrowMats[info.arrows[op % 10]];
     		module.arrows[op % 10].transform.Find("light").GetComponentInChildren<Light>().color = ComponentInfo.LIGHTCOLORS[info.arrows[op % 10]];
             Debug.LogFormat("[The Modkit #{0}] {1} arrow is now {2}.", moduleId, ComponentInfo.DIRNAMES[op % 10], ComponentInfo.COLORNAMES[info.arrows[op % 10]]);
+            module.HandleColorblindAdjust();
         }
         else
         {
@@ -687,8 +691,10 @@ class ParanormalWires : Puzzle
         while(true)
         {
 			module.LED[n].transform.Find("light").GetComponentInChildren<Renderer>().material = module.LEDMats[6];
+            module.cbLEDTexts[n].text = "";
             yield return new WaitForSeconds(rnd.Range(0.05f, 0.3f));
             module.LED[n].transform.Find("light").GetComponentInChildren<Renderer>().material = module.LEDMats[info.LED[n]];
+            module.cbLEDTexts[n].text = module.colorblindMode ? ComponentInfo.COLORNAMES[info.LED[n]].First().ToString() : "";
             yield return new WaitForSeconds(rnd.Range(0.05f, 0.3f));
         }
     }
