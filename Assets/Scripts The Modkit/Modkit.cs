@@ -195,7 +195,7 @@ public class Modkit : MonoBehaviour
 				var curOverrideIdx = 0;
 				if (curBatch.Any())
 				{
-					curOverrideIdx = curBatch[Random.Range(0, curBatch.Count)];
+					curOverrideIdx = curBatch.PickRandom();
 					curBatch.Remove(curOverrideIdx);
 				}
 				else if (overrideIdxComponents.Any(a => a.Any()))
@@ -209,7 +209,7 @@ public class Modkit : MonoBehaviour
 							break;
                         }
 					}
-					curOverrideIdx = curBatch[Random.Range(0, curBatch.Count)];
+					curOverrideIdx = curBatch.PickRandom();
 					curBatch.Remove(curOverrideIdx);
 				}
 				// 0, Use edgework to determine components
