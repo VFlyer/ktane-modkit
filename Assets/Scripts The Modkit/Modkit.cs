@@ -64,7 +64,9 @@ public class Modkit : MonoBehaviour
 	static List<Modkit> loadedModkits = new List<Modkit>();
 	static List<List<int>> overrideIdxComponents = new List<List<int>>();
 	[SerializeField]
-	bool enableBruteTest = false;
+	private bool enableBruteTest = false, testOverrideString = false;
+	[SerializeField]
+	private string debugStrOverride = "";
 	ModkitSettings modConfig = new ModkitSettings();
 
 	string[][] passwords = {
@@ -152,7 +154,7 @@ public class Modkit : MonoBehaviour
     {
         try
         {
-			var missionID = Application.isEditor ? "freeplay" : Game.Mission.ID ?? "unknown";
+			var missionID = Application.isEditor ? (testOverrideString ? "unknown" : "freeplay") : Game.Mission.ID ?? "unknown";
 			var overwriteSuccessful = false;
 			Debug.LogFormat("<The Modkit #{0}> Mission ID: {1}", moduleId, missionID);
 			switch (missionID)
@@ -173,7 +175,7 @@ public class Modkit : MonoBehaviour
 				return;
 			}
 			
-			var rgxMatchEnforceDesc = Regex.Matches(Game.Mission.Description ?? "", @"\[The Modkit\](\s[0-3]?[0-9])+", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant );
+			var rgxMatchEnforceDesc = Regex.Matches(Application.isEditor ? debugStrOverride :  Game.Mission.Description ?? "", @"\[The Modkit\](\s[0-3]?[0-9])+", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 			if (rgxMatchEnforceDesc.Count > 0)
 			{
 				if (!overrideIdxComponents.Any())
@@ -183,8 +185,11 @@ public class Modkit : MonoBehaviour
 					{
 						var matchingStr = item.Value;
 						var nextItems = new List<int>();
-						foreach (var splitIdx in matchingStr.Split().Skip(1))
+						foreach (var splitIdx in matchingStr.Split().Skip(2))
+						{
+							//Debug.LogFormat("<The Modkit #{0}> \"{1}\"", moduleId, splitIdx);
 							nextItems.Add(int.Parse(splitIdx));
+						}
 						if (!nextItems.Any())
 							nextItems.Add(32);
 						overrideIdxComponents.Add(nextItems);
@@ -268,7 +273,7 @@ public class Modkit : MonoBehaviour
         }
 		catch (Exception error)
         {
-			Debug.LogWarningFormat("<The Modkit #{0}> Override does not work as intended! ", moduleId);
+			Debug.LogWarningFormat("<The Modkit #{0}> Override does not work as intended!", moduleId);
 			Debug.LogException(error);
 			Debug.LogWarningFormat("<The Modkit #{0}> Using default settings.", moduleId);
 			forceComponents = false;
