@@ -346,7 +346,7 @@ public class Modkit : MonoBehaviour
 		var curModID = moduleId * 1;
 		if (forceByModuleID)
 		{
-			Debug.LogFormat("[The Modkit #{0}] Enforcing components viva module ID.", moduleId);
+			Debug.LogFormat("[The Modkit #{0}] Enforcing components via module ID.", moduleId);
 			for (int x = 0; x < componentsForced.Length; x++)
 			{
 				targetComponents[x] = curModID % 2 == 1;
