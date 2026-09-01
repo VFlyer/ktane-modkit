@@ -253,7 +253,7 @@ public class Modkit : MonoBehaviour
 							forceComponents = true;
 							do
 								componentsForced = Enumerable.Range(0, 5).Select(a => Random.value < 0.5f).ToArray();
-							while (!alwaysOne || !componentsForced.Any());
+							while (alwaysOne && !componentsForced.Any(a => a));
 						}
 						break;
 					case 39:
