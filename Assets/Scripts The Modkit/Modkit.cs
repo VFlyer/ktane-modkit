@@ -233,6 +233,7 @@ public class Modkit : MonoBehaviour
                         {
 							var binConvert = Enumerable.Range(0, 5).Select(a => ((curOverrideIdx - 1) >> a) % 2 == 1).ToArray();
 							forceComponents = true;
+							forceByModuleID = false;
 							componentsForced = binConvert;
                         }
 						break;
@@ -244,6 +245,7 @@ public class Modkit : MonoBehaviour
 							for (var x = 0; x < amountToPick; x++)
 								newEnforceComponents[pickedIdxes[x]] = true;
 							forceComponents = true;
+							forceByModuleID = false;
 							componentsForced = newEnforceComponents;
 						}
 						break;
@@ -251,6 +253,7 @@ public class Modkit : MonoBehaviour
                         {
 							var alwaysOne = curOverrideIdx == 38;
 							forceComponents = true;
+							forceByModuleID = false;
 							do
 								componentsForced = Enumerable.Range(0, 5).Select(a => Random.value < 0.5f).ToArray();
 							while (alwaysOne && !componentsForced.Any(a => a));
